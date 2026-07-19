@@ -14,29 +14,35 @@ const features = [
 const row1 = features.slice(0, 5);
 const row2 = features.slice(5);
 
-/** Arc uses design-specific glyphs where they differ from pill icons */
+/**
+ * Arc glyphs match the design left→right:
+ * layout, folder+gear, sliders, user, user+sync, megaphone, calendar↑, chat, star
+ */
 const arcIconSrc = [
   '/images/features/icons/dashboard.svg',
   '/images/features/icons/project.svg',
   '/images/features/icons/sprint-sliders.svg',
   '/images/features/icons/people.svg',
-  '/images/features/icons/portal.svg',
+  '/images/features/icons/portal-user.svg',
   '/images/features/icons/notice.svg',
   '/images/features/icons/timesheet.svg',
   '/images/features/icons/chat.svg',
   '/images/features/icons/feedback.svg',
 ];
 
-/** 9 icon positions along a wide shallow arc (percent of arc box) */
+/**
+ * Wide shallow semicircle — ends sit near dashboard top corners,
+ * apex sits well above the dashboard (matches design).
+ */
 const arcIcons = arcIconSrc.map((icon, index) => {
   const t = index / 8;
-  const start = Math.PI * 0.95;
-  const end = Math.PI * 0.05;
+  const start = Math.PI * 0.78;
+  const end = Math.PI * 0.22;
   const angle = start + t * (end - start);
   const rx = 48;
-  const ry = 88;
+  const ry = 92;
   const cx = 50;
-  const cy = 102;
+  const cy = 100;
   return {
     icon,
     left: cx + rx * Math.cos(angle),
@@ -52,12 +58,14 @@ const arcIcons = arcIconSrc.map((icon, index) => {
     <div class="features-hero__visual mx-auto" aria-label="Pixeldesk product features preview">
       <!-- Arc line + individual icon orbs -->
       <div class="features-hero__arc" aria-hidden="true">
-        <svg class="features-hero__arc-line" viewBox="0 0 820 260" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <!-- Same ellipse as icon math: rx=48 ry=92 cx=50 cy=100, θ=0.78π→0.22π -->
+        <svg class="features-hero__arc-line" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
           <path
-            d="M36 236 C 110 36, 270 10, 410 10 C 550 10, 710 36, 784 236"
-            stroke="#D5CCFF"
+            d="M 13.02 41.36 A 48 92 0 0 1 86.98 41.36"
+            stroke="#D8D0FF"
             stroke-width="1.5"
             stroke-linecap="round"
+            vector-effect="non-scaling-stroke"
           ></path>
         </svg>
         <ul class="features-hero__arc-icons">
@@ -144,17 +152,18 @@ const arcIcons = arcIconSrc.map((icon, index) => {
 
   .features-hero__visual {
     position: relative;
-    width: min(100%, 760px);
-    aspect-ratio: 760 / 400;
+    width: min(100%, 860px);
+    aspect-ratio: 860 / 400;
   }
 
+  /* Arc wider than dashboard so icons extend past its edges */
   .features-hero__arc {
     position: absolute;
     left: 50%;
     top: 0;
     z-index: 2;
-    width: 100%;
-    height: 58%;
+    width: 118%;
+    height: 72%;
     transform: translateX(-50%);
     pointer-events: none;
   }
@@ -176,8 +185,8 @@ const arcIcons = arcIconSrc.map((icon, index) => {
 
   .features-hero__arc-icon {
     position: absolute;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     transform: translate(-50%, -50%);
   }
 
@@ -185,27 +194,27 @@ const arcIcons = arcIconSrc.map((icon, index) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 999px;
     background: #fff;
-    border: 1px solid #d5ccff;
-    box-shadow: 0 3px 12px rgba(108, 65, 255, 0.1);
+    border: 1px solid #ddd4ff;
+    box-shadow: 0 2px 10px rgba(108, 65, 255, 0.08);
   }
 
   .features-hero__arc-orb img {
     display: block;
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
   }
 
   .features-hero__dash {
     position: absolute;
     left: 50%;
-    top: 20%;
+    top: 28%;
     z-index: 1;
-    width: 86%;
-    max-width: 640px;
+    width: 70%;
+    max-width: 560px;
     transform: translateX(-50%);
     overflow: hidden;
     border-radius: 14px;
@@ -221,8 +230,13 @@ const arcIcons = arcIconSrc.map((icon, index) => {
   @media (min-width: 640px) {
     .features-hero__arc-icon,
     .features-hero__arc-orb {
-      width: 38px;
-      height: 38px;
+      width: 34px;
+      height: 34px;
+    }
+
+    .features-hero__arc-orb img {
+      width: 15px;
+      height: 15px;
     }
   }
 
@@ -323,19 +337,29 @@ const arcIcons = arcIconSrc.map((icon, index) => {
 
   @media (max-width: 639px) {
     .features-hero__visual {
-      width: min(100%, 520px);
-      aspect-ratio: 760 / 360;
+      width: min(100%, 100%);
+      aspect-ratio: 860 / 380;
+    }
+
+    .features-hero__arc {
+      width: 112%;
+      height: 68%;
+    }
+
+    .features-hero__dash {
+      width: 78%;
+      top: 30%;
     }
 
     .features-hero__arc-icon,
     .features-hero__arc-orb {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
     }
 
     .features-hero__arc-orb img {
-      width: 13px;
-      height: 13px;
+      width: 12px;
+      height: 12px;
     }
   }
 </style>
