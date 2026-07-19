@@ -29,6 +29,28 @@ export default function AuthBase({
     let cancelled = false;
 
     (async () => {
+      const params = new URLSearchParams(window.location.search);
+      const forceLogout = params.get('logout') === '1';
+
+      // Dashboard sends ?logout=1 when its API session fails but landing still
+      // has host-only proxy cookies — clear them here so we don't redirect-loop.
+      if (forceLogout) {
+        try {
+          await logout();
+        } catch {
+          /* ignore */
+        }
+        params.delete('logout');
+        const next = params.toString();
+        const cleanUrl = `${window.location.pathname}${next ? `?${next}` : ''}${window.location.hash}`;
+        window.history.replaceState({}, '', cleanUrl);
+        if (!cancelled) {
+          setSession(null);
+          setSessionLoading(false);
+        }
+        return;
+      }
+
       try {
         const data = await getSession();
         if (!cancelled) setSession(data);
