@@ -4,6 +4,11 @@ import OtpVerification from './OtpVerification';
 import { getSession, logout, requestOtp, verifyOtp } from '../../lib/api/auth.api';
 import { DASHBOARD_URL } from '../../lib/api/api.config';
 import { dashboardRedirectUrl } from '../../lib/auth/dashboardRedirect';
+import { getCsrfTokenFromCookie } from '../../lib/csrf';
+
+type VerifyOtpResponse = {
+  data?: { csrfToken?: string };
+};
 
 interface AuthBaseProps {
   supportUrl?: string;
@@ -70,7 +75,11 @@ export default function AuthBase({
 
   useEffect(() => {
     if (!sessionLoading && session) {
-      window.location.replace(dashboardRedirectUrl(DASHBOARD_URL));
+      window.location.replace(
+        dashboardRedirectUrl(DASHBOARD_URL, {
+          csrfToken: getCsrfTokenFromCookie(),
+        }),
+      );
     }
   }, [session, sessionLoading]);
 
@@ -103,9 +112,17 @@ export default function AuthBase({
     try {
       setLoading(true);
       setError(undefined);
-      await verifyOtp(email, otp, rememberMe);
+      const result = (await verifyOtp(
+        email,
+        otp,
+        rememberMe,
+      )) as VerifyOtpResponse;
+      const csrfToken =
+        result?.data?.csrfToken || getCsrfTokenFromCookie() || undefined;
       // cookies are set by backend; hard-navigate into dashboard
-      window.location.replace(dashboardRedirectUrl(DASHBOARD_URL));
+      window.location.replace(
+        dashboardRedirectUrl(DASHBOARD_URL, { csrfToken }),
+      );
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
