@@ -23,7 +23,7 @@ jobs:
           docker build --progress=plain \
             --build-arg PUBLIC_API_URL=${{ secrets.PUBLIC_API_URL }} \
             --build-arg PUBLIC_DASHBOARD_URL=${{ secrets.PUBLIC_DASHBOARD_URL }} \
-            --build-arg PUBLIC_USE_API_PROXY=true \
+            --build-arg PUBLIC_USE_API_PROXY=false \
             -t ${{ secrets.DOCKER_HUB_USERNAME }}/pixel-desk-landing:latest .
 
       - name: Push Docker image

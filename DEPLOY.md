@@ -1,17 +1,34 @@
 # Production deploy (pixel-desk-landing)
 
-## Same-origin API proxy (recommended)
+## Auth / API mode (important)
 
-Set `PUBLIC_USE_API_PROXY=true` so browser requests go to `/api/proxy/...` on your app host. Nginx in the Docker image forwards those paths to `PUBLIC_API_URL`.
+Dashboard (`dashboard.pixeldesk.in`) talks **directly** to `apis.pixeldesk.in`.
+Login must set session cookies on that same API host, or the dashboard will bounce back to login after OTP.
 
-This avoids cross-origin session cookie issues between the landing site and API (same pattern as pixel-desk-web).
+For production, set:
+
+```bash
+PUBLIC_USE_API_PROXY=false
+PUBLIC_API_URL=https://apis.pixeldesk.in
+```
+
+The browser then calls the API cross-origin with `credentials: 'include'`. Backend must have:
+
+- `CROSS_SITE_AUTH=true`
+- `LANDING_PAGE_URL=https://pixeldesk.in` (CORS)
+- `FRONTEND_URL=https://dashboard.pixeldesk.in` (CORS)
+- Prefer `COOKIE_DOMAIN=.pixeldesk.in` (optional if cookies are host-scoped to `apis.pixeldesk.in`)
+
+### Local / same-origin proxy
+
+`PUBLIC_USE_API_PROXY=true` is fine for local Astro/nginx proxy development. Do **not** use it in production when the dashboard is on another subdomain — cookies would be scoped to `pixeldesk.in` and never sent to `apis.pixeldesk.in`.
 
 ## Required build / runtime env
 
 | Variable | Example | Purpose |
 |----------|---------|---------|
-| `PUBLIC_API_URL` | `https://api.pixeldesk.in` | Upstream API (proxy target + baked into client) |
-| `PUBLIC_USE_API_PROXY` | `true` | Use `/api/proxy` in the login OTP flow |
+| `PUBLIC_API_URL` | `https://apis.pixeldesk.in` | API base (direct) or proxy upstream |
+| `PUBLIC_USE_API_PROXY` | `false` (prod) / `true` (local) | Same-origin `/api/proxy` vs direct API |
 | `PUBLIC_DASHBOARD_URL` | `https://dashboard.pixeldesk.in` | Redirect after successful OTP verify |
 | `PUBLIC_LOGIN_URL` | `/login` | Login path (same-origin) |
 | `PUBLIC_SUPPORT_URL` | `/resources/knowledge-base` | Support link on the login form |
@@ -20,22 +37,18 @@ This avoids cross-origin session cookie issues between the landing site and API 
 
 Set GitHub repo secrets `PUBLIC_API_URL` and `PUBLIC_DASHBOARD_URL` for `.github/workflows/deploy-prod.yml`.
 
-## Docker build example
+## Docker build example (production)
 
 ```bash
 docker build --progress=plain \
-  --build-arg PUBLIC_API_URL=https://api.pixeldesk.in \
+  --build-arg PUBLIC_API_URL=https://apis.pixeldesk.in \
   --build-arg PUBLIC_DASHBOARD_URL=https://dashboard.pixeldesk.in \
-  --build-arg PUBLIC_USE_API_PROXY=true \
+  --build-arg PUBLIC_USE_API_PROXY=false \
   -t pixel-desk-landing:latest .
 ```
 
 Image serves on **port 80**.
 
-## Backend cookie domain
-
-If the API sets `Domain=api.pixeldesk.in` on session cookies, the browser will not send them to your landing host. Prefer **`Domain=.pixeldesk.in`** (leading dot) so cookies work across subdomains, or omit `Domain` when using the proxy (cookie scoped to landing host).
-
 ## HSTS
 
-Enable `Strict-Transport-Security` at your TLS terminator (CDN / load balancer), not on plain HTTP nginx. `nginx.conf` already sets frame/CSP-related headers.
+Enable HSTS at your TLS terminator when serving HTTPS.
