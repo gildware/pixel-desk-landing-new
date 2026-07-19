@@ -1,0 +1,62 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Sign in | Pixeldesk',
+  description = 'Sign in to your Pixeldesk account.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-dvh overflow-x-hidden">
+    <div
+      class="flex min-h-dvh w-full items-center justify-center bg-gradient-to-br from-[#F3EEFF] via-[#F7F4FF] to-[#EEF1FF] p-4 sm:p-6 md:p-8"
+    >
+      <div
+        class="flex min-h-[min(720px,calc(100dvh-2rem))] w-full max-w-[1100px] flex-col overflow-hidden rounded-2xl border border-white/80 bg-white shadow-[0_8px_40px_rgba(108,65,255,0.08)] sm:rounded-3xl md:min-h-[min(760px,calc(100dvh-4rem))]"
+      >
+        <header
+          class="flex shrink-0 items-center justify-between px-5 pb-2 pt-5 sm:px-8 sm:pt-7 md:px-10"
+        >
+          <a href="/login" class="inline-flex items-center" aria-label="Pixeldesk home">
+            <img
+              src="/images/logo.svg"
+              alt="Pixeldesk"
+              width="155"
+              height="30"
+              class="h-7 w-auto sm:h-8"
+            />
+          </a>
+          <a
+            href="/"
+            class="inline-flex items-center justify-center rounded-full border border-[#E5E5E5] bg-[#F7F7F7] px-4 py-1.5 text-sm font-medium text-[#444444] transition-colors hover:bg-[#EFEFEF] sm:px-5"
+          >
+            Home
+          </a>
+        </header>
+
+        <main
+          class="flex flex-1 items-center justify-center px-5 pb-10 sm:px-8 sm:pb-14 md:px-10"
+        >
+          <div class="w-full max-w-[420px]">
+            <slot />
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

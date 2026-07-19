@@ -1,0 +1,466 @@
+---
+/**
+ * LOCKED: native sticky stack — do not rewrite to a JS scene/pin.
+ * Cards pin with peeks; last card + CTA are one sticky unit; a short
+ * hold then exit-lock so copy + stack + CTA leave (and return) together.
+ */
+const stats = [
+  {
+    value: '84%',
+    title: 'of businesses don’t communicate with clients through a PM tool',
+    body: 'Email remains the most widely used tool for client communication at 59%, while only 16% of businesses use a project management tool to communicate with clients — meaning the vast majority of clients are getting project updates through a channel with no live data attached.',
+    source: 'Source: Project.co Business Communication Statistics 2024',
+    color: '#6A40FF',
+  },
+  {
+    value: '40%',
+    title: 'team members don’t fill timesheets accurately',
+    body: 'Research shows 40% of employees either skip timesheets or fill them inaccurately — making project budgets and billing unreliable from day one.',
+    source: 'Source: AffinityLive / Accelo via Shortlister',
+    color: '#48445B',
+  },
+  {
+    value: '65%',
+    title: 'projects fail to meet their goals',
+    body: 'Only 35% of projects worldwide finish on time, on budget, and with the required scope. The rest run over, get cut, or deliver less than promised.',
+    source: 'Source: Standish Group CHAOS Report',
+    color: '#C71573',
+  },
+  {
+    value: '42%',
+    title: 'PMs spend a full day manually compiling reports',
+    body: '42% of project professionals spend one or more days every week just collating project status reports — almost entirely because their tools don’t connect.',
+    source: 'Source: Wellingtone State of Project Management 2025',
+    color: '#D1882C',
+  },
+  {
+    value: '89%',
+    title: 'of teams use more than one tool to manage work',
+    body: 'With 89% of teams juggling multiple disconnected tools, context gets lost constantly — in emails, spreadsheets, chats, and file systems that never talk to each other.',
+    source: 'Source: Smartsheet Limitations of Spreadsheets Report 2025',
+    color: '#508CA6',
+  },
+  {
+    value: '59%',
+    title: 'of businesses still communicate project updates to clients via email',
+    body: '59% of businesses rely on email as their primary channel for client communication — meaning clients receive static, manually written updates rather than live, real-time visibility into their project’s actual status.',
+    source: 'Source: Project.co Business Communication Statistics 2024',
+    color: '#0C7F82',
+  },
+];
+
+const leadStats = stats.slice(0, -1);
+const lastStat = stats[stats.length - 1];
+const lastIndex = stats.length - 1;
+---
+
+<section class="py-10 sm:py-12">
+  <div class="pd-rail">
+    <img
+      src="/images/dashboard-preview.png"
+      alt="Pixeldesk dashboard showing project summaries, status, and team widgets"
+      width="881"
+      height="493"
+      class="mx-auto w-full max-w-[881px] rounded-[14px] shadow-[6px_6px_25px_rgba(0,0,0,0.1)]"
+      loading="lazy"
+      decoding="async"
+    />
+
+    <div class="why-stack mt-10 sm:mt-14" style={`--stack-count: ${stats.length};`} data-why-stack>
+      <div class="why-stack__deck" data-why-deck>
+        <aside class="why-stack__copy">
+          <span class="pd-section-label">Why Pixeldesk exists</span>
+          <h2 class="mt-4 max-w-[343px] text-[40px] font-medium leading-[47px] text-navy sm:text-[42px]">
+            Most tools track work. <span class="text-purple">Pixeldesk understands it.</span>
+          </h2>
+          <p class="mt-6 max-w-[296px] text-[14px] font-light leading-[20px] text-navy">
+            Project tools were built to manage tasks. But projects don’t fail because of tasks — they fail because of the
+            gaps around them. The client who didn’t know. The budget that crept past. The team member who burned out
+            quietly. The decision lost in a chat thread. Pixeldesk was built to close those gaps.
+          </p>
+        </aside>
+
+        {
+          leadStats.flatMap((stat, i) => [
+            <article
+              class="why-stack__card"
+              style={`--i: ${i}; background-color: ${stat.color};`}
+              aria-label={`${stat.value} ${stat.title}`}
+            >
+              <div class="flex h-full flex-col gap-5 sm:flex-row sm:gap-8">
+                <p class="shrink-0 text-[38px] font-medium leading-none text-white">{stat.value}</p>
+                <div class="min-w-0">
+                  <h3 class="max-w-[406px] text-[28px] font-medium leading-[36px] text-white sm:text-[32px] sm:leading-[36px]">
+                    {stat.title}
+                  </h3>
+                  <p class="mt-5 max-w-[395px] text-[14px] font-light leading-[22px] text-white/90">{stat.body}</p>
+                  <p class="mt-8 text-[10px] font-light text-white/55">{stat.source}</p>
+                </div>
+              </div>
+            </article>,
+            <div class="why-stack__spacer" aria-hidden="true" />,
+          ])
+        }
+
+        <!-- Last card + CTA: one unit. JS locks peeks/copy to this unit on exit. -->
+        <div class="why-stack__finale" style={`--i: ${lastIndex};`} data-why-finale>
+          <article
+            class="why-stack__card why-stack__card--finale"
+            style={`background-color: ${lastStat.color};`}
+            aria-label={`${lastStat.value} ${lastStat.title}`}
+          >
+            <div class="flex h-full flex-col gap-5 sm:flex-row sm:gap-8">
+              <p class="shrink-0 text-[38px] font-medium leading-none text-white">{lastStat.value}</p>
+              <div class="min-w-0">
+                <h3 class="max-w-[406px] text-[28px] font-medium leading-[36px] text-white sm:text-[32px] sm:leading-[36px]">
+                  {lastStat.title}
+                </h3>
+                <p class="mt-5 max-w-[395px] text-[14px] font-light leading-[22px] text-white/90">
+                  {lastStat.body}
+                </p>
+                <p class="mt-8 text-[10px] font-light text-white/55">{lastStat.source}</p>
+              </div>
+            </div>
+          </article>
+
+          <div class="why-stack__cta">
+            <div class="why-stack__cta-pill">
+              <div
+                class="flex items-center gap-2.5 rounded-[40px] bg-white p-2.5 shadow-[5px_5px_7.5px_rgba(0,0,0,0.25)] sm:p-[10px]"
+              >
+                <img
+                  src="/images/icons/portal-check.svg"
+                  alt=""
+                  width="42"
+                  height="42"
+                  class="size-[42px] shrink-0"
+                />
+                <p class="text-center text-[13px] font-medium leading-[21px] text-purple sm:text-[15px]">
+                  Pixeldesk gives every client a live portal — real-time project status, budget visibility, milestone
+                  tracking, and direct feedback tools — so they never have to ask for an update again.
+                </p>
+              </div>
+            </div>
+
+            <div class="rounded-[14px] bg-navy px-6 pb-12 pt-16 text-center text-white sm:px-10 sm:pt-20">
+              <p class="mx-auto max-w-[874px] text-[18px] font-light leading-[26px] sm:text-[20px]">
+                These aren’t edge cases. They’re the everyday reality of running a project without the right
+                infrastructure. Every one of these problems has a direct solution in Pixeldesk.
+              </p>
+              <a href="/features" class="pd-btn-primary mt-8 inline-flex min-w-[227px]">
+                See how Pixeldesk fixes this &nbsp;→
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="why-stack__spacer why-stack__spacer--hold" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const root = document.querySelector('[data-why-stack]');
+    if (!root) return;
+
+    const finale = root.querySelector('[data-why-finale]');
+    const copy = root.querySelector('.why-stack__copy');
+    const leadCards = [...root.querySelectorAll('.why-stack__card')].filter(
+      (c) => !c.classList.contains('why-stack__card--finale'),
+    );
+    if (!finale || !copy || !leadCards.length) return;
+
+    const pinned = [copy, ...leadCards];
+    let locking = false;
+
+    const unlock = () => {
+      if (!locking) return;
+      locking = false;
+      pinned.forEach((el) => {
+        el.style.transform = '';
+        el.style.position = '';
+        el.style.left = '';
+        el.style.width = '';
+        el.style.top = '';
+        el.style.right = '';
+        el.style.margin = '';
+        el.style.zIndex = '';
+        el.style.maxHeight = '';
+        el.classList.remove('is-exit-locked');
+        delete el.dataset.exitOffset;
+      });
+      root.querySelectorAll('[data-why-ghost]').forEach((g) => g.remove());
+    };
+
+    const update = () => {
+      if (window.matchMedia('(max-width: 1023px)').matches) {
+        unlock();
+        return;
+      }
+
+      const rootBox = root.getBoundingClientRect();
+      const finaleTop = finale.getBoundingClientRect().top;
+      const stickyTop = parseFloat(getComputedStyle(finale).top) || 0;
+
+      if (rootBox.bottom < 0 || rootBox.top > window.innerHeight) {
+        unlock();
+        return;
+      }
+
+      const exiting = finaleTop < stickyTop - 0.5;
+      if (!exiting) {
+        unlock();
+        return;
+      }
+
+      // Intended sticky tops (not live rects) so title/peeks stay aligned
+      // with the finale while the whole section exits — including scroll-up.
+      if (!locking) {
+        locking = true;
+        pinned.forEach((el) => {
+          const rect = el.getBoundingClientRect();
+          const intendedTop = parseFloat(getComputedStyle(el).top) || stickyTop;
+          el.dataset.exitOffset = String(intendedTop - stickyTop);
+          el.classList.add('is-exit-locked');
+
+          const ghost = document.createElement('div');
+          ghost.setAttribute('data-why-ghost', '');
+          ghost.setAttribute('aria-hidden', 'true');
+          ghost.style.height = `${el.offsetHeight}px`;
+          ghost.style.width = `${el.offsetWidth}px`;
+          ghost.style.pointerEvents = 'none';
+          if (el.classList.contains('why-stack__copy')) {
+            ghost.style.gridColumn = '1';
+            ghost.style.gridRow = '1 / -1';
+          } else {
+            ghost.style.gridColumn = '2';
+          }
+          el.parentNode.insertBefore(ghost, el);
+
+          el.style.position = 'fixed';
+          el.style.left = `${rect.left}px`;
+          el.style.width = `${rect.width}px`;
+          el.style.top = `${finaleTop + (intendedTop - stickyTop)}px`;
+          el.style.right = 'auto';
+          el.style.margin = '0';
+          el.style.zIndex = getComputedStyle(el).zIndex || '10';
+          if (el.classList.contains('why-stack__copy')) {
+            el.style.maxHeight = `${rect.height}px`;
+          }
+        });
+      }
+
+      pinned.forEach((el) => {
+        const offset = parseFloat(el.dataset.exitOffset || '0');
+        el.style.top = `${finaleTop + offset}px`;
+      });
+    };
+
+    let ticking = false;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          ticking = false;
+          update();
+        });
+      },
+      { passive: true },
+    );
+    window.addEventListener('resize', unlock);
+  })();
+</script>
+
+<style>
+  .why-stack {
+    --stack-peek: 14px;
+    --card-h: 318px;
+    /* Nav is absolute on the hero — not fixed — so pin near the top */
+    --header-h: 1.25rem;
+    --slot-run: 60vh;
+    position: relative;
+    width: 100%;
+    /* Keep sticky peeks’ z-index inside this section so they can’t
+       paint over the following FeatureGrid when scrolling back up. */
+    isolation: isolate;
+    z-index: 0;
+  }
+
+  .why-stack__deck {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .why-stack__copy {
+    position: sticky;
+    top: calc(var(--header-h) + 0.5rem);
+    z-index: 2;
+    align-self: start;
+    margin-bottom: 1.5rem;
+  }
+
+  .why-stack__card {
+    position: sticky;
+    top: calc(var(--header-h) + var(--i) * var(--stack-peek));
+    z-index: calc(10 + var(--i));
+    height: var(--card-h);
+    margin: 0;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 5px 5px 7.5px rgba(0, 0, 0, 0.16);
+    color: #fff;
+    opacity: 1;
+    background-clip: padding-box;
+  }
+
+  .why-stack__spacer {
+    height: var(--slot-run);
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+
+  .why-stack__spacer--hold {
+    /* Short pause after full stack, then whole section exits together.
+       Exit-lock script handles leave-together — hold no longer needs to be huge. */
+    height: 28vh;
+  }
+
+  .why-stack__finale {
+    position: sticky;
+    top: calc(var(--header-h) + var(--i) * var(--stack-peek));
+    z-index: calc(10 + var(--i));
+  }
+
+  .why-stack__finale .why-stack__card {
+    position: relative !important;
+    top: auto !important;
+    z-index: auto;
+  }
+
+  .why-stack__cta {
+    position: relative;
+    margin-top: 1.25rem;
+    padding-top: 2rem;
+  }
+
+  .why-stack__cta-pill {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    z-index: 2;
+    width: min(100%, 784px);
+    transform: translateX(-50%);
+  }
+
+  @media (min-width: 1024px) {
+    .why-stack__deck {
+      display: grid;
+      grid-template-columns: 343px minmax(0, 609px);
+      justify-content: space-between;
+      column-gap: 2rem;
+      align-items: start;
+    }
+
+    .why-stack__copy {
+      grid-column: 1;
+      grid-row-start: 1;
+      grid-row-end: -1;
+      width: 343px;
+      margin-bottom: 0;
+    }
+
+    .why-stack__card,
+    .why-stack__spacer:not(.why-stack__spacer--hold) {
+      grid-column: 2;
+    }
+
+    .why-stack__finale,
+    .why-stack__spacer--hold {
+      grid-column: 1 / -1;
+    }
+
+    .why-stack__card {
+      width: 100%;
+      max-width: 609px;
+    }
+
+    .why-stack__finale .why-stack__card {
+      width: 100%;
+      max-width: 609px;
+      margin-left: auto;
+    }
+
+    .why-stack__cta {
+      width: 100vw;
+      max-width: 100vw;
+      margin-left: calc(50% - 50vw);
+      margin-right: calc(50% - 50vw);
+      padding-left: max(1.25rem, calc((100vw - 1100px) / 2 + 1.25rem));
+      padding-right: max(1.25rem, calc((100vw - 1100px) / 2 + 1.25rem));
+    }
+  }
+
+  @media (min-width: 640px) {
+    .why-stack__card {
+      padding: 2.5rem;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .why-stack {
+      --card-h: min(300px, calc(100dvh - var(--header-h) - 10rem));
+      --stack-peek: 10px;
+      --header-h: 1rem;
+      --slot-run: 65vh;
+    }
+
+    .why-stack__copy {
+      position: relative;
+      top: auto;
+    }
+
+    .why-stack__cta {
+      width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .why-stack__copy {
+      position: relative;
+      top: auto;
+      grid-row: auto;
+    }
+
+    .why-stack__deck {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .why-stack__spacer {
+      display: none;
+    }
+
+    .why-stack__card,
+    .why-stack__finale {
+      position: relative;
+      top: auto !important;
+    }
+
+    .why-stack__card {
+      height: auto;
+      min-height: var(--card-h);
+    }
+  }
+</style>

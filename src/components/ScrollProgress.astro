@@ -1,0 +1,131 @@
+---
+/**
+ * Circular back-to-top control with scroll progress ring.
+ * Mounted once in BaseLayout so every marketing page gets it.
+ */
+---
+
+<button
+  id="scroll-to-top"
+  type="button"
+  class="scroll-to-top pointer-events-none fixed bottom-6 right-4 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-white text-purple opacity-0 shadow-lg ring-1 ring-[#e2e2e2]/80 transition-all duration-300 ease-out md:right-6"
+  aria-label="Scroll to top"
+  tabindex="-1"
+>
+  <svg class="absolute inset-0 h-full w-full -rotate-90" viewBox="0 0 48 48" aria-hidden="true">
+    <circle
+      cx="24"
+      cy="24"
+      r="21"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      class="text-[#e2e2e2]"
+    />
+    <circle
+      id="scroll-progress-ring"
+      cx="24"
+      cy="24"
+      r="21"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      class="text-purple"
+      style="stroke-dasharray: 131.95; stroke-dashoffset: 131.95;"
+    />
+  </svg>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.25"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    class="relative h-5 w-5"
+    aria-hidden="true"
+  >
+    <path d="M12 19V5M5 12l7-7 7 7" />
+  </svg>
+</button>
+
+<script>
+  function initScrollProgress() {
+    const btn = document.getElementById('scroll-to-top');
+    const ring = document.getElementById('scroll-progress-ring');
+    if (!btn || !ring) return;
+
+    // Avoid stacking listeners across Astro view transitions / re-inits
+    if (btn.dataset.bound === 'true') {
+      window.dispatchEvent(new Event('scroll'));
+      return;
+    }
+    btn.dataset.bound = 'true';
+
+    const CIRCUMFERENCE = 2 * Math.PI * 21;
+    ring.style.strokeDasharray = String(CIRCUMFERENCE);
+
+    let ticking = false;
+    let visible = false;
+
+    const update = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = Math.max(
+        document.documentElement.scrollHeight - window.innerHeight,
+        0,
+      );
+      const progress = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
+
+      ring.style.strokeDashoffset = String(CIRCUMFERENCE * (1 - progress));
+
+      const shouldShow = scrollTop > 280;
+      if (shouldShow !== visible) {
+        visible = shouldShow;
+        btn.classList.toggle('opacity-0', !shouldShow);
+        btn.classList.toggle('pointer-events-none', !shouldShow);
+        btn.classList.toggle('opacity-100', shouldShow);
+        btn.tabIndex = shouldShow ? 0 : -1;
+      }
+
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+
+    btn.addEventListener('click', () => {
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+  }
+
+  initScrollProgress();
+  document.addEventListener('astro:page-load', initScrollProgress);
+</script>
+
+<style>
+  .scroll-to-top:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -8px rgb(108 65 255 / 0.28);
+  }
+
+  .scroll-to-top:focus-visible {
+    outline: 2px solid #6c41ff;
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-to-top {
+      transition: opacity 0.01ms !important;
+    }
+  }
+</style>

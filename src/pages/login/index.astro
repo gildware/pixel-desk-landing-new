@@ -1,0 +1,12 @@
+---
+import AuthLayout from '../../layouts/AuthLayout.astro';
+import AuthBase from '../../components/auth/AuthBase';
+
+const supportUrl = import.meta.env.PUBLIC_SUPPORT_URL || '/resources/knowledge-base';
+---
+
+<AuthLayout title="Sign in | Pixeldesk" description="Sign in to your Pixeldesk account.">
+  <AuthBase client:only="react" supportUrl={supportUrl}>
+    <p slot="fallback" class="text-center text-sm text-[#666666]">Loading…</p>
+  </AuthBase>
+</AuthLayout>

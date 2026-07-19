@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import CtaBand from '../../components/CtaBand.astro';
+
+const topics = [
+  { title: 'Workspace setup', body: 'Set up your workspace, invite your team, and create your first project.' },
+  { title: 'Projects', body: 'Create tasks, set milestones, manage dependencies, and switch views.' },
+  { title: 'Sprint planning', body: 'Create sprints, manage your backlog, and track velocity.' },
+  { title: 'Client portal', body: 'Invite clients, manage their access, and configure budget visibility.' },
+  { title: 'Team chat', body: 'Use project-linked chat, @mentions, file sharing, and search.' },
+  { title: 'People & leave', body: 'Leave requests, holiday calendar, birthdays, and team availability.' },
+  { title: 'Timesheets', body: 'Log time, submit for approval, and export billing reports.' },
+  { title: 'Notice board', body: 'Post, manage, and archive important team and client announcements.' },
+  { title: 'Billing', body: 'Manage your plan, users, billing details, and invoices.' },
+];
+---
+
+<BaseLayout
+  title="Knowledge Base"
+  description="What do you need help with? Browse Pixeldesk guides for setup, projects, sprints, clients, and more."
+>
+  <Header current="resources" />
+  <main>
+    <section class="relative overflow-hidden hero-glow pt-28 pb-12 sm:pt-32">
+      <div class="container-pd text-center">
+        <p class="text-sm font-light text-purple">
+          <a href="/resources" class="hover:underline">Resources</a> / Knowledge Base
+        </p>
+        <h1 class="mt-3 heading-xl">Knowledge Base</h1>
+        <p class="mx-auto mt-5 max-w-md body-lg">What do you need help with?</p>
+      </div>
+    </section>
+
+    <section class="pb-16 sm:pb-20">
+      <div class="container-pd grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          topics.map((topic) => (
+            <article class="card-surface p-6">
+              <h2 class="text-lg font-medium text-navy">{topic.title}</h2>
+              <p class="mt-3 text-sm font-light leading-relaxed text-navy/75">{topic.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <CtaBand title="Still stuck? We’re here to help." subtitle="Reach out to support or browse more resources anytime." />
+  </main>
+  <Footer />
+</BaseLayout>

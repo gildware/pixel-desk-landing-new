@@ -1,0 +1,123 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import FeaturesHero from '../components/features/FeaturesHero.astro';
+
+const featureCards = [
+  {
+    label: 'Dashboard',
+    title: 'Smart Dashboard — Your workspace, your way.',
+    body: 'The Pixeldesk built around a flexible widget system, each person configures their own workspace. Everything is drag-and-drop, role-based, and updates in real time.',
+    tags: ['Drag-and-drop', 'Real-time', 'Customizable'],
+  },
+  {
+    label: 'Project Management',
+    title: 'Full project lifecycle. One place.',
+    body: 'Create tasks, assign owners, set priorities, define dependencies, and mark milestones — then track progress across timeline views. When a task runs behind, Pixeldesk surfaces it early.',
+    tags: ['Timeline', 'Dependencies', 'Milestones'],
+  },
+  {
+    label: 'Sprint Planning',
+    title: 'Agile delivery for every team.',
+    body: 'Large projects become manageable when broken into focused cycles. Tasks move between backlog and sprint with simple drag-and-drop. Keep teams focused and improve delivery cadence.',
+    tags: ['Backlog', 'Velocity', 'Cycles'],
+  },
+  {
+    label: 'Client Portal',
+    title: 'Total transparency. Zero chaos.',
+    body: 'Instead of weekly update emails and scheduled status calls, clients get their own dedicated login and can check in whenever they need to.',
+    tags: ['Live status', 'Budget', 'Feedback'],
+  },
+  {
+    label: 'People Management',
+    title: 'A workplace that genuinely cares for its people.',
+    body: 'Help managers plan resources effectively while creating a more organized and people-focused work environment.',
+    tags: ['Leave', 'Birthdays', 'Availability'],
+  },
+  {
+    label: 'Notice Board',
+    title: 'Important updates that actually get seen.',
+    body: 'Critical announcements get buried in email and disappear in chat. Admins and PMs can target notices at specific teams, projects, or client portals.',
+    tags: ['Pinned', 'Targeted', 'Client-facing'],
+  },
+  {
+    label: 'Team Chat',
+    title: 'Every conversation, connected to its project.',
+    body: "When team communication is scattered across external tools, context gets lost constantly. Pixeldesk's built-in chat ties every conversation directly to the project.",
+    tags: ['@mentions', 'Files', 'Search'],
+  },
+  {
+    label: 'Timesheets',
+    title: 'Timesheet that drives the whole project.',
+    body: "Every hour logged automatically updates the project's actual timeline and recalculates project effort consumption in real time.",
+    tags: ['Approvals', 'Billing', 'Exports'],
+  },
+  {
+    label: 'Feedback System',
+    title: 'Feedback that accumulates — and actually means something.',
+    body: "A single end-of-project survey only captures how the client felt on delivery day. Pixeldesk's feedback system works differently — clients submit feedback at any milestone.",
+    tags: ['Ongoing', 'Client', 'Actionable'],
+  },
+];
+
+const faqs = [
+  {
+    q: 'What is the client portal in Pixeldesk?',
+    a: 'The client portal is a dedicated login for clients with live visibility into project status, monthly budget, and milestone progress — without any access to your internal workspace.',
+  },
+  {
+    q: 'How does the Notice Board work in Pixeldesk?',
+    a: 'Admins and PMs post announcements targeted at teams, projects, or client portals. Notices can be pinned so they stay visible on dashboards.',
+  },
+  {
+    q: 'Does Pixeldesk have built-in team chat?',
+    a: 'Yes. Chat is project-linked so conversations stay with the work they belong to.',
+  },
+  {
+    q: 'Can I export project data from Pixeldesk?',
+    a: 'Yes. Export billing reports, timesheets, and client-facing project data to Excel where supported.',
+  },
+  {
+    q: 'Does Pixeldesk support agile sprint planning?',
+    a: 'Yes. Manage backlog, create sprints, and track delivery across agile cycles.',
+  },
+];
+---
+
+<BaseLayout
+  title="Features"
+  description="Every feature your team needs in one workspace — dashboard, projects, sprints, client portal, timesheets, chat, and more."
+>
+  <Header current="features" />
+  <main>
+    <FeaturesHero />
+
+    <section class="pb-16 sm:pb-20">
+      <div class="pd-rail">
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            featureCards.map((card) => (
+              <article class="pd-card flex min-h-[280px] flex-col px-[21px] py-[18px]">
+                <span class="pd-chip-outline w-fit">{card.label}</span>
+                <h2 class="mt-4 text-[22px] font-medium leading-[24px] text-navy">{card.title}</h2>
+                <p class="mt-3 flex-1 text-[12px] font-light leading-[17px] text-navy">{card.body}</p>
+                <div class="mt-5 flex flex-wrap gap-2">
+                  {card.tags.map((tag) => (
+                    <span class="pd-chip">{tag}</span>
+                  ))}
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <Faq items={faqs} title="Feature questions, answered." />
+    <CtaBand />
+  </main>
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,262 @@
+---
+const features = [
+  {
+    icon: '/images/icons/dashboard.svg',
+    label: 'Dashboard',
+    title: 'Your data, your way.',
+    body: 'Pixeldesk was built to answer all of these — from a single, customizable workspace that works for PMs, teams, and clients simultaneously.',
+    tags: ['Real-time', 'Customizable', 'Role-based'],
+  },
+  {
+    icon: '/images/icons/dashboard.svg',
+    label: 'Projects',
+    title: 'Ship projects on time. Every time.',
+    body: 'Transparent timeline views — from creation to delivery.',
+    tags: ['Tasks', 'Milestones', 'Kanban'],
+  },
+  {
+    icon: '/images/icons/dashboard.svg',
+    label: 'Timesheets',
+    title: 'Log time. Bill accurately.',
+    body: 'Task-linked time logging with manager approvals, billing reports, and excel exports.',
+    tags: ['Billing', 'Approval flow'],
+  },
+  {
+    icon: '/images/icons/dashboard.svg',
+    label: 'Client Portal',
+    title: 'Give clients a seat — without losing control.',
+    body: 'Live project status, budget view, live feedback, shareable link, and Excel export — all from one client login.',
+    tags: ['Live status', 'Budget', 'Excel export'],
+  },
+  {
+    icon: '/images/icons/dashboard.svg',
+    label: 'Notice Board',
+    title: 'Important updates, impossible to miss.',
+    body: 'Dashboard-pinned announcements for teams and clients — sprint alerts, holidays, policy updates.',
+    tags: ['Team', 'Client-facing'],
+  },
+];
+---
+
+<section class="feature-workspace relative overflow-hidden py-16 sm:py-20">
+  <div class="feature-workspace__glow" aria-hidden="true"></div>
+  <div class="pd-rail relative z-[1]">
+    <span class="feature-workspace__label">Everything your team needs</span>
+    <h2 class="feature-workspace__title mt-[11px]">
+      One workspace. Every role covered.
+    </h2>
+    <p class="feature-workspace__subtitle mt-3 max-w-[420px]">
+      From sprint planning to birthday reminders — Pixeldesk handles the work around the work.
+    </p>
+
+    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        features.map((feature) => (
+          <article class="feature-workspace__card flex min-h-[280px] flex-col justify-between px-6 py-5">
+            <div class="flex size-[35px] items-center justify-center">
+              <img src={feature.icon} alt="" width="35" height="35" class="size-[35px]" />
+            </div>
+            <div class="mt-6 flex flex-col gap-3">
+              <span class="feature-workspace__chip-outline w-fit">{feature.label}</span>
+              <h3 class="feature-workspace__card-title">{feature.title}</h3>
+              <p class="feature-workspace__card-body">{feature.body}</p>
+              <div class="flex flex-wrap gap-2">
+                {feature.tags.map((tag) => (
+                  <span class="feature-workspace__tag">{tag}</span>
+                ))}
+              </div>
+            </div>
+          </article>
+        ))
+      }
+
+      <a href="/features" class="feature-workspace__cta">
+        <p class="feature-workspace__cta-title">
+          Many more features that make your project hassle free
+        </p>
+        <span class="feature-workspace__cta-link">See All Features →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .feature-workspace {
+    --fw-navy: #121328;
+    --fw-heading: #14203a;
+    --fw-body: #5a676d;
+    --fw-muted: #878999;
+    --fw-purple: #6c41ff;
+    --fw-purple-soft: #685ba3;
+    --fw-label-bg: #dcd4fb;
+    --fw-tag-bg: #f2e8fe;
+    --fw-tag-text: #7b6bb8;
+    /* Sit above WhyExists sticky peeks when the two sections overlap on scroll-back */
+    position: relative;
+    z-index: 2;
+    isolation: isolate;
+    background:
+      radial-gradient(ellipse 80% 70% at 8% 92%, #fee5c6 0%, rgba(254, 229, 198, 0.55) 35%, transparent 62%),
+      radial-gradient(ellipse 75% 65% at 94% 8%, #daf5fd 0%, rgba(218, 245, 253, 0.65) 40%, transparent 65%),
+      radial-gradient(ellipse 60% 55% at 6% 14%, #deeae0 0%, rgba(222, 234, 224, 0.7) 45%, transparent 70%),
+      radial-gradient(ellipse 55% 50% at 88% 88%, #fef4f2 0%, rgba(254, 244, 242, 0.8) 40%, transparent 65%),
+      radial-gradient(ellipse 40% 35% at 50% 45%, #ffffff 0%, transparent 70%),
+      linear-gradient(160deg, #e8f3ee 0%, #eaf7fb 28%, #f5f3f0 62%, #fdf3e8 100%);
+  }
+
+  .feature-workspace__glow {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.55) 0%, transparent 40%),
+      radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.4) 0%, transparent 35%);
+  }
+
+  .feature-workspace__label {
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 15px;
+    border-radius: 40px;
+    border: none;
+    background: var(--fw-label-bg);
+    color: var(--fw-purple-soft);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 25px;
+  }
+
+  .feature-workspace__title {
+    max-width: 640px;
+    color: var(--fw-heading);
+    font-family: var(--font-sans);
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 47px;
+    letter-spacing: -0.02em;
+  }
+
+  @media (min-width: 640px) {
+    .feature-workspace__title {
+      font-size: 42px;
+    }
+  }
+
+  .feature-workspace__subtitle {
+    color: var(--fw-body);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 22px;
+  }
+
+  .feature-workspace__card {
+    background: #fff;
+    border: none;
+    border-radius: 22px;
+    box-shadow:
+      0 4px 24px rgba(18, 19, 40, 0.06),
+      0 1px 3px rgba(18, 19, 40, 0.04);
+  }
+
+  .feature-workspace__chip-outline {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 14px;
+    border-radius: 40px;
+    border: 1px solid #c5c7d1;
+    color: #6b6e7e;
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 14px;
+  }
+
+  .feature-workspace__card-title {
+    color: var(--fw-navy);
+    font-family: var(--font-sans);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 26px;
+    letter-spacing: -0.01em;
+  }
+
+  .feature-workspace__card-body {
+    color: var(--fw-body);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 17px;
+  }
+
+  .feature-workspace__tag {
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+    padding: 0 10px;
+    border-radius: 40px;
+    background: var(--fw-tag-bg);
+    color: var(--fw-tag-text);
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 14px;
+  }
+
+  .feature-workspace__cta {
+    position: relative;
+    display: flex;
+    min-height: 280px;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    border-radius: 22px;
+    padding: 28px 24px;
+    color: #fff;
+    background: linear-gradient(145deg, #56358c 0%, #7a45b8 32%, #c46a9e 68%, #e27ea0 100%);
+    box-shadow: 0 10px 28px rgba(86, 53, 140, 0.28);
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .feature-workspace__cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.22;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.35) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.25) 0 1px, transparent 1.5px),
+      linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.08) 50%, transparent 60%);
+    background-size: 18px 18px, 22px 22px, 100% 100%;
+    pointer-events: none;
+  }
+
+  .feature-workspace__cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgba(86, 53, 140, 0.34);
+  }
+
+  .feature-workspace__cta-title {
+    position: relative;
+    z-index: 1;
+    max-width: 240px;
+    font-family: var(--font-sans);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 30px;
+    letter-spacing: -0.01em;
+  }
+
+  .feature-workspace__cta-link {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+</style>

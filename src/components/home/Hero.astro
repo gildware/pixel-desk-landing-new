@@ -1,0 +1,353 @@
+---
+const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companies'];
+const avatars = [1, 2, 3, 4];
+const countries = [
+  { name: 'USA', value: '65' },
+  { name: 'Chile', value: '18' },
+  { name: 'UK', value: '02' },
+  { name: 'India', value: '05' },
+];
+const todayRows = [
+  { label: 'Presentation', value: '15', color: '#41C6FF', width: '100%' },
+  { label: 'HTML Code', value: '2', color: '#A9FF41', width: '42%' },
+  { label: 'Videos', value: '13', color: '#FF8BA8', width: '82%' },
+];
+---
+
+<section class="pd-hero-gradient relative overflow-hidden pb-10 pt-[140px] sm:pt-[160px]">
+  <div class="pd-rail grid items-center gap-10 lg:grid-cols-[421px_1fr] lg:gap-16">
+    <div>
+      <h1 class="max-w-[421px] text-[40px] font-medium leading-[48px] tracking-tight text-navy sm:text-[48px] sm:leading-[52px]">
+        Where projects get done — and <span class="text-purple">teams actually thrive.</span>
+      </h1>
+      <p class="mt-5 max-w-[401px] text-[16px] font-light leading-[25px] text-navy">
+        Managing a project means juggling tasks, timelines, team wellbeing, and client expectations all at once.
+        Pixeldesk brings every piece of that picture into a single, intelligent workspace — so nothing slips through
+        the gaps and everyone always knows where things stand.
+      </p>
+      <a href="/pricing" class="pd-btn-primary mt-8">Start for free</a>
+    </div>
+
+    <!-- Hero visual: HTML cards + clean graphic layers matching Figma -->
+    <div class="hero-visual relative mx-auto aspect-[499/486] w-full max-w-[520px]" data-hero-visual aria-label="Pixeldesk product preview">
+      <!-- Soft purple décor — static (does not ride with cards) -->
+      <div class="hero-decor hero-decor--purple-a" aria-hidden="true"></div>
+      <div class="hero-decor hero-decor--purple-b" aria-hidden="true"></div>
+
+      <!-- Card 1: Project -->
+      <article
+        class="hero-part hero-part--card hero-part--project"
+        style="--from-x: 0px; --from-y: -30px; --delay: 120ms;"
+      >
+        <div class="flex items-start justify-between gap-2">
+          <p class="text-[8px] font-bold text-ink">Project ID: 00051557</p>
+          <span class="rounded-full border border-[#18cf00] bg-[#adffa3] px-1.5 py-0.5 text-[6px] font-semibold text-[#18cf00]">
+            In-Progress
+          </span>
+        </div>
+        <p class="mt-2 text-[13px] font-bold leading-[16px] text-purple sm:text-sm">
+          PRO-025-67529-<br />Roe Stepern
+        </p>
+        <div class="mt-3 flex gap-1.5">
+          {
+            avatars.map((n) => (
+              <img
+                src={`/images/avatars/${n}.png`}
+                alt=""
+                width="31"
+                height="31"
+                class="size-[28px] rounded-full object-cover sm:size-[31px]"
+                loading="eager"
+              />
+            ))
+          }
+        </div>
+        <div class="mt-3 flex items-end justify-between gap-2">
+          <div class="rounded bg-[#f0f0f0] px-2.5 py-1.5">
+            <p class="text-[8px] text-ink">Project Type</p>
+            <p class="text-[11px] font-bold text-ink">Presentation</p>
+          </div>
+          <div class="text-right">
+            <p class="text-[7px] text-ink">Design Level</p>
+            <span class="mt-1 inline-flex rounded-full bg-[#e70004] px-3 py-1 text-[10px] font-bold text-white">
+              L1, L2
+            </span>
+          </div>
+        </div>
+        <div class="mt-3 flex overflow-hidden rounded-full text-[8px] font-bold text-white sm:text-[10px]">
+          <span class="bg-ink px-2.5 py-1.5">10:00 PM 27 Sep</span>
+          <span class="flex-1 bg-purple px-2.5 py-1.5">10:00 PM | 27 Sep</span>
+        </div>
+      </article>
+
+      <!-- Folder icon -->
+      <img
+        src="/images/figma/hero-parts/folder.svg"
+        alt=""
+        width="56"
+        height="56"
+        class="hero-part hero-part--folder"
+        style="--from-x: -20px; --from-y: 0px; --delay: 200ms;"
+        loading="eager"
+      />
+
+      <!-- Card 2: User by Country -->
+      <article
+        class="hero-part hero-part--card hero-part--map"
+        style="--from-x: -28px; --from-y: 10px; --delay: 260ms;"
+      >
+        <div class="flex items-center justify-between">
+          <p class="text-[9px] font-semibold text-[#444]">User by Country</p>
+          <p class="text-xs font-semibold text-purple">90</p>
+        </div>
+        <img
+          src="/images/map.svg"
+          alt=""
+          width="141"
+          height="67"
+          class="mt-2 h-auto w-full object-contain"
+          loading="eager"
+        />
+        <div class="mt-2 flex justify-between text-center text-[6px] font-semibold text-[#5f616d]">
+          {
+            countries.map((c) => (
+              <div>
+                <p>{c.name}</p>
+                <p class="text-[10px] text-purple">{c.value}</p>
+              </div>
+            ))
+          }
+        </div>
+      </article>
+
+      <!-- Stars -->
+      <img
+        src="/images/figma/hero-parts/stars.svg"
+        alt=""
+        width="140"
+        height="28"
+        class="hero-part hero-part--stars"
+        style="--from-x: 0px; --from-y: -14px; --delay: 320ms;"
+        loading="eager"
+      />
+
+      <!-- People (Figma handshake illustration) -->
+      <img
+        src="/images/figma/hero-parts/people.png"
+        alt=""
+        width="260"
+        height="220"
+        class="hero-part hero-part--people"
+        style="--from-x: 24px; --from-y: -4px; --delay: 380ms;"
+        loading="eager"
+      />
+
+      <!-- Plant accent -->
+      <img
+        src="/images/figma/hero-parts/plant.svg"
+        alt=""
+        width="40"
+        height="48"
+        class="hero-part hero-part--plant"
+        style="--from-x: 8px; --from-y: 10px; --delay: 420ms;"
+        loading="eager"
+      />
+
+      <!-- Card 3: Today Projects -->
+      <article
+        class="hero-part hero-part--card hero-part--today"
+        style="--from-x: 24px; --from-y: 28px; --delay: 460ms;"
+      >
+        <div class="mb-2 flex items-center justify-between">
+          <p class="text-[11px] font-semibold text-[#444]">Today Projects</p>
+          <span class="rounded-full border border-[#d6d6d6] bg-[#f0f0f0] px-2 py-0.5 text-[9px] font-semibold text-[#444]">
+            Qty ▾
+          </span>
+        </div>
+        <div class="space-y-2">
+          {
+            todayRows.map((row) => (
+              <div class="flex items-center gap-2">
+                <div
+                  class="flex h-[22px] items-center rounded-full px-2.5 text-[10px] font-semibold text-[#333]"
+                  style={`background:${row.color}; width:${row.width};`}
+                >
+                  {row.label}
+                </div>
+                <span class="ml-auto text-[11px] font-bold text-[#444]">{row.value}</span>
+              </div>
+            ))
+          }
+        </div>
+      </article>
+
+      <!-- Sprint Plan badge -->
+      <span
+        class="hero-part hero-part--sprint"
+        style="--from-x: 0px; --from-y: 14px; --delay: 520ms;"
+      >
+        Sprint Plan
+      </span>
+    </div>
+  </div>
+
+  <div class="pd-rail mt-14 text-center sm:mt-16">
+    <p class="inline-flex rounded-full border border-line bg-white px-3 py-0.5 text-[12px] font-light text-muted">
+      Useful tool for
+    </p>
+    <div class="mt-5 flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-[22px] font-light leading-[25px] text-navy/45 sm:gap-x-14 sm:text-[25px]">
+      {audiences.map((name) => <span>{name}</span>)}
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .hero-visual {
+    --card-shadow: 4px 4px 15px rgba(0, 0, 0, 0.12);
+  }
+
+  .hero-part {
+    position: absolute;
+    opacity: 0;
+    transform: translate3d(var(--from-x, 0), var(--from-y, 0), 0);
+    transition:
+      opacity 1.35s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0ms),
+      transform 1.35s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0ms);
+    will-change: transform, opacity;
+  }
+
+  .hero-visual.is-ready .hero-part {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  /* Soft Figma-style purple blobs (static) */
+  .hero-decor {
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .hero-decor--purple-a {
+    top: 4%;
+    left: 2%;
+    z-index: 0;
+    width: 78%;
+    height: 62%;
+    border-radius: 46% 54% 48% 52% / 52% 44% 56% 48%;
+    background:
+      radial-gradient(ellipse 70% 60% at 42% 45%, rgba(186, 168, 255, 0.85) 0%, rgba(186, 168, 255, 0.4) 42%, transparent 70%);
+    filter: blur(1px);
+  }
+
+  .hero-decor--purple-b {
+    right: -4%;
+    bottom: 0;
+    z-index: 0;
+    width: 74%;
+    height: 68%;
+    border-radius: 54% 46% 42% 58% / 48% 56% 44% 52%;
+    background:
+      radial-gradient(ellipse 65% 55% at 58% 48%, rgba(108, 65, 255, 0.5) 0%, rgba(150, 120, 240, 0.28) 45%, transparent 72%);
+    filter: blur(1px);
+  }
+
+  .hero-part--card {
+    z-index: 5;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: var(--card-shadow);
+    padding: 0.85rem;
+  }
+
+  /* Positions mapped from Figma Group 643 (~499×486) */
+  .hero-part--project {
+    top: 0;
+    left: 20%;
+    z-index: 6;
+    width: min(42%, 215px);
+  }
+
+  .hero-part--folder {
+    top: 42%;
+    left: 9%;
+    z-index: 7;
+    width: 44px;
+    height: 44px;
+  }
+
+  .hero-part--map {
+    top: 50%;
+    left: 2%;
+    z-index: 5;
+    width: min(34%, 168px);
+  }
+
+  .hero-part--stars {
+    top: 28%;
+    left: 70%;
+    z-index: 4;
+    width: min(16%, 92px);
+    height: auto;
+  }
+
+  .hero-part--people {
+    top: 30%;
+    left: 56%;
+    z-index: 3;
+    width: min(40%, 200px);
+    height: auto;
+    object-fit: contain;
+  }
+
+  .hero-part--plant {
+    top: 56%;
+    left: 54%;
+    z-index: 4;
+    width: 32px;
+    height: auto;
+    opacity: 0.95;
+  }
+
+  .hero-part--today {
+    top: 64%;
+    right: 0;
+    bottom: auto;
+    z-index: 6;
+    width: min(40%, 195px);
+  }
+
+  .hero-part--sprint {
+    top: 78%;
+    left: 18%;
+    bottom: auto;
+    z-index: 8;
+    border-radius: 999px;
+    background: #ff9f1a;
+    padding: 0.2rem 0.7rem;
+    font-size: 10px;
+    font-weight: 600;
+    color: #fff;
+    box-shadow: 0 3px 8px rgba(255, 159, 26, 0.35);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-part {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function playHeroVisual() {
+    document.querySelectorAll('[data-hero-visual]').forEach((el) => {
+      el.classList.remove('is-ready');
+      void el.offsetWidth;
+      requestAnimationFrame(() => el.classList.add('is-ready'));
+    });
+  }
+
+  playHeroVisual();
+  document.addEventListener('astro:page-load', playHeroVisual);
+</script>

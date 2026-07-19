@@ -1,0 +1,191 @@
+@import "tailwindcss";
+@import "@fontsource-variable/outfit";
+
+@theme {
+  --font-sans: "Outfit Variable", "Outfit", ui-sans-serif, system-ui, sans-serif;
+
+  /* Exact Figma tokens */
+  --color-navy: #000945;
+  --color-purple: #6c41ff;
+  --color-purple-deep: #5a2fff;
+  --color-ink: #3d3d3d;
+  --color-muted: #5f616d;
+  --color-label: #878787;
+  --color-surface: #f7f6fb;
+  --color-line: #e2e2e2;
+  --color-login: #f0f0f0;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-navy);
+    background: #fff;
+  }
+}
+
+@layer components {
+  /* Figma content rail: 1010px centered in 1512 frame → ~251px side margin */
+  .pd-frame {
+    width: 100%;
+    max-width: 1512px;
+    margin-inline: auto;
+  }
+
+  .pd-rail {
+    width: 100%;
+    max-width: 1010px;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+
+  @media (min-width: 1100px) {
+    .pd-rail {
+      padding-inline: 0;
+    }
+  }
+
+  .pd-nav-shell {
+    height: 60px;
+    border-radius: 28px;
+    background: #fff;
+    box-shadow: 6px 6px 33px rgba(0, 0, 0, 0.08);
+  }
+
+  .pd-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    padding: 0 24px;
+    border-radius: 25px;
+    background: #6c41ff;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 14px;
+    border: 1px solid #6c41ff;
+    transition: background 0.15s ease;
+  }
+
+  .pd-btn-primary:hover {
+    background: #5a2fff;
+  }
+
+  .pd-btn-login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    min-width: 62px;
+    padding: 0 15px;
+    border-radius: 25px;
+    background: #f0f0f0;
+    border: 1px solid #e2e2e2;
+    box-shadow: 4px 4px 7px rgba(0, 0, 0, 0.12);
+    color: #000945;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 14px;
+  }
+
+  .pd-section-label {
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 15px;
+    border-radius: 40px;
+    border: 0.5px solid #e2e2e2;
+    background: #fff;
+    color: #000945;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 25px;
+  }
+
+  .pd-card {
+    background: #fff;
+    border: 0.5px solid #e2e2e2;
+    border-radius: 15px;
+    box-shadow: 5px 5px 7.5px rgba(0, 0, 0, 0.16);
+  }
+
+  .pd-chip {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    padding: 0 10px;
+    border-radius: 40px;
+    background: rgba(108, 65, 255, 0.11);
+    color: #6c41ff;
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 14px;
+  }
+
+  .pd-chip-outline {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 15px;
+    border-radius: 40px;
+    border: 0.5px solid #878787;
+    color: #878787;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 14px;
+  }
+
+  .pd-hero-gradient {
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 1512 853' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect width='100%' height='100%' fill='url(%23g)' opacity='0.76'/><defs><radialGradient id='g' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(2.8831e-14 -195.3 346.19 1.4216e-13 756 790.26)'><stop stop-color='rgba(255,255,255,1)' offset='0.30769'/><stop stop-color='rgba(218,208,255,0.75)' offset='0.48077'/><stop stop-color='rgba(182,160,255,0.5)' offset='0.65385'/><stop stop-color='rgba(108,65,255,0)' offset='1'/></radialGradient></defs></svg>");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+  }
+
+  .faq-icon {
+    display: flex;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-navy);
+  }
+
+  .faq-icon-v {
+    transform-origin: center;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .faq-item.is-open .faq-icon-v {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+
+  .faq-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .faq-item.is-open .faq-panel {
+    grid-template-rows: 1fr;
+  }
+
+  .faq-panel-inner {
+    overflow: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-panel,
+    .faq-icon-v {
+      transition: none;
+    }
+  }
+}

@@ -1,0 +1,35 @@
+---
+import '../styles/global.css';
+import ScrollProgress from '../components/ScrollProgress.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonical?: string;
+}
+
+const {
+  title = 'Pixeldesk — The complete project OS for modern teams',
+  description = 'Manage projects, delight clients, and take care of your people — all in one workspace.',
+  canonical,
+} = Astro.props;
+
+const pageTitle = title.includes('Pixeldesk') ? title : `${title} | Pixeldesk`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{pageTitle}</title>
+  </head>
+  <body class="min-h-screen overflow-x-hidden">
+    <slot />
+    <ScrollProgress />
+  </body>
+</html>

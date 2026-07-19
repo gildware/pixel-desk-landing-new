@@ -1,0 +1,111 @@
+---
+interface FaqItem {
+  q: string;
+  a: string;
+}
+
+interface Props {
+  items: FaqItem[];
+  title?: string;
+}
+
+const { items, title = 'Common questions, answered.' } = Astro.props;
+
+/** Match Figma: keep phrase before the comma on one line, then break. */
+const commaIdx = title.indexOf(', ');
+const titleLines =
+  commaIdx === -1
+    ? [title]
+    : [title.slice(0, commaIdx + 1), title.slice(commaIdx + 2)];
+---
+
+<section id="faq" class="scroll-mt-24 pt-8 pb-16 sm:pt-10 sm:pb-24">
+  <div class="pd-rail grid gap-8 lg:grid-cols-[380px_590px] lg:justify-between lg:gap-10">
+    <div>
+      <span class="pd-section-label">FAQ</span>
+      <h2 class="mt-[11px] text-[40px] font-medium leading-[47px] text-navy sm:text-[42px]">
+        {
+          titleLines.map((line, i) => (
+            <>
+              {i > 0 && <br />}
+              <span class="whitespace-nowrap">{line}</span>
+            </>
+          ))
+        }
+      </h2>
+    </div>
+
+    <div class="divide-y divide-[#ececec] rounded-[14px] border border-line bg-white" data-faq-list>
+      {
+        items.map((item, i) => (
+          <div class:list={['faq-item', 'px-5', 'py-3.5', { 'is-open': i === 0 }]}>
+            <button
+              type="button"
+              class="faq-trigger flex w-full cursor-pointer items-center justify-between gap-4 text-left text-[16px] font-medium leading-[20px] text-navy"
+              aria-expanded={i === 0 ? 'true' : 'false'}
+            >
+              <span>{item.q}</span>
+              <span class="faq-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1" />
+                  <path
+                    class="faq-icon-h"
+                    d="M6 10h8"
+                    stroke="currentColor"
+                    stroke-width="1"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    class="faq-icon-v"
+                    d="M10 6v8"
+                    stroke="currentColor"
+                    stroke-width="1"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </span>
+            </button>
+            <div class="faq-panel" role="region">
+              <div class="faq-panel-inner">
+                <p class="pb-1 pt-3 text-[14px] font-light leading-[16px] text-navy/80">{item.a}</p>
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  function initFaqAccordion() {
+    document.querySelectorAll('[data-faq-list]').forEach((list) => {
+      if (list instanceof HTMLElement && list.dataset.faqBound === 'true') return;
+      if (list instanceof HTMLElement) list.dataset.faqBound = 'true';
+
+      list.querySelectorAll('.faq-item').forEach((item) => {
+        const trigger = item.querySelector('.faq-trigger');
+        if (!(trigger instanceof HTMLButtonElement)) return;
+
+        trigger.addEventListener('click', () => {
+          const willOpen = !item.classList.contains('is-open');
+
+          list.querySelectorAll('.faq-item.is-open').forEach((openItem) => {
+            if (openItem === item) return;
+            openItem.classList.remove('is-open');
+            const openTrigger = openItem.querySelector('.faq-trigger');
+            if (openTrigger instanceof HTMLButtonElement) {
+              openTrigger.setAttribute('aria-expanded', 'false');
+            }
+          });
+
+          item.classList.toggle('is-open', willOpen);
+          trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        });
+      });
+    });
+  }
+
+  initFaqAccordion();
+  document.addEventListener('astro:page-load', initFaqAccordion);
+</script>

@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Hero from '../components/home/Hero.astro';
+import WhyExists from '../components/home/WhyExists.astro';
+import FeatureGrid from '../components/home/FeatureGrid.astro';
+import GettingStarted from '../components/home/GettingStarted.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+const faqs = [
+  {
+    q: 'What is Pixeldesk?',
+    a: 'Pixeldesk is a cloud-based project management platform that combines sprint planning, client portals, team chat, budget tracking, timesheets, leave management, and a customizable analytics dashboard in one workspace. It is designed for agencies, product teams, and consulting firms.',
+  },
+  {
+    q: 'How does Pixeldesk differ from Jira, Asana, or Monday.com?',
+    a: 'Pixeldesk unifies project delivery with client portals, people ops, timesheets, and feedback in one workspace — so you are not stitching together five tools to run a client engagement.',
+  },
+  {
+    q: 'Can clients track their project budget in Pixeldesk?',
+    a: 'Yes. The client portal gives clients live visibility into project status, monthly budget, and milestone progress — without access to internal workspace data.',
+  },
+  {
+    q: 'Does Pixeldesk support sprint planning?',
+    a: 'Yes. Create sprints, manage your backlog, track velocity, and move work between backlog and sprint with drag-and-drop.',
+  },
+  {
+    q: 'Does Pixeldesk have a built-in team chat?',
+    a: 'Yes. Built-in chat ties every conversation to the project, with @mentions, file sharing, and search — so context never leaves the workspace.',
+  },
+  {
+    q: 'What is the Notice Board in Pixeldesk?',
+    a: 'The Notice Board pins critical announcements for teams and clients — sprint alerts, holidays, and policy updates that cannot get buried in email or chat.',
+  },
+  {
+    q: 'Is Pixeldesk free to use?',
+    a: 'Yes. Start free, then scale when you are ready. Every core feature ships in one plan — no module gates or hidden add-ons.',
+  },
+];
+---
+
+<BaseLayout
+  title="Pixeldesk — Where projects get done and teams thrive"
+  description="The complete project OS for modern teams. Manage projects, delight clients, and take care of your people — all in one workspace."
+>
+  <Header current="home" />
+  <main>
+    <Hero />
+    <WhyExists />
+    <FeatureGrid />
+    <GettingStarted />
+    <Faq items={faqs} />
+    <CtaBand />
+  </main>
+  <Footer />
+</BaseLayout>

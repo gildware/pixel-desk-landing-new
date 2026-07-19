@@ -1,0 +1,643 @@
+---
+/**
+ * LOCKED: full-overlap sticky image stack — do not rewrite the scroll model.
+ * Images cover 100% (no peeks). Copy + steps stay with the scene until the
+ * last card stacks, then the whole unit exits together.
+ */
+const steps = [
+  {
+    title: 'Set up your workspace',
+    body: 'Create your company profile, invite your team, and build your project structure in under 15 minutes.',
+    image: '/images/getting-started/01-workspace.png',
+  },
+  {
+    title: 'Invite Members',
+    body: 'Create your company profile, invite your team, and build your project structure in under 15 minutes.',
+    image: '/images/getting-started/02-members.png',
+  },
+  {
+    title: 'Setup Policies',
+    body: 'Create your company profile, invite your team, and build your project structure in under 15 minutes.',
+    image: '/images/getting-started/03-policies.png',
+  },
+  {
+    title: 'Invite your clients',
+    body: 'Create your company profile, invite your team, and build your project structure in under 15 minutes.',
+    image: '/images/getting-started/04-clients.png',
+  },
+  {
+    title: 'Customize your dashboard',
+    body: 'Create your company profile, invite your team, and build your project structure in under 15 minutes.',
+    image: '/images/getting-started/05-dashboard.png',
+  },
+  {
+    title: 'Start your first project',
+    body: 'Create your company profile, invite your team, and build your project structure in under 15 minutes.',
+    image: '/images/getting-started/06-project.png',
+  },
+];
+
+const leadSteps = steps.slice(0, -1);
+const lastStep = steps[steps.length - 1];
+const lastIndex = steps.length - 1;
+---
+
+<section class="bg-white pt-10 pb-8 sm:pt-14 sm:pb-10">
+  <div class="pd-rail">
+    <div class="gs-stack" style={`--stack-count: ${steps.length};`} data-gs-stack>
+      <div class="gs-stack__deck" data-gs-deck>
+        <aside class="gs-stack__copy" data-gs-copy>
+          <span class="gs-label">Getting started</span>
+          <h2 class="mt-[11px] max-w-[470px] text-[40px] font-medium leading-[45px] text-navy sm:text-[42px]">
+            Up and running in minutes.
+          </h2>
+          <p class="mt-4 max-w-[372px] text-[14px] font-light leading-[19px] text-navy">
+            No lengthy onboarding. No IT ticket. No consultant required. Pixeldesk is designed to be productive from day
+            one.
+          </p>
+
+          <ol class="gs-steps" data-gs-steps>
+            {
+              steps.map((step, i) => (
+                <li
+                  class:list={['gs-step', i === 0 && 'is-active']}
+                  data-gs-step
+                  data-index={i}
+                >
+                  <span class="gs-step__marker" aria-hidden="true">
+                    {i === 0 ? '1' : ''}
+                  </span>
+                  <div class="gs-step__content">
+                    <h3 class="gs-step__title">{step.title}</h3>
+                    <p class="gs-step__body">{step.body}</p>
+                  </div>
+                </li>
+              ))
+            }
+          </ol>
+        </aside>
+
+        {
+          leadSteps.flatMap((step, i) => [
+            <article
+              class="gs-stack__card"
+              style={`--i: ${i};`}
+              data-gs-card
+              data-index={i}
+              aria-label={step.title}
+            >
+              <img
+                src={step.image}
+                alt={step.title}
+                width="544"
+                height="360"
+                class="gs-stack__img"
+                loading={i === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+              />
+            </article>,
+            <div class="gs-stack__spacer" aria-hidden="true" />,
+          ])
+        }
+
+        <div class="gs-stack__finale" style={`--i: ${lastIndex};`} data-gs-finale>
+          <article
+            class="gs-stack__card gs-stack__card--finale"
+            data-gs-card
+            data-index={lastIndex}
+            aria-label={lastStep.title}
+          >
+            <img
+              src={lastStep.image}
+              alt={lastStep.title}
+              width="544"
+              height="360"
+              class="gs-stack__img"
+              loading="lazy"
+              decoding="async"
+            />
+          </article>
+          <div class="gs-stack__finale-pad" aria-hidden="true"></div>
+        </div>
+
+        <div class="gs-stack__spacer gs-stack__spacer--hold" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const root = document.querySelector('[data-gs-stack]');
+    if (!root) return;
+
+    const finale = root.querySelector('[data-gs-finale]');
+    const copy = root.querySelector('[data-gs-copy]');
+    const leadCards = [...root.querySelectorAll('.gs-stack__card')].filter(
+      (c) => !c.classList.contains('gs-stack__card--finale'),
+    );
+    const allCards = [...root.querySelectorAll('[data-gs-card]')];
+    const steps = [...root.querySelectorAll('[data-gs-step]')];
+    if (!finale || !copy || !leadCards.length) return;
+
+    const pinned = [copy, ...leadCards];
+    let locking = false;
+
+    // Design: preview top aligns with step 1 — in layout AND when sticky,
+    // so the first image never starts high and then jumps down.
+    const syncCardPin = () => {
+      const step0 = root.querySelector('[data-gs-step]');
+      if (!step0 || window.matchMedia('(max-width: 1023px)').matches) {
+        root.style.removeProperty('--card-pin-offset');
+        root.style.removeProperty('--card-pin-top');
+        return;
+      }
+      // Measure against the step title row (not the ol), so sticky + layout match.
+      const offset = Math.max(
+        0,
+        Math.round(step0.getBoundingClientRect().top - copy.getBoundingClientRect().top),
+      );
+      root.style.setProperty('--card-pin-offset', `${offset}px`);
+      root.style.setProperty('--card-pin-top', `calc(var(--pin-top) + ${offset}px)`);
+    };
+
+    const activate = (index) => {
+      steps.forEach((step, i) => {
+        const active = i === index;
+        step.classList.toggle('is-active', active);
+        const marker = step.querySelector('.gs-step__marker');
+        if (marker) marker.textContent = active ? String(i + 1) : '';
+      });
+      // Hide fully covered cards so nothing can ghost through the top layer
+      allCards.forEach((card, i) => {
+        const covered = i < index;
+        card.classList.toggle('is-covered', covered);
+        card.setAttribute('aria-hidden', covered ? 'true' : 'false');
+      });
+    };
+
+    const syncActiveStep = () => {
+      let active = 0;
+      allCards.forEach((card, i) => {
+        if (card.classList.contains('gs-stack__card--finale')) {
+          const finaleTop = finale.getBoundingClientRect().top;
+          const finaleSticky = parseFloat(getComputedStyle(finale).top) || 0;
+          if (finaleTop <= finaleSticky + 1) active = i;
+          return;
+        }
+        const top = card.getBoundingClientRect().top;
+        const stickyTop = parseFloat(getComputedStyle(card).top) || 0;
+        if (top <= stickyTop + 1) active = i;
+      });
+      activate(active);
+    };
+
+    const unlock = () => {
+      if (!locking) return;
+      locking = false;
+      pinned.forEach((el) => {
+        el.style.transform = '';
+        el.style.position = '';
+        el.style.left = '';
+        el.style.width = '';
+        el.style.top = '';
+        el.style.right = '';
+        el.style.margin = '';
+        el.style.zIndex = '';
+        el.style.maxHeight = '';
+        el.classList.remove('is-exit-locked');
+        delete el.dataset.exitOffset;
+      });
+      root.querySelectorAll('[data-gs-ghost]').forEach((g) => g.remove());
+    };
+
+    const updateExitLock = () => {
+      if (window.matchMedia('(max-width: 1023px)').matches) {
+        unlock();
+        return;
+      }
+
+      const rootBox = root.getBoundingClientRect();
+      const finaleTop = finale.getBoundingClientRect().top;
+      const stickyTop = parseFloat(getComputedStyle(finale).top) || 0;
+
+      if (rootBox.bottom < 0 || rootBox.top > window.innerHeight) {
+        unlock();
+        return;
+      }
+
+      const exiting = finaleTop < stickyTop - 0.5;
+      if (!exiting) {
+        unlock();
+        return;
+      }
+
+      // Cards share --card-pin-top with the finale; copy sits higher at --pin-top.
+      // Use intended sticky tops (not live rects) so jump-scroll still exits cleanly.
+      if (!locking) {
+        locking = true;
+        const copyPin = parseFloat(getComputedStyle(copy).top) || stickyTop;
+        pinned.forEach((el) => {
+          const rect = el.getBoundingClientRect();
+          const intendedTop = el.classList.contains('gs-stack__copy') ? copyPin : stickyTop;
+          el.dataset.exitOffset = String(intendedTop - stickyTop);
+          el.classList.add('is-exit-locked');
+
+          const ghost = document.createElement('div');
+          ghost.setAttribute('data-gs-ghost', '');
+          ghost.setAttribute('aria-hidden', 'true');
+          ghost.style.height = `${el.offsetHeight}px`;
+          ghost.style.width = `${el.offsetWidth}px`;
+          if (el.classList.contains('gs-stack__copy')) {
+            ghost.style.gridColumn = '1';
+            ghost.style.gridRow = '1 / -1';
+          } else {
+            ghost.style.gridColumn = '2';
+          }
+          el.parentNode.insertBefore(ghost, el);
+
+          el.style.position = 'fixed';
+          el.style.left = `${rect.left}px`;
+          el.style.width = `${rect.width}px`;
+          el.style.top = `${finaleTop + (intendedTop - stickyTop)}px`;
+          el.style.right = 'auto';
+          el.style.margin = '0';
+          el.style.zIndex = getComputedStyle(el).zIndex || '10';
+          if (el.classList.contains('gs-stack__copy')) {
+            el.style.maxHeight = `${rect.height}px`;
+          }
+        });
+      }
+
+      pinned.forEach((el) => {
+        const offset = parseFloat(el.dataset.exitOffset || '0');
+        el.style.top = `${finaleTop + offset}px`;
+      });
+    };
+
+    const update = () => {
+      syncActiveStep();
+      updateExitLock();
+    };
+
+    let ticking = false;
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          ticking = false;
+          update();
+        });
+      },
+      { passive: true },
+    );
+    window.addEventListener('resize', () => {
+      unlock();
+      syncCardPin();
+      update();
+    });
+    syncCardPin();
+    update();
+  })();
+</script>
+
+<style>
+  .gs-label {
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 15px;
+    border-radius: 40px;
+    border: none;
+    background: #dcd4fb;
+    color: #685ba3;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 25px;
+  }
+
+  .gs-stack {
+    /* 0 peek = full overlap (not WhyExists-style colored strips) */
+    --stack-peek: 0px;
+    --card-h: 360px;
+    /* Site nav is absolute on the hero — not fixed — so pin near the
+       viewport top. Large --header-h was creating empty white space. */
+    --header-h: 1.25rem;
+    --pin-top: var(--header-h);
+    /* Distance from section label → first step; JS measures exact value */
+    --card-pin-offset: 225px;
+    --card-pin-top: calc(var(--pin-top) + var(--card-pin-offset));
+    --slot-run: 48vh;
+    position: relative;
+    width: 100%;
+    isolation: isolate;
+    z-index: 0;
+  }
+
+  .gs-stack__deck {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .gs-stack__copy {
+    position: sticky;
+    top: var(--pin-top);
+    z-index: 2;
+    align-self: start;
+    margin-bottom: 1.5rem;
+    /* No inner scroll — overflow:auto was trapping wheel events on the
+       left column so page/stack scroll stopped when hovering the steps. */
+    max-height: none;
+    overflow: visible;
+  }
+
+  .gs-stack__card {
+    position: sticky;
+    /* Same pin top for every card → full cover, no peek */
+    top: var(--card-pin-top);
+    z-index: calc(10 + var(--i));
+    height: var(--card-h);
+    margin: 0;
+    overflow: hidden;
+    border-radius: 14px;
+    border: 1px solid #e2e2e2;
+    background: #fff;
+    box-shadow: 6px 6px 25px rgba(0, 0, 0, 0.08);
+    /* Opaque card + white corner fade (not a transparent mask — that
+       punched through and let lower stacked cards’ numbers ghost in). */
+  }
+
+  /* Keep first preview aligned with step 1 before sticky engages */
+  .gs-stack__card[data-index='0'] {
+    margin-top: var(--card-pin-offset);
+  }
+
+  .gs-stack__card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      transparent 55%,
+      rgba(255, 255, 255, 0.55) 78%,
+      #fff 100%
+    );
+  }
+
+  .gs-stack__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: left top;
+    background: #fff;
+  }
+
+  .gs-stack__spacer {
+    height: var(--slot-run);
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+
+  .gs-stack__spacer--hold {
+    height: 8vh;
+  }
+
+  .gs-stack__finale {
+    position: sticky;
+    top: var(--card-pin-top);
+    z-index: calc(10 + var(--i));
+  }
+
+  .gs-stack__finale .gs-stack__card {
+    position: relative !important;
+    top: auto !important;
+    z-index: 1;
+  }
+
+  .gs-stack__card.is-covered {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .gs-stack__finale-pad {
+    height: max(64px, calc(100dvh - var(--header-h) - var(--card-h) - 14rem));
+    pointer-events: none;
+  }
+
+  /* Timeline — in-flow rail (matches design: outlined active ring + dots) */
+  .gs-steps {
+    --rail-size: 30px;
+    --dot-size: 10px;
+    --rail-gap: 20px;
+    --rail-pad: 6px;
+    position: relative;
+    margin: 2.5rem 0 0;
+    /* room for ring stroke + white halo so overflow never clips the "1" */
+    padding: 4px 0 2px var(--rail-pad);
+    list-style: none;
+  }
+
+  .gs-steps::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--rail-pad) + var(--rail-size) / 2);
+    top: calc(4px + var(--rail-size) / 2);
+    bottom: calc(2px + var(--rail-size) / 2);
+    width: 1px;
+    transform: translateX(-50%);
+    background: #d9d9e3;
+    pointer-events: none;
+  }
+
+  .gs-step {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--rail-size) minmax(0, 1fr);
+    column-gap: var(--rail-gap);
+    align-items: start;
+    min-height: 59px;
+  }
+
+  .gs-step + .gs-step {
+    margin-top: 22px;
+  }
+
+  .gs-step__marker {
+    position: relative;
+    z-index: 1;
+    box-sizing: border-box;
+    display: inline-flex;
+    width: var(--rail-size);
+    height: var(--rail-size);
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    background: #fff;
+    color: #6c41ff;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0;
+    text-align: center;
+    -webkit-font-smoothing: antialiased;
+    /* White halo clears the rail behind the marker */
+    box-shadow: 0 0 0 4px #fff;
+  }
+
+  .gs-step:not(.is-active) .gs-step__marker {
+    width: var(--dot-size);
+    height: var(--dot-size);
+    margin-top: calc((var(--rail-size) - var(--dot-size)) / 2);
+    margin-left: calc((var(--rail-size) - var(--dot-size)) / 2);
+    border: none;
+    font-size: 0;
+    color: transparent;
+    background: #a8a8b8;
+    box-shadow: 0 0 0 3px #fff;
+  }
+
+  .gs-step.is-active .gs-step__marker {
+    width: var(--rail-size);
+    height: var(--rail-size);
+    margin: 0;
+    border: 2px solid #6c41ff;
+    background: #fff;
+    color: #6c41ff;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    padding-top: 0.5px;
+    box-shadow: 0 0 0 4px #fff;
+  }
+
+  .gs-step__content {
+    min-width: 0;
+    padding-top: 4px;
+  }
+
+  .gs-step__title {
+    margin: 0;
+    color: #6b6b7b;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 22px;
+  }
+
+  .gs-step__body {
+    margin: 6px 0 0;
+    max-width: 384px;
+    color: #9a9aab;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 16px;
+  }
+
+  .gs-step.is-active .gs-step__title {
+    color: #6c41ff;
+  }
+
+  .gs-step.is-active .gs-step__body {
+    color: rgba(0, 9, 69, 0.78);
+  }
+
+  @media (min-width: 1024px) {
+    .gs-stack__deck {
+      display: grid;
+      grid-template-columns: 413px 544px;
+      justify-content: space-between;
+      column-gap: 3.3rem;
+      align-items: start;
+    }
+
+    .gs-stack__copy {
+      grid-column: 1;
+      grid-row-start: 1;
+      grid-row-end: -1;
+      width: 413px;
+      margin-bottom: 0;
+    }
+
+    .gs-stack__card,
+    .gs-stack__spacer:not(.gs-stack__spacer--hold),
+    .gs-stack__finale,
+    .gs-stack__spacer--hold {
+      grid-column: 2;
+    }
+
+    .gs-stack__card,
+    .gs-stack__finale .gs-stack__card {
+      width: 100%;
+      max-width: 544px;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .gs-stack {
+      --card-h: min(280px, calc(100dvh - 12rem));
+      --header-h: 1rem;
+      --pin-top: 1rem;
+      --slot-run: 50vh;
+      --card-pin-offset: 0px;
+      --card-pin-top: auto;
+    }
+
+    .gs-stack__copy {
+      position: relative;
+      top: auto;
+      max-height: none;
+      overflow: visible;
+    }
+
+    .gs-stack__card[data-index='0'] {
+      margin-top: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gs-stack__copy {
+      position: relative;
+      top: auto;
+      max-height: none;
+    }
+
+    .gs-stack__deck {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .gs-stack__spacer,
+    .gs-stack__finale-pad {
+      display: none;
+    }
+
+    .gs-stack__card,
+    .gs-stack__finale {
+      position: relative;
+      top: auto !important;
+    }
+
+    .gs-stack__card {
+      height: auto;
+      min-height: 220px;
+    }
+
+    .gs-stack__img {
+      aspect-ratio: 544 / 360;
+      height: auto;
+      object-fit: contain;
+      object-position: left top;
+    }
+  }
+</style>

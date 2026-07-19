@@ -1,0 +1,341 @@
+---
+const features = [
+  { label: 'Dashboard', icon: '/images/features/icons/dashboard.svg' },
+  { label: 'Project Management', icon: '/images/features/icons/project.svg' },
+  { label: 'Sprint Planning', icon: '/images/features/icons/sprint.svg' },
+  { label: 'People Management', icon: '/images/features/icons/people.svg' },
+  { label: 'Client Portal', icon: '/images/features/icons/portal.svg' },
+  { label: 'Notice Board', icon: '/images/features/icons/notice.svg' },
+  { label: 'Timesheets', icon: '/images/features/icons/timesheet.svg' },
+  { label: 'Team Chat', icon: '/images/features/icons/chat.svg' },
+  { label: 'Feedback System', icon: '/images/features/icons/feedback.svg' },
+];
+
+const row1 = features.slice(0, 5);
+const row2 = features.slice(5);
+
+/** Arc uses design-specific glyphs where they differ from pill icons */
+const arcIconSrc = [
+  '/images/features/icons/dashboard.svg',
+  '/images/features/icons/project.svg',
+  '/images/features/icons/sprint-sliders.svg',
+  '/images/features/icons/people.svg',
+  '/images/features/icons/portal.svg',
+  '/images/features/icons/notice.svg',
+  '/images/features/icons/timesheet.svg',
+  '/images/features/icons/chat.svg',
+  '/images/features/icons/feedback.svg',
+];
+
+/** 9 icon positions along a wide shallow arc (percent of arc box) */
+const arcIcons = arcIconSrc.map((icon, index) => {
+  const t = index / 8;
+  const start = Math.PI * 0.95;
+  const end = Math.PI * 0.05;
+  const angle = start + t * (end - start);
+  const rx = 48;
+  const ry = 88;
+  const cx = 50;
+  const cy = 102;
+  return {
+    icon,
+    left: cx + rx * Math.cos(angle),
+    top: cy - ry * Math.sin(angle),
+  };
+});
+---
+
+<section class="features-hero relative overflow-hidden pt-[118px] pb-12 sm:pt-[132px] sm:pb-16">
+  <div class="features-hero__glow" aria-hidden="true"></div>
+
+  <div class="pd-rail relative z-[1]">
+    <div class="features-hero__visual mx-auto" aria-label="Pixeldesk product features preview">
+      <!-- Arc line + individual icon orbs -->
+      <div class="features-hero__arc" aria-hidden="true">
+        <svg class="features-hero__arc-line" viewBox="0 0 820 260" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path
+            d="M36 236 C 110 36, 270 10, 410 10 C 550 10, 710 36, 784 236"
+            stroke="#D5CCFF"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          ></path>
+        </svg>
+        <ul class="features-hero__arc-icons">
+          {
+            arcIcons.map((item) => (
+              <li
+                class="features-hero__arc-icon"
+                style={`left:${item.left.toFixed(2)}%;top:${item.top.toFixed(2)}%;`}
+              >
+                <span class="features-hero__arc-orb">
+                  <img src={item.icon} alt="" width="16" height="16" />
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Dashboard screenshot (separate asset) -->
+      <div class="features-hero__dash">
+        <img
+          src="/images/features/dashboard-fade.png"
+          alt="Pixeldesk dashboard showing deliverables, tasks, and utilization"
+          width="1636"
+          height="916"
+          class="features-hero__dash-img"
+          fetchpriority="high"
+        />
+      </div>
+    </div>
+
+    <div class="features-hero__copy mx-auto text-center">
+      <h1 class="features-hero__title">
+        Every feature your team needs.<br />In one workspace.
+      </h1>
+      <p class="features-hero__subtitle">
+        Built for three audiences at once — the Project Manager who needs control, the team that needs clarity, and the
+        client who needs confidence in what’s being delivered.
+      </p>
+      <span class="features-hero__cta">EVERYTHING, ONE PLACE.</span>
+    </div>
+
+    <div class="features-hero__pills">
+      <div class="features-hero__pill-row">
+        {
+          row1.map((pill) => (
+            <span class="features-hero__pill">
+              <img src={pill.icon} alt="" width="15" height="15" class="features-hero__pill-icon" />
+              {pill.label}
+            </span>
+          ))
+        }
+      </div>
+      <div class="features-hero__pill-row">
+        {
+          row2.map((pill) => (
+            <span class="features-hero__pill">
+              <img src={pill.icon} alt="" width="15" height="15" class="features-hero__pill-icon" />
+              {pill.label}
+            </span>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .features-hero {
+    --fh-purple: #6c41ff;
+    --fh-purple-soft: #efeaff;
+    --fh-navy: #000945;
+    --fh-body: #3d3d3d;
+  }
+
+  .features-hero__glow {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 68% 52% at 50% 18%, rgba(218, 208, 255, 0.72) 0%, rgba(218, 208, 255, 0.22) 48%, transparent 72%),
+      radial-gradient(ellipse 34% 26% at 14% 26%, rgba(255, 236, 210, 0.28) 0%, transparent 60%);
+  }
+
+  .features-hero__visual {
+    position: relative;
+    width: min(100%, 760px);
+    aspect-ratio: 760 / 400;
+  }
+
+  .features-hero__arc {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    z-index: 2;
+    width: 100%;
+    height: 58%;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .features-hero__arc-line {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .features-hero__arc-icons {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .features-hero__arc-icon {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    transform: translate(-50%, -50%);
+  }
+
+  .features-hero__arc-orb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #d5ccff;
+    box-shadow: 0 3px 12px rgba(108, 65, 255, 0.1);
+  }
+
+  .features-hero__arc-orb img {
+    display: block;
+    width: 16px;
+    height: 16px;
+  }
+
+  .features-hero__dash {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    z-index: 1;
+    width: 86%;
+    max-width: 640px;
+    transform: translateX(-50%);
+    overflow: hidden;
+    border-radius: 14px;
+    box-shadow: 0 16px 44px rgba(0, 9, 69, 0.1);
+  }
+
+  .features-hero__dash-img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (min-width: 640px) {
+    .features-hero__arc-icon,
+    .features-hero__arc-orb {
+      width: 38px;
+      height: 38px;
+    }
+  }
+
+  .features-hero__copy {
+    margin-top: 8px;
+    max-width: 720px;
+  }
+
+  .features-hero__title {
+    color: var(--fh-navy);
+    font-family: var(--font-sans);
+    font-size: 34px;
+    font-weight: 500;
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+  }
+
+  @media (min-width: 640px) {
+    .features-hero__title {
+      font-size: 48px;
+      line-height: 54px;
+    }
+  }
+
+  .features-hero__subtitle {
+    margin: 12px auto 0;
+    max-width: 680px;
+    color: var(--fh-body);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 22px;
+  }
+
+  .features-hero__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 16px;
+    height: 24px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: var(--fh-purple);
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .features-hero__pills {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    width: min(100%, 820px);
+    margin: 14px auto 0;
+  }
+
+  .features-hero__pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  @media (min-width: 900px) {
+    .features-hero__pill-row {
+      flex-wrap: nowrap;
+    }
+  }
+
+  .features-hero__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 12px 0 9px;
+    border-radius: 999px;
+    background: var(--fh-purple-soft);
+    color: var(--fh-purple);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .features-hero__pill-icon {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    display: block;
+  }
+
+  @media (max-width: 639px) {
+    .features-hero__visual {
+      width: min(100%, 520px);
+      aspect-ratio: 760 / 360;
+    }
+
+    .features-hero__arc-icon,
+    .features-hero__arc-orb {
+      width: 28px;
+      height: 28px;
+    }
+
+    .features-hero__arc-orb img {
+      width: 13px;
+      height: 13px;
+    }
+  }
+</style>

@@ -1,0 +1,67 @@
+---
+const product = [
+  { href: '/features', label: 'Features' },
+  { href: '/pricing', label: 'Pricing' },
+  { href: '#', label: 'Roadmap' },
+];
+
+const company = [
+  { href: '#', label: 'About' },
+  { href: '#', label: 'Blog' },
+  { href: '#', label: 'Careers' },
+  { href: '#', label: 'Press' },
+];
+
+const support = [
+  { href: '/resources/knowledge-base', label: 'Help Center' },
+  { href: '#', label: 'Contact' },
+  { href: '#', label: 'Privacy' },
+  { href: '#', label: 'Terms' },
+];
+---
+
+<footer class="bg-navy text-white">
+  <div class="pd-rail py-14 sm:py-16">
+    <div class="grid gap-10 md:grid-cols-[1fr_repeat(3,auto)] md:gap-16 lg:gap-24">
+      <div class="max-w-[235px]">
+        <img src="/images/logo-white.svg" alt="Pixeldesk" width="168" height="34" class="h-[34px] w-[168px]" />
+        <p class="mt-5 text-[12px] font-light leading-[16px] text-white/85">
+          The complete project OS for modern teams. Manage projects, delight clients, and take care of your people — all
+          in one workspace.
+        </p>
+      </div>
+
+      <div>
+        <p class="text-[12px] font-semibold leading-[16px]">Product</p>
+        <ul class="mt-2.5 space-y-2.5 text-[12px] font-normal leading-[16px] text-white/90">
+          {product.map((item) => (
+            <li><a href={item.href} class="hover:text-white">{item.label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <p class="text-[12px] font-semibold leading-[16px]">Company</p>
+        <ul class="mt-2.5 space-y-2.5 text-[12px] font-normal leading-[16px] text-white/90">
+          {company.map((item) => (
+            <li><a href={item.href} class="hover:text-white">{item.label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        <p class="text-[12px] font-semibold leading-[16px]">Support</p>
+        <ul class="mt-2.5 space-y-2.5 text-[12px] font-normal leading-[16px] text-white/90">
+          {support.map((item) => (
+            <li><a href={item.href} class="hover:text-white">{item.label}</a></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 flex flex-col gap-3 border-t border-white/20 pt-5 text-[10px] font-light leading-[16px] text-white/70 sm:flex-row sm:items-center sm:justify-between">
+      <p>© 2026 Pixeldesk. All rights reserved.</p>
+      <p>Work smarter. Deliver better.</p>
+    </div>
+  </div>
+</footer>

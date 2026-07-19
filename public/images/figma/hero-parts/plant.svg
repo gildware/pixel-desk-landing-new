@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="48" viewBox="0 0 40 48" fill="none">
+  <!-- Figma-style leaf sprigs -->
+  <g fill="#6C41FF">
+    <path d="M12 28c0-8 4-16 8-20-1 8-1 14 0 20-3 1-6 1-8 0z"/>
+    <path d="M20 30c2-8 8-14 12-16-4 6-6 12-6 18-2 0-4 0-6-2z"/>
+    <ellipse cx="10" cy="18" rx="3.2" ry="5" transform="rotate(-35 10 18)"/>
+    <ellipse cx="14" cy="12" rx="2.8" ry="4.5" transform="rotate(-20 14 12)"/>
+    <ellipse cx="26" cy="14" rx="3" ry="5" transform="rotate(25 26 14)"/>
+    <ellipse cx="30" cy="20" rx="2.6" ry="4.2" transform="rotate(40 30 20)"/>
+  </g>
+</svg>

@@ -1,0 +1,1004 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+type FeatureItem = { text: string; included?: boolean };
+type FeatureGroup = { title: string; items: FeatureItem[] };
+
+type Plan = {
+  id: string;
+  name: string;
+  featured?: boolean;
+  priceLabel: string;
+  priceSub: string;
+  priceMonthly?: string;
+  priceAnnual?: string;
+  blurb: string;
+  bestFor: string;
+  cta: string;
+  href: string;
+  footnote?: string;
+  groups: FeatureGroup[];
+  excludedTitle?: string;
+  excluded?: FeatureItem[];
+};
+
+const plans: Plan[] = [
+  {
+    id: 'starter',
+    name: 'Starter',
+    priceLabel: 'Free',
+    priceSub: 'Forever free · No credit card needed',
+    blurb: 'For freelancers, managers, and small teams just getting started with structured project delivery.',
+    bestFor: 'Best for: Teams of 1–5',
+    cta: 'Get started free',
+    href: '#',
+    groups: [
+      {
+        title: 'Workspace & Projects',
+        items: [
+          { text: 'Up to 5 users' },
+          { text: 'Up to 3 active projects' },
+          { text: 'Unlimited tasks per project' },
+          { text: 'Task assignments, due dates, priorities' },
+          { text: 'Basic dashboard (up to 3 widgets)' },
+          { text: 'Basic timesheet logging' },
+          { text: 'Birthday calendar' },
+          { text: 'Community support + help docs' },
+        ],
+      },
+    ],
+    excludedTitle: 'Not included',
+    excluded: [
+      { text: 'Client portal', included: false },
+      { text: 'Sprint planning', included: false },
+      { text: 'Budget tracking', included: false },
+      { text: 'Team chat', included: false },
+      { text: 'Leave & holiday management', included: false },
+    ],
+  },
+  {
+    id: 'growth',
+    name: 'Growth',
+    featured: true,
+    priceLabel: '₹599',
+    priceAnnual: '₹599',
+    priceMonthly: '₹749',
+    priceSub: 'Billed annually (₹7,188/user/year) · ₹749/user/mo billed monthly',
+    blurb: 'For growing agencies, product teams, and consultancies managing multiple clients, sprints, and projects.',
+    bestFor: 'Best for: Teams of 5–100 · Includes 14-day free trial',
+    cta: 'Start 14-day free trial',
+    href: '#',
+    footnote: 'No credit card needed for trial',
+    groups: [
+      {
+        title: 'Everything in Starter, plus:',
+        items: [
+          { text: 'Unlimited users' },
+          { text: 'Unlimited active projects' },
+          { text: 'Timeline view (Gantt-style)' },
+          { text: 'Task dependencies and milestones' },
+        ],
+      },
+      {
+        title: 'Client Portal',
+        items: [
+          { text: 'Client login with live project status' },
+          { text: 'Monthly budget view for clients' },
+          { text: 'Client live feedback on deliverables' },
+          { text: 'Excel export of project tracker' },
+        ],
+      },
+      {
+        title: 'Sprint Planning',
+        items: [
+          { text: 'Sprint creation with goals & dates' },
+          { text: 'Backlog management (drag & drop)' },
+          { text: 'Sprint velocity tracking' },
+        ],
+      },
+      {
+        title: 'Communication',
+        items: [
+          { text: 'Built-in project-linked team chat' },
+          { text: 'Notice board (team + client-facing)' },
+        ],
+      },
+      {
+        title: 'Budget & Finance',
+        items: [
+          { text: 'Monthly budget tracking + alerts' },
+          { text: 'Budget reports (Excel/PDF export)' },
+        ],
+      },
+      {
+        title: 'People',
+        items: [
+          { text: 'Full leave & holiday management' },
+          { text: 'Approval workflow for leave' },
+          { text: 'Team availability overview' },
+          { text: 'Full timesheet management' },
+          { text: 'Timesheet billing reports' },
+        ],
+      },
+      {
+        title: 'Dashboard',
+        items: [{ text: 'Role-based dashboard views' }],
+      },
+      {
+        title: 'Support',
+        items: [
+          { text: 'Priority email & live chat support' },
+          { text: 'Onboarding call included' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise',
+    priceLabel: 'Custom pricing',
+    priceSub: 'Billed annually · Negotiated per team size',
+    blurb: 'For large agencies, enterprise teams, and organizations with compliance needs, custom integrations, or 100+ seats.',
+    bestFor: 'Best for: Teams of 100+ · Volume discounts available',
+    cta: 'Talk to sales',
+    href: '#',
+    groups: [
+      {
+        title: 'Everything in Growth, plus:',
+        items: [
+          { text: 'Custom user roles & granular permissions' },
+          { text: 'Single Sign-On (SSO / SAML 2.0)' },
+          { text: 'White-label client portal (your brand)' },
+          { text: 'API access for custom integrations' },
+          { text: 'Multi-workspace / multi-org support' },
+          { text: 'Data residency controls' },
+          { text: 'Audit logs & activity history' },
+          { text: '99.9% SLA-backed uptime guarantee' },
+          { text: 'Custom data retention policies' },
+        ],
+      },
+      {
+        title: 'Support & Onboarding',
+        items: [
+          { text: 'Dedicated Customer Success Manager' },
+          { text: 'Custom onboarding & team training' },
+          { text: '24/7 priority support' },
+          { text: 'Quarterly business reviews' },
+        ],
+      },
+    ],
+  },
+];
+
+type Cell = boolean | string;
+
+const comparison: { category: string; rows: { name: string; starter: Cell; growth: Cell; enterprise: Cell }[] }[] = [
+  {
+    category: 'Workspace & Projects',
+    rows: [
+      { name: 'Users', starter: 'Up to 5', growth: 'Unlimited', enterprise: 'Unlimited' },
+      { name: 'Active projects', starter: 'Up to 3', growth: 'Unlimited', enterprise: 'Unlimited' },
+      { name: 'Task management (Kanban, List)', starter: true, growth: true, enterprise: true },
+      { name: 'Timeline / Gantt view', starter: false, growth: true, enterprise: true },
+      { name: 'Dependencies & milestones', starter: false, growth: true, enterprise: true },
+      { name: 'Sprint planning & velocity', starter: false, growth: true, enterprise: true },
+    ],
+  },
+  {
+    category: 'Client Portal',
+    rows: [
+      { name: 'Client login & live status', starter: false, growth: true, enterprise: true },
+      { name: 'Monthly budget visibility', starter: false, growth: true, enterprise: true },
+      { name: 'Client feedback on deliverables', starter: false, growth: true, enterprise: true },
+      { name: 'White-label branding', starter: false, growth: false, enterprise: true },
+    ],
+  },
+  {
+    category: 'Communication & People',
+    rows: [
+      { name: 'Project-linked team chat', starter: false, growth: true, enterprise: true },
+      { name: 'Notice board', starter: false, growth: true, enterprise: true },
+      { name: 'Leave & holiday management', starter: false, growth: true, enterprise: true },
+      { name: 'Team availability overview', starter: false, growth: true, enterprise: true },
+    ],
+  },
+  {
+    category: 'Timesheets & Budget',
+    rows: [
+      { name: 'Basic timesheet logging', starter: true, growth: true, enterprise: true },
+      { name: 'Timesheet approvals & billing reports', starter: false, growth: true, enterprise: true },
+      { name: 'Budget tracking & spend alerts', starter: false, growth: true, enterprise: true },
+      { name: 'Budget & timesheet Excel/PDF export', starter: false, growth: true, enterprise: true },
+    ],
+  },
+  {
+    category: 'Enterprise & Security',
+    rows: [
+      { name: 'SSO / SAML 2.0', starter: false, growth: false, enterprise: true },
+      { name: 'Audit logs & data residency', starter: false, growth: false, enterprise: true },
+      { name: '99.9% uptime SLA', starter: false, growth: false, enterprise: true },
+    ],
+  },
+  {
+    category: 'Support',
+    rows: [
+      { name: 'Help docs & community', starter: true, growth: true, enterprise: true },
+      { name: 'Priority email & live chat', starter: false, growth: true, enterprise: true },
+      { name: 'Dedicated Customer Success Manager', starter: false, growth: false, enterprise: true },
+      { name: 'Onboarding call', starter: false, growth: true, enterprise: true },
+    ],
+  },
+];
+
+function cellContent(value: Cell) {
+  if (typeof value === 'string') return value;
+  return value ? 'check' : 'cross';
+}
+---
+
+<BaseLayout
+  title="Pricing"
+  description="Transparent pricing. Everything included. No surprises. Start free and scale when you're ready."
+>
+  <Header current="pricing" />
+  <main class="pricing-page">
+    <section class="pricing-hero">
+      <div class="pricing-hero__glow" aria-hidden="true"></div>
+      <div class="pricing-shell pricing-hero__content">
+        <h1 class="pricing-hero__title">
+          Transparent pricing.<br />Everything included. No surprises.
+        </h1>
+        <p class="pricing-hero__subtitle">
+          Start free. Scale when you’re ready. Every core feature ships in one plan — no module gates, no hidden
+          add-ons.
+        </p>
+
+        <div class="billing-toggle" data-billing-toggle>
+          <span class="billing-toggle__label is-active" data-billing-label="annual">Annual billing</span>
+          <button
+            type="button"
+            class="billing-toggle__switch"
+            data-billing-switch
+            role="switch"
+            aria-checked="true"
+            aria-label="Toggle monthly billing"
+          >
+            <span class="billing-toggle__knob"></span>
+          </button>
+          <span class="billing-toggle__label" data-billing-label="monthly">Monthly billing</span>
+          <span class="billing-toggle__save">Save 20% annually</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="pricing-plans">
+      <div class="pricing-shell pricing-plans__grid">
+        {
+          plans.map((plan) => (
+            <article class:list={['plan-card', plan.featured && 'plan-card--featured']}>
+              {plan.featured && (
+                <span class="plan-card__badge">
+                  <span aria-hidden="true">★</span> Most popular
+                </span>
+              )}
+
+              <p class="plan-card__name">{plan.name}</p>
+
+              <div class="plan-card__price-row">
+                {plan.priceAnnual ? (
+                  <p
+                    class="plan-card__price"
+                    data-price
+                    data-monthly={plan.priceMonthly}
+                    data-annual={plan.priceAnnual}
+                  >
+                    <span data-amount>{plan.priceAnnual}</span>
+                    <span class="plan-card__price-unit">/user/mo</span>
+                  </p>
+                ) : (
+                  <p class="plan-card__price">{plan.priceLabel}</p>
+                )}
+              </div>
+
+              <p class="plan-card__price-sub" data-price-sub={plan.id}>
+                {plan.priceSub}
+              </p>
+              <p class="plan-card__blurb">{plan.blurb}</p>
+              <p class="plan-card__best">
+                <span aria-hidden="true">+</span> {plan.bestFor}
+              </p>
+
+              <div class="plan-card__body">
+                {plan.groups.map((group) => (
+                  <div class="plan-card__group">
+                    <p class="plan-card__group-title">{group.title}</p>
+                    <ul class="plan-card__list">
+                      {group.items.map((item) => (
+                        <li>
+                          <span class="plan-card__icon plan-card__icon--check" aria-hidden="true">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                              <path
+                                d="M2.5 7.2L5.4 10.1L11.5 3.9"
+                                stroke="currentColor"
+                                stroke-width="1.6"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                              />
+                            </svg>
+                          </span>
+                          <span>{item.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+
+                {plan.excluded && plan.excluded.length > 0 && (
+                  <div class="plan-card__group">
+                    <p class="plan-card__group-title">{plan.excludedTitle}</p>
+                    <ul class="plan-card__list">
+                      {plan.excluded.map((item) => (
+                        <li class="is-excluded">
+                          <span class="plan-card__icon plan-card__icon--cross" aria-hidden="true">
+                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                              <path
+                                d="M2.5 2.5L9.5 9.5M9.5 2.5L2.5 9.5"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                              />
+                            </svg>
+                          </span>
+                          <span>{item.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              <div class="plan-card__footer">
+                <a
+                  href={plan.href}
+                  class:list={['plan-card__cta', plan.featured ? 'plan-card__cta--primary' : 'plan-card__cta--ghost']}
+                >
+                  {plan.cta} <span aria-hidden="true">→</span>
+                </a>
+                {plan.footnote && <p class="plan-card__footnote">{plan.footnote}</p>}
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="pricing-compare">
+      <div class="pricing-shell">
+        <div class="pricing-compare__intro">
+          <span class="pricing-compare__pill">Plan comparison</span>
+          <h2 class="pricing-compare__title">Everything, side by side.</h2>
+          <p class="pricing-compare__subtitle">Every feature across every plan — no fine print.</p>
+        </div>
+
+        <div class="compare-table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th scope="col">Feature</th>
+                <th scope="col">Starter</th>
+                <th scope="col" class="is-highlight">Growth</th>
+                <th scope="col" class="is-highlight">Enterprise</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                comparison.map((group) => (
+                  <>
+                    <tr class="compare-table__category">
+                      <td colspan="4">{group.category}</td>
+                    </tr>
+                    {group.rows.map((row) => {
+                      const cells = [row.starter, row.growth, row.enterprise].map(cellContent);
+                      return (
+                        <tr>
+                          <th scope="row">{row.name}</th>
+                          {cells.map((cell) => (
+                            <td>
+                              {cell === 'check' ? (
+                                <span class="compare-table__check" aria-label="Included">
+                                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path
+                                      d="M3 8.2L6.2 11.4L13 4.4"
+                                      stroke="currentColor"
+                                      stroke-width="1.8"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                    />
+                                  </svg>
+                                </span>
+                              ) : cell === 'cross' ? (
+                                <span class="compare-table__cross" aria-label="Not included">
+                                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                    <path
+                                      d="M2.5 2.5L9.5 9.5M9.5 2.5L2.5 9.5"
+                                      stroke="currentColor"
+                                      stroke-width="1.5"
+                                      stroke-linecap="round"
+                                    />
+                                  </svg>
+                                </span>
+                              ) : (
+                                <span class="compare-table__text">{cell}</span>
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      );
+                    })}
+                  </>
+                ))
+              }
+              <tr class="compare-table__price">
+                <th scope="row">Price (annual billing)</th>
+                <td><span class="compare-table__price-val">Free</span></td>
+                <td><span class="compare-table__price-val is-accent">₹599/user/mo</span></td>
+                <td><span class="compare-table__price-val is-accent">Custom</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .pricing-page {
+    --pp-navy: #000945;
+    --pp-purple: #6c41ff;
+    --pp-body: #3d3d3d;
+    --pp-muted: #5f616d;
+    --pp-label: #878787;
+    --pp-line: #e8e8ec;
+    --pp-surface: #f7f6fb;
+    --pp-green: #16a34a;
+    background: #fff;
+  }
+
+  /* Match Header horizontal rail: 1512 frame with 251px side inset */
+  .pricing-shell {
+    width: 100%;
+    max-width: 1512px;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+
+  @media (min-width: 1100px) {
+    .pricing-shell {
+      padding-inline: 251px;
+    }
+  }
+
+  /* —— Hero —— */
+  .pricing-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 156px 0 8px;
+    text-align: center;
+  }
+
+  .pricing-hero__glow {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 90% 80% at 50% -10%, rgba(218, 208, 255, 0.85) 0%, rgba(218, 208, 255, 0.35) 38%, transparent 68%),
+      radial-gradient(ellipse 45% 40% at 8% 12%, rgba(255, 236, 210, 0.28) 0%, transparent 58%),
+      linear-gradient(180deg, #efeaff 0%, #f7f4ff 38%, #ffffff 100%);
+  }
+
+  .pricing-hero__content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .pricing-hero__title {
+    margin: 0 auto;
+    max-width: 720px;
+    color: var(--pp-navy);
+    font-size: 34px;
+    font-weight: 500;
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+  }
+
+  @media (min-width: 640px) {
+    .pricing-hero {
+      padding-top: 180px;
+      padding-bottom: 12px;
+    }
+
+    .pricing-hero__title {
+      font-size: 48px;
+      line-height: 1.12;
+    }
+  }
+
+  .pricing-hero__subtitle {
+    margin: 18px auto 0;
+    max-width: 560px;
+    color: var(--pp-muted);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 24px;
+  }
+
+  @media (min-width: 640px) {
+    .pricing-hero__subtitle {
+      margin-top: 22px;
+      font-size: 16px;
+      line-height: 26px;
+    }
+  }
+
+  /* —— Billing toggle —— */
+  .billing-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 40px;
+  }
+
+  .billing-toggle__label {
+    color: var(--pp-label);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1;
+    transition: color 0.15s ease;
+  }
+
+  .billing-toggle__label.is-active {
+    color: var(--pp-purple);
+    font-weight: 500;
+  }
+
+  .billing-toggle__switch {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--pp-purple);
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s ease;
+  }
+
+  .billing-toggle__switch[aria-checked='false'] {
+    background: #cfc8e8;
+  }
+
+  .billing-toggle__knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+    transition: transform 0.2s ease;
+  }
+
+  .billing-toggle__switch[aria-checked='false'] .billing-toggle__knob {
+    transform: translateX(20px);
+  }
+
+  .billing-toggle__save {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: #e8f8ee;
+    color: #15803d;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  /* —— Plans —— */
+  .pricing-plans {
+    position: relative;
+    padding: 40px 0 80px;
+    background: linear-gradient(180deg, #ffffff 0%, #faf9fd 55%, var(--pp-surface) 100%);
+  }
+
+  .pricing-plans__grid {
+    display: grid;
+    gap: 18px;
+    align-items: start;
+  }
+
+  @media (min-width: 960px) {
+    .pricing-plans__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+  }
+
+  .plan-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    padding: 28px 22px 22px;
+    border-radius: 18px;
+    border: 1px solid #ebeaf0;
+    background: #fff;
+    box-shadow: 0 8px 28px rgba(0, 9, 69, 0.04);
+  }
+
+  .plan-card--featured {
+    border: 2px solid var(--pp-purple);
+    box-shadow: 0 12px 40px rgba(108, 65, 255, 0.12);
+    padding-top: 34px;
+  }
+
+  .plan-card__badge {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 26px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: #e6a817;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .plan-card__name {
+    margin: 0;
+    color: var(--pp-label);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .plan-card__price-row {
+    margin-top: 10px;
+  }
+
+  .plan-card__price {
+    margin: 0;
+    color: var(--pp-navy);
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .plan-card__price-unit {
+    margin-left: 4px;
+    color: var(--pp-muted);
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  .plan-card__price-sub {
+    margin: 8px 0 0;
+    color: var(--pp-muted);
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 18px;
+  }
+
+  .plan-card__blurb {
+    margin: 14px 0 0;
+    color: var(--pp-body);
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 20px;
+  }
+
+  .plan-card__best {
+    margin: 14px 0 0;
+    color: #3b82f6;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 18px;
+  }
+
+  .plan-card__body {
+    margin-top: 22px;
+    flex: 1;
+  }
+
+  .plan-card__group + .plan-card__group {
+    margin-top: 18px;
+  }
+
+  .plan-card__group-title {
+    margin: 0 0 8px;
+    color: var(--pp-label);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .plan-card__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .plan-card__list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: var(--pp-body);
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 18px;
+  }
+
+  .plan-card__list li.is-excluded {
+    color: var(--pp-label);
+  }
+
+  .plan-card__icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+  }
+
+  .plan-card__icon--check {
+    color: #3b82f6;
+  }
+
+  .plan-card__icon--cross {
+    color: #c4c4cc;
+  }
+
+  .plan-card__footer {
+    margin-top: 28px;
+  }
+
+  .plan-card__cta {
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 42px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .plan-card__cta--primary {
+    background: var(--pp-purple);
+    color: #fff;
+  }
+
+  .plan-card__cta--primary:hover {
+    background: #5a2fff;
+  }
+
+  .plan-card__cta--ghost {
+    border: 1px solid var(--pp-line);
+    background: #fff;
+    color: var(--pp-navy);
+  }
+
+  .plan-card__cta--ghost:hover {
+    background: var(--pp-surface);
+  }
+
+  .plan-card__footnote {
+    margin: 10px 0 0;
+    text-align: center;
+    color: var(--pp-label);
+    font-size: 11px;
+    font-weight: 300;
+  }
+
+  /* —— Comparison —— */
+  .pricing-compare {
+    background: var(--pp-surface);
+    padding: 72px 0 96px;
+  }
+
+  .pricing-compare__intro {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .pricing-compare__pill {
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: rgba(108, 65, 255, 0.1);
+    color: var(--pp-purple);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .pricing-compare__title {
+    margin: 14px 0 0;
+    color: var(--pp-navy);
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  @media (min-width: 640px) {
+    .pricing-compare__title {
+      font-size: 40px;
+    }
+  }
+
+  .pricing-compare__subtitle {
+    margin: 10px 0 0;
+    color: var(--pp-muted);
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  .compare-table-wrap {
+    overflow-x: auto;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid var(--pp-line);
+  }
+
+  .compare-table {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  .compare-table thead th {
+    padding: 18px 20px;
+    color: var(--pp-navy);
+    font-size: 13px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--pp-line);
+  }
+
+  .compare-table thead th:not(:first-child) {
+    text-align: center;
+  }
+
+  .compare-table thead th.is-highlight {
+    background: rgba(108, 65, 255, 0.06);
+  }
+
+  .compare-table__category td {
+    padding: 12px 20px;
+    background: #f3f2f7;
+    color: var(--pp-body);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .compare-table tbody tr:not(.compare-table__category) th,
+  .compare-table tbody tr:not(.compare-table__category) td {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--pp-line);
+    vertical-align: middle;
+  }
+
+  .compare-table tbody tr:not(.compare-table__category) th {
+    color: var(--pp-navy);
+    font-size: 13px;
+    font-weight: 400;
+    text-align: left;
+  }
+
+  .compare-table tbody tr:not(.compare-table__category) td {
+    text-align: center;
+  }
+
+  .compare-table__check {
+    display: inline-flex;
+    color: var(--pp-green);
+  }
+
+  .compare-table__cross {
+    display: inline-flex;
+    color: #c4c4cc;
+  }
+
+  .compare-table__text {
+    color: var(--pp-navy);
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .compare-table__price th,
+  .compare-table__price td {
+    border-bottom: 0 !important;
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+  }
+
+  .compare-table__price th {
+    font-weight: 600 !important;
+  }
+
+  .compare-table__price-val {
+    color: var(--pp-navy);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .compare-table__price-val.is-accent {
+    color: var(--pp-purple);
+  }
+</style>
+
+<script>
+  const root = document.querySelector('[data-billing-toggle]');
+  const switchBtn = root?.querySelector('[data-billing-switch]');
+  const labels = root?.querySelectorAll('[data-billing-label]');
+  const prices = document.querySelectorAll('[data-price]');
+  const growthSub = document.querySelector('[data-price-sub="growth"]');
+
+  const subCopy = {
+    annual: 'Billed annually (₹7,188/user/year) · ₹749/user/mo billed monthly',
+    monthly: 'Billed monthly · ₹599/user/mo with annual billing',
+  };
+
+  function setBilling(mode) {
+    const annual = mode === 'annual';
+    switchBtn?.setAttribute('aria-checked', String(annual));
+    labels?.forEach((label) => {
+      const key = label.getAttribute('data-billing-label');
+      label.classList.toggle('is-active', key === mode);
+    });
+    prices.forEach((el) => {
+      const value = annual ? el.getAttribute('data-annual') : el.getAttribute('data-monthly');
+      const amount = el.querySelector('[data-amount]');
+      if (amount && value) amount.textContent = value;
+    });
+    if (growthSub) growthSub.textContent = annual ? subCopy.annual : subCopy.monthly;
+  }
+
+  switchBtn?.addEventListener('click', () => {
+    const annual = switchBtn.getAttribute('aria-checked') === 'true';
+    setBilling(annual ? 'monthly' : 'annual');
+  });
+</script>

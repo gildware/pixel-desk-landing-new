@@ -1,0 +1,58 @@
+{
+  "content": {
+    "x0": 0,
+    "y0": 0,
+    "x1": 1023,
+    "y1": 804
+  },
+  "parts": {
+    "stars": {
+      "left": 64.91,
+      "top": 46.02,
+      "width": 10.26,
+      "height": 2.99
+    },
+    "folder": {
+      "left": 24.93,
+      "top": 53.61,
+      "width": 5.96,
+      "height": 7.84
+    },
+    "people": {
+      "left": 52.79,
+      "top": 46.27,
+      "width": 26.1,
+      "height": 28.36
+    },
+    "plant": {
+      "left": 55.33,
+      "top": 68.78,
+      "width": 7.72,
+      "height": 7.96
+    },
+    "purple-a": {
+      "left": 37.83,
+      "top": 61.69,
+      "width": 23.75,
+      "height": 31.09
+    },
+    "purple-b": {
+      "left": 21.8,
+      "top": 26.99,
+      "width": 36.46,
+      "height": 35.82
+    },
+    "purple-c": {
+      "left": 57.67,
+      "top": 31.59,
+      "width": 20.43,
+      "height": 36.44
+    },
+    "sprint": {
+      "left": 29.52,
+      "top": 84.33,
+      "width": 8.02,
+      "height": 3.36
+    }
+  }
+}
