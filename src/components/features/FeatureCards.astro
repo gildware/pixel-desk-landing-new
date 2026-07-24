@@ -1,0 +1,506 @@
+---
+type Bullet = { label: string; detail: string };
+
+type FeatureCard = {
+  icon: string;
+  label: string;
+  title: string;
+  body: string;
+  bullets?: Bullet[];
+  tags: string[];
+  span?: 'third' | 'half' | 'wide';
+  mediaHeight?: number;
+  layout?: 'stack' | 'split';
+};
+
+const cards: FeatureCard[] = [
+  {
+    icon: '/images/features/icons/dashboard.png',
+    label: 'Dashboard',
+    title: 'Smart Dashboard — Your workspace, your way.',
+    body: 'The Pixeldesk built around a flexible widget system, each person configures their own workspace. Everything is drag-and-drop, role-based, and updates in real time. A fully customizable dashboard that updates in real time.',
+    tags: ['Drag-and-drop', 'Real-time', 'Customizable'],
+    span: 'third',
+    mediaHeight: 134,
+  },
+  {
+    icon: '/images/features/icons/project.png',
+    label: 'Project Management',
+    title: 'Full project lifecycle. One place.',
+    body: 'Create tasks, assign owners, set priorities, define dependencies, and mark milestones — then track progress across timeline views. When a task runs behind, Pixeldesk surfaces it early so the team can respond before it becomes a blocker.',
+    tags: ['Timeline', 'Dependencies', 'Milestones'],
+    span: 'third',
+    mediaHeight: 134,
+  },
+  {
+    icon: '/images/features/icons/sprint.png',
+    label: 'Sprint Planning',
+    title: 'Agile delivery for every team.',
+    body: 'Large projects become manageable when broken into focused cycles. Tasks move between backlog and sprint with simple drag-and-drop. Keep teams focused, improve delivery speed, and adapt quickly as priorities evolve.',
+    tags: ['Agile', 'Backlog', 'Velocity', 'Sprint goals'],
+    span: 'third',
+    mediaHeight: 134,
+  },
+  {
+    icon: '/images/features/icons/portal.png',
+    label: 'Client Portal',
+    title: 'Total transparency. Zero chaos.',
+    body: 'Instead of weekly update emails and scheduled status calls, clients get their own dedicated login and can check in whenever they need to.',
+    bullets: [
+      { label: 'Live project status', detail: 'Real-time milestone and sprint progress, anytime' },
+      { label: 'Monthly effort view', detail: 'Clear effort breakdown by project' },
+      { label: 'Live feedback', detail: 'Drop comments directly on deliverables' },
+      { label: 'Excel export', detail: 'Download the full project tracker as a .xlsx file' },
+    ],
+    tags: ['Live status', 'Budget', 'Feedback', 'Excel export', 'Shareable link'],
+    span: 'half',
+    mediaHeight: 164,
+  },
+  {
+    icon: '/images/features/icons/people.png',
+    label: 'People Management',
+    title: 'A workplace that genuinely cares for its people.',
+    body: 'Help managers plan resources effectively while creating a more organized and people-focused work environment.',
+    bullets: [
+      { label: 'Leave management', detail: 'Submit, approve, and track time off in one flow' },
+      { label: 'Holiday calendar', detail: 'Pre-loaded public holidays by region' },
+      { label: 'Birthday calendar', detail: 'Team birthdays surfaced on the dashboard' },
+      { label: 'Team overview', detail: 'Availability, capacity, and workload at a glance' },
+    ],
+    tags: ['Leave', 'Holidays', 'Birthdays', 'Availability'],
+    span: 'half',
+    mediaHeight: 164,
+  },
+  {
+    icon: '/images/features/icons/notice.png',
+    label: 'Notice Board',
+    title: 'Important updates that actually get seen.',
+    body: 'Critical announcements get buried in email and disappear in chat. Admins and PMs can target notices at specific teams, projects, or client portals. Pin updates directly to user dashboards so critical information remains visible until acknowledged or archived.',
+    tags: ['Announcements', 'Star Marked'],
+    span: 'third',
+    mediaHeight: 140,
+  },
+  {
+    icon: '/images/features/icons/chat.png',
+    label: 'Team Chat',
+    title: 'Every conversation, connected to its project.',
+    body: "When team communication is scattered across external tools, context gets lost constantly. Pixeldesk's built-in chat ties every conversation directly to the project it belongs to. A dedicated chat spaces linked to every project.",
+    tags: ['Per-project', 'File sharing', 'Chat history'],
+    span: 'third',
+    mediaHeight: 140,
+  },
+  {
+    icon: '/images/features/icons/timesheet.png',
+    label: 'Timesheets',
+    title: 'Timesheet that drives the whole project.',
+    body: "Every hour logged automatically updates the project's actual timeline and recalculates project effort consumption in real time. Team members cannot move to a new project until their timesheet is complete, which enforces workflow discipline without the manager having to chase anyone.",
+    tags: ['Workflow discipline', 'Feedback-linked'],
+    span: 'third',
+    mediaHeight: 140,
+  },
+  {
+    icon: '/images/features/icons/feedback.png',
+    label: 'Feedback System',
+    title: 'Feedback that accumulates — and actually means something.',
+    body: "A single end-of-project survey only captures how the client felt on delivery day. Pixeldesk's feedback system works differently — clients submit feedback at any point during the project, and every submission is averaged into a running satisfaction score that reflects the full experience.",
+    tags: ['Team notices', 'Client-facing', 'Dashboard-pinned'],
+    span: 'wide',
+    layout: 'split',
+    mediaHeight: 223,
+  },
+];
+
+const row1 = cards.slice(0, 3);
+const row2 = cards.slice(3, 5);
+const row3 = cards.slice(5, 8);
+const row4 = cards.slice(8);
+---
+
+<section class="feature-cards pb-16 sm:pb-20">
+  <div class="pd-rail">
+    <div class="feature-cards__grid">
+      {
+        row1.map((card) => (
+          <article class="feature-card feature-card--third">
+            <div class="feature-card__icon" aria-hidden="true">
+              <img src={card.icon} alt="" width="22" height="22" />
+            </div>
+            <span class="feature-card__label">{card.label}</span>
+            <h2 class="feature-card__title">{card.title}</h2>
+            <p class="feature-card__body">{card.body}</p>
+            <div class="feature-card__footer">
+              <div class="feature-card__tags">
+                {card.tags.map((tag) => (
+                  <span class="feature-card__tag">{tag}</span>
+                ))}
+              </div>
+              <div
+                class="feature-card__media"
+                style={`--media-h: ${card.mediaHeight}px`}
+                aria-hidden="true"
+              />
+            </div>
+          </article>
+        ))
+      }
+
+      {
+        row2.map((card) => (
+          <article class="feature-card feature-card--half">
+            <div class="feature-card__icon" aria-hidden="true">
+              <img src={card.icon} alt="" width="22" height="22" />
+            </div>
+            <span class="feature-card__label">{card.label}</span>
+            <h2 class="feature-card__title">{card.title}</h2>
+            <p class="feature-card__body">{card.body}</p>
+            {card.bullets && (
+              <ul class="feature-card__bullets">
+                {card.bullets.map((item) => (
+                  <li>
+                    <span class="feature-card__bullet-label">{item.label}</span>
+                    <span class="feature-card__bullet-detail">— {item.detail}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div class="feature-card__footer">
+              <div class="feature-card__tags">
+                {card.tags.map((tag) => (
+                  <span class="feature-card__tag">{tag}</span>
+                ))}
+              </div>
+              <div
+                class="feature-card__media"
+                style={`--media-h: ${card.mediaHeight}px`}
+                aria-hidden="true"
+              />
+            </div>
+          </article>
+        ))
+      }
+
+      {
+        row3.map((card) => (
+          <article class="feature-card feature-card--third">
+            <div class="feature-card__icon" aria-hidden="true">
+              <img src={card.icon} alt="" width="22" height="22" />
+            </div>
+            <span class="feature-card__label">{card.label}</span>
+            <h2 class="feature-card__title">{card.title}</h2>
+            <p class="feature-card__body">{card.body}</p>
+            <div class="feature-card__footer">
+              <div class="feature-card__tags">
+                {card.tags.map((tag) => (
+                  <span class="feature-card__tag">{tag}</span>
+                ))}
+              </div>
+              <div
+                class="feature-card__media"
+                style={`--media-h: ${card.mediaHeight}px`}
+                aria-hidden="true"
+              />
+            </div>
+          </article>
+        ))
+      }
+
+      {
+        row4.map((card) => (
+          <article class="feature-card feature-card--wide">
+            <div class="feature-card__copy">
+              <div class="feature-card__icon" aria-hidden="true">
+                <img src={card.icon} alt="" width="22" height="22" />
+              </div>
+              <span class="feature-card__label">{card.label}</span>
+              <h2 class="feature-card__title">{card.title}</h2>
+              <p class="feature-card__body">{card.body}</p>
+              <div class="feature-card__tags">
+                {card.tags.map((tag) => (
+                  <span class="feature-card__tag">{tag}</span>
+                ))}
+              </div>
+            </div>
+            <div
+              class="feature-card__media feature-card__media--side"
+              style={`--media-h: ${card.mediaHeight}px`}
+              aria-hidden="true"
+            />
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .feature-cards__grid {
+    display: grid;
+    gap: 28px;
+    grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 890px;
+    margin-inline: auto;
+  }
+
+  @media (min-width: 720px) {
+    .feature-cards__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .feature-card--wide {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .feature-cards__grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 28px;
+    }
+
+    .feature-card--third {
+      grid-column: span 2;
+    }
+
+    .feature-card--half {
+      grid-column: span 3;
+    }
+
+    .feature-card--wide {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .feature-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-self: stretch;
+    height: 100%;
+    gap: 15px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #e2e2e2;
+    border-radius: 15px;
+    min-width: 0;
+  }
+
+  .feature-card__footer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    width: 100%;
+    margin-top: auto;
+  }
+
+  .feature-card--wide {
+    flex-direction: column;
+  }
+
+  @media (min-width: 900px) {
+    .feature-card--wide {
+      flex-direction: row;
+      align-items: stretch;
+      max-width: 890px;
+    }
+  }
+
+  .feature-card__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  @media (min-width: 900px) {
+    .feature-card__copy {
+      width: 550px;
+      flex: 0 0 550px;
+    }
+  }
+
+  /* Same glyph assets as hero pills — soft lavender orb + purple line icon */
+  .feature-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 41px;
+    height: 41px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: rgba(108, 65, 255, 0.1);
+    box-shadow: 0 0 18px rgba(108, 65, 255, 0.18);
+  }
+
+  .feature-card__icon img {
+    display: block;
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+  }
+
+  .feature-card__label {
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    padding: 0 11px;
+    border-radius: 8px;
+    background: rgba(108, 65, 255, 0.11);
+    color: #6c41ff;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 12px;
+    white-space: nowrap;
+  }
+
+  .feature-card__title {
+    margin: 0;
+    color: #000945;
+    font-family: var(--font-sans);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0;
+  }
+
+  .feature-card__body {
+    margin: 0;
+    color: #000945;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 18px;
+  }
+
+  .feature-card__bullets {
+    margin: 0;
+    padding-left: 1.1em;
+    list-style: disc;
+    color: #000945;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .feature-card__bullet-label {
+    font-weight: 500;
+  }
+
+  .feature-card__bullet-detail {
+    font-weight: 300;
+  }
+
+  .feature-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .feature-card__tag {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    padding: 0 10px;
+    border-radius: 40px;
+    background: rgba(108, 65, 255, 0.11);
+    color: #6c41ff;
+    font-family: var(--font-sans);
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 14px;
+    white-space: nowrap;
+  }
+
+  /* Soft translucent/blurred top — matches Figma gray media fade */
+  .feature-card__media {
+    position: relative;
+    width: 100%;
+    height: var(--media-h, 134px);
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 0 0 10px 10px;
+    background: #d9d9d9;
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 12%,
+      rgba(0, 0, 0, 0.55) 32%,
+      rgba(0, 0, 0, 0.88) 58%,
+      #000 78%
+    );
+    mask-image: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 12%,
+      rgba(0, 0, 0, 0.55) 32%,
+      rgba(0, 0, 0, 0.88) 58%,
+      #000 78%
+    );
+  }
+
+  .feature-card__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.65) 0%,
+      rgba(255, 255, 255, 0.2) 28%,
+      rgba(255, 255, 255, 0) 55%
+    );
+    filter: blur(8px);
+  }
+
+  .feature-card__media--side {
+    border-radius: 0 10px 10px 0;
+    min-height: 180px;
+  }
+
+  @media (min-width: 900px) {
+    .feature-card__media--side {
+      flex: 1 1 auto;
+      width: auto;
+      height: var(--media-h, 223px);
+      min-height: var(--media-h, 223px);
+      align-self: stretch;
+      -webkit-mask-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(0, 0, 0, 0.18) 10%,
+        rgba(0, 0, 0, 0.55) 28%,
+        rgba(0, 0, 0, 0.88) 52%,
+        #000 72%
+      );
+      mask-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(0, 0, 0, 0.18) 10%,
+        rgba(0, 0, 0, 0.55) 28%,
+        rgba(0, 0, 0, 0.88) 52%,
+        #000 72%
+      );
+    }
+
+    .feature-card__media--side::after {
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.65) 0%,
+        rgba(255, 255, 255, 0.2) 28%,
+        rgba(255, 255, 255, 0) 55%
+      );
+    }
+  }
+
+  @media (max-width: 899px) {
+    .feature-card__media--side {
+      border-radius: 0 0 10px 10px;
+    }
+  }
+</style>
