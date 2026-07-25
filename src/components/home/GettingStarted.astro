@@ -42,16 +42,16 @@ const lastStep = steps[steps.length - 1];
 const lastIndex = steps.length - 1;
 ---
 
-<section class="bg-white pt-10 pb-8 sm:pt-14 sm:pb-10">
+<section class="bg-white pt-10 pb-2 sm:pt-14 sm:pb-4">
   <div class="pd-rail">
     <div class="gs-stack" style={`--stack-count: ${steps.length};`} data-gs-stack>
       <div class="gs-stack__deck" data-gs-deck>
         <aside class="gs-stack__copy" data-gs-copy>
           <span class="gs-label">Getting started</span>
-          <h2 class="mt-[13.75px] max-w-[587.5px] text-[50px] font-medium leading-[56.25px] text-navy sm:text-[52.5px]">
+          <h2 class="mt-[13.75px] max-w-[587.5px] text-[42.5px] font-medium leading-[47.5px] text-navy sm:text-[45px] sm:leading-[50px]">
             Up and running in minutes.
           </h2>
-          <p class="mt-4 max-w-[465px] text-[17.5px] font-light leading-[23.75px] text-navy">
+          <p class="mt-3 max-w-[465px] text-[15px] font-light leading-[21px] text-navy">
             No lengthy onboarding. No IT ticket. No consultant required. Pixeldesk is designed to be productive from day
             one.
           </p>
@@ -77,6 +77,7 @@ const lastIndex = steps.length - 1;
           </ol>
         </aside>
 
+        <div class="gs-stack__cards">
         {
           leadSteps.flatMap((step, i) => [
             <article
@@ -118,6 +119,7 @@ const lastIndex = steps.length - 1;
             />
           </article>
           <div class="gs-stack__finale-pad" aria-hidden="true"></div>
+        </div>
         </div>
 
         <div class="gs-stack__spacer gs-stack__spacer--hold" aria-hidden="true"></div>
@@ -253,8 +255,6 @@ const lastIndex = steps.length - 1;
           if (el.classList.contains('gs-stack__copy')) {
             ghost.style.gridColumn = '1';
             ghost.style.gridRow = '1 / -1';
-          } else {
-            ghost.style.gridColumn = '2';
           }
           el.parentNode.insertBefore(ghost, el);
 
@@ -309,20 +309,21 @@ const lastIndex = steps.length - 1;
   .gs-label {
     display: inline-flex;
     align-items: center;
-    height: 37.5px;
-    padding: 0 18.75px;
+    height: 35px;
+    padding: 0 17.5px;
     border-radius: 50px;
     border: none;
     background: #dcd4fb;
     color: #685ba3;
-    font-size: 17.5px;
+    font-size: 16.25px;
     font-weight: 400;
-    line-height: 31.25px;
+    line-height: 28.75px;
   }
 
   .gs-stack {
     /* 0 peek = full overlap; --slot-run controls scroll gap between swaps */
     --stack-peek: 0px;
+    --stack-gap: 1.5rem;
     --card-h: 450px;
     --header-h: 1.25rem;
     --pin-top: calc(var(--header-h) + 0.5rem);
@@ -372,6 +373,12 @@ const lastIndex = steps.length - 1;
     margin-top: var(--card-pin-offset);
   }
 
+  .gs-stack__cards {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
   .gs-stack__card::after {
     content: '';
     position: absolute;
@@ -407,8 +414,15 @@ const lastIndex = steps.length - 1;
     pointer-events: none;
   }
 
+  /* Pull each card up out of its scroll slot so the stack reads as
+     card → small gap → next card (spacers still drive sticky scroll). */
+  .gs-stack__spacer:not(.gs-stack__spacer--hold) + .gs-stack__card,
+  .gs-stack__spacer:not(.gs-stack__spacer--hold) + .gs-stack__finale {
+    margin-top: calc(-1 * var(--slot-run) + var(--stack-gap));
+  }
+
   .gs-stack__spacer--hold {
-    height: 28vh;
+    height: 3vh;
   }
 
   .gs-stack__finale {
@@ -424,19 +438,19 @@ const lastIndex = steps.length - 1;
   }
 
   .gs-stack__finale-pad {
-    height: max(80px, calc(100dvh - var(--header-h) - var(--card-h) - 14rem));
+    height: 32px;
     pointer-events: none;
     flex-shrink: 0;
   }
 
   /* Timeline — in-flow rail (matches design: outlined active ring + dots) */
   .gs-steps {
-    --rail-size: 37.5px;
-    --dot-size: 12.5px;
-    --rail-gap: 25px;
+    --rail-size: 35px;
+    --dot-size: 11.25px;
+    --rail-gap: 22.5px;
     --rail-pad: 7.5px;
     position: relative;
-    margin: 2.5rem 0 0;
+    margin: 1.75rem 0 0;
     /* room for ring stroke + white halo so overflow never clips the "1" */
     padding: 5px 0 2.5px var(--rail-pad);
     list-style: none;
@@ -460,11 +474,11 @@ const lastIndex = steps.length - 1;
     grid-template-columns: var(--rail-size) minmax(0, 1fr);
     column-gap: var(--rail-gap);
     align-items: start;
-    min-height: 73.75px;
+    min-height: 58px;
   }
 
   .gs-step + .gs-step {
-    margin-top: 27.5px;
+    margin-top: 18px;
   }
 
   .gs-step__marker {
@@ -525,18 +539,18 @@ const lastIndex = steps.length - 1;
   .gs-step__title {
     margin: 0;
     color: #6b6b7b;
-    font-size: 22.5px;
+    font-size: 19px;
     font-weight: 500;
-    line-height: 27.5px;
+    line-height: 23.75px;
   }
 
   .gs-step__body {
-    margin: 7.5px 0 0;
+    margin: 5px 0 0;
     max-width: 480px;
     color: #9a9aab;
-    font-size: 15px;
+    font-size: 13.5px;
     font-weight: 300;
-    line-height: 20px;
+    line-height: 17.5px;
   }
 
   .gs-step.is-active .gs-step__title {
@@ -564,9 +578,10 @@ const lastIndex = steps.length - 1;
       margin-bottom: 0;
     }
 
-    .gs-stack__card,
-    .gs-stack__spacer:not(.gs-stack__spacer--hold),
-    .gs-stack__finale,
+    .gs-stack__cards {
+      grid-column: 2;
+    }
+
     .gs-stack__spacer--hold {
       grid-column: 2;
     }
@@ -616,6 +631,11 @@ const lastIndex = steps.length - 1;
     .gs-stack__spacer,
     .gs-stack__finale-pad {
       display: none;
+    }
+
+    .gs-stack__spacer:not(.gs-stack__spacer--hold) + .gs-stack__card,
+    .gs-stack__spacer:not(.gs-stack__spacer--hold) + .gs-stack__finale {
+      margin-top: 0;
     }
 
     .gs-stack__card[data-index='0'] {
