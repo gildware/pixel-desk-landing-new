@@ -98,18 +98,18 @@ const sections: ResourceSection[] = [
 >
   <Header current="resources" />
   <main class="resources-page">
-    <section class="resources-hero relative overflow-hidden pt-[140px] pb-10 sm:pt-[160px] sm:pb-12">
+    <section class="resources-hero relative overflow-hidden pt-[175px] pb-10 sm:pt-[200px] sm:pb-12">
       <div class="resources-hero__glow" aria-hidden="true"></div>
       <div class="pd-rail relative z-[1] text-center">
-        <h1 class="text-[40px] font-medium leading-[48px] tracking-tight text-navy sm:text-[50px] sm:leading-[52px]">
+        <h1 class="text-[50px] font-medium leading-[60px] tracking-tight text-navy sm:text-[62.5px] sm:leading-[65px]">
           Resources
         </h1>
-        <p class="mx-auto mt-4 max-w-[714px] text-[15px] font-light leading-[24px] text-navy sm:mt-5 sm:text-[16px]">
+        <p class="mx-auto mt-4 max-w-[892.5px] text-[18.75px] font-light leading-[30px] text-navy sm:mt-5 sm:text-[20px]">
           Built for three audiences at once — the Project Manager who needs control, the team that needs clarity, and the
           client who needs confidence in what’s being delivered.
         </p>
 
-        <form class="resources-search mx-auto mt-8 w-full max-w-[562px]" role="search" action="/resources" method="get">
+        <form class="resources-search mx-auto mt-8 w-full max-w-[702.5px]" role="search" action="/resources" method="get">
           <label class="sr-only" for="resource-search">Search resources</label>
           <div class="resources-search__field">
             <input
@@ -117,7 +117,7 @@ const sections: ResourceSection[] = [
               name="q"
               type="search"
               placeholder=""
-              class="h-[42px] w-full rounded-full border-0 bg-white px-5 pr-12 text-[14px] font-light text-navy outline-none placeholder:text-label"
+              class="h-[52.5px] w-full rounded-full border-0 bg-white px-5 pr-12 text-[17.5px] font-light text-navy outline-none placeholder:text-label"
             />
             <span class="resources-search__icon" aria-hidden="true">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -131,11 +131,11 @@ const sections: ResourceSection[] = [
     </section>
 
     <section class="pb-20 sm:pb-24">
-      <div class="pd-rail space-y-12 sm:space-y-[50px]">
+      <div class="pd-rail space-y-12 sm:space-y-[62.5px]">
         {
           sections.map((section) => (
             <div>
-              <h2 class="text-[20px] font-medium leading-[24px] text-navy">{section.heading}</h2>
+              <h2 class="text-[25px] font-medium leading-[30px] text-navy">{section.heading}</h2>
               <div
                 class:list={[
                   'mt-4 grid gap-5 sm:gap-7',
@@ -147,19 +147,19 @@ const sections: ResourceSection[] = [
                 {section.cards.map((card) => (
                   <a
                     href={card.href}
-                    class="resources-card group flex min-h-[222px] flex-col gap-[15px] rounded-[15px] border border-line bg-white p-5 transition hover:-translate-y-0.5"
+                    class="resources-card group flex min-h-[277.5px] flex-col gap-[18.75px] rounded-[18.75px] border border-line bg-white p-5 transition hover:-translate-y-0.5"
                   >
-                    <span class="relative size-[41px] shrink-0">
+                    <span class="relative size-[51.25px] shrink-0">
                       <img
                         src={card.icon}
                         alt=""
                         width="69"
                         height="69"
-                        class="absolute inset-[-14px] size-[69px] max-w-none"
+                        class="absolute inset-[-17.5px] size-[86.25px] max-w-none"
                       />
                     </span>
-                    <h3 class="text-[20px] font-medium leading-[24px] text-navy">{card.title}</h3>
-                    <p class="flex-1 text-[12px] font-light leading-[18px] text-navy">{card.body}</p>
+                    <h3 class="text-[25px] font-medium leading-[30px] text-navy">{card.title}</h3>
+                    <p class="flex-1 text-[15px] font-light leading-[22.5px] text-navy">{card.body}</p>
                     <span class="pd-chip w-fit">Learn More</span>
                   </a>
                 ))}
@@ -178,7 +178,7 @@ const sections: ResourceSection[] = [
     pointer-events: none;
     position: absolute;
     inset: 0;
-    height: min(1006px, 100%);
+    height: min(1257.5px, 100%);
     background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 1512 1006' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect width='100%' height='100%' fill='url(%23g)' opacity='0.96'/><defs><radialGradient id='g' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(2.8831e-14 -230.33 346.19 1.6766e-13 756 932.01)'><stop stop-color='rgba(255,255,255,1)' offset='0.30769'/><stop stop-color='rgba(218,208,255,0.75)' offset='0.48077'/><stop stop-color='rgba(182,160,255,0.5)' offset='0.65385'/><stop stop-color='rgba(108,65,255,0)' offset='1'/></radialGradient></defs></svg>");
     background-size: 100% 100%;
     background-repeat: no-repeat;
@@ -186,15 +186,15 @@ const sections: ResourceSection[] = [
 
   .resources-search__field {
     position: relative;
-    border-radius: 21px;
+    border-radius: 26.25px;
     background: #fff;
-    box-shadow: 6px 6px 33px rgba(108, 65, 255, 0.21);
+    box-shadow: 7.5px 7.5px 41.25px rgba(108, 65, 255, 0.21);
   }
 
   .resources-search__icon {
     position: absolute;
     top: 50%;
-    right: 18px;
+    right: 22.5px;
     display: flex;
     transform: translateY(-50%);
     pointer-events: none;
@@ -205,15 +205,15 @@ const sections: ResourceSection[] = [
   }
 
   .resources-card:hover {
-    box-shadow: 5px 5px 16px rgba(0, 0, 0, 0.06);
+    box-shadow: 6.25px 6.25px 20px rgba(0, 0, 0, 0.06);
   }
 
   .sr-only {
     position: absolute;
-    width: 1px;
-    height: 1px;
+    width: 1.25px;
+    height: 1.25px;
     padding: 0;
-    margin: -1px;
+    margin: -1.25px;
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
