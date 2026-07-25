@@ -1,7 +1,11 @@
 // @ts-check
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
+
+const root = path.dirname(fileURLToPath(import.meta.url));
 
 const apiUrl = (process.env.PUBLIC_API_URL || 'http://localhost:3002').replace(/\/$/, '');
 
@@ -19,6 +23,9 @@ export default defineConfig({
       cssMinify: true,
     },
     resolve: {
+      alias: {
+        '@assets': path.resolve(root, '../assets'),
+      },
       dedupe: ['react', 'react-dom'],
     },
     optimizeDeps: {
