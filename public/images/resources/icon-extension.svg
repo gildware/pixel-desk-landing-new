@@ -1,17 +1,18 @@
 <svg width="69" height="69" viewBox="0 0 69 69" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <g filter="url(#ext_glow)">
-    <circle cx="34.5" cy="34.5" r="20.5" fill="#6C41FF"/>
-  </g>
-  <path d="M29.5 28.5h4.5v3.2c1.4 0 2.5 1.1 2.5 2.5s-1.1 2.5-2.5 2.5v3.2h-4.5v-3.2c-1.4 0-2.5-1.1-2.5-2.5s1.1-2.5 2.5-2.5v-3.2Z" stroke="white" stroke-width="0.9" stroke-linejoin="round"/>
-  <path d="M36.5 31.5h4.5v3.2c1.2 0 2.2 1 2.2 2.2s-1 2.2-2.2 2.2v3.2h-4.5V39c-1.2 0-2.2-1-2.2-2.2" stroke="white" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round"/>
-  <defs>
-    <filter id="ext_glow" x="0" y="0" width="69" height="69" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
-      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-      <feOffset/><feGaussianBlur stdDeviation="7"/><feComposite in2="hardAlpha" operator="out"/>
-      <feColorMatrix type="matrix" values="0 0 0 0 0.423529 0 0 0 0 0.254902 0 0 0 0 1 0 0 0 0.35 0"/>
-      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
-      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
-    </filter>
-  </defs>
+<g filter="url(#filter0_d_2126_90)">
+<circle cx="34.5" cy="34.5" r="20.5" fill="#6C41FF"/>
+</g>
+<path d="M28 40.5C28 40.9644 28 41.1966 28.0257 41.3916C28.2029 42.7378 29.2622 43.7971 30.6084 43.9743C30.8034 44 31.0356 44 31.5 44H39.2C40.8802 44 41.7202 44 42.362 43.673C42.9265 43.3854 43.3854 42.9265 43.673 42.362C44 41.7202 44 40.8802 44 39.2V31.9882C44 31.2545 44 30.8876 43.9171 30.5423C43.8436 30.2362 43.7224 29.9436 43.5579 29.6751C43.3724 29.3724 43.113 29.113 42.5941 28.5941L39.4059 25.4059C38.887 24.887 38.6276 24.6276 38.3249 24.4421C38.0564 24.2776 37.7638 24.1564 37.4577 24.0829C37.1124 24 36.7455 24 36.0118 24H31.5C31.0356 24 30.8034 24 30.6084 24.0257C29.2622 24.2029 28.2029 25.2622 28.0257 26.6084C28 26.8034 28 27.0356 28 27.5M32 36.5L34.5 34L32 31.5M28 31.5L25.5 34L28 36.5" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+<defs>
+<filter id="filter0_d_2126_90" x="0" y="0" width="69" height="69" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset/>
+<feGaussianBlur stdDeviation="7"/>
+<feComposite in2="hardAlpha" operator="out"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.423529 0 0 0 0 0.254902 0 0 0 0 1 0 0 0 0.35 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2126_90"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2126_90" result="shape"/>
+</filter>
+</defs>
 </svg>

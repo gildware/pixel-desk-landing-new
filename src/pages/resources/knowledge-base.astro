@@ -2,18 +2,79 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-import CtaBand from '../../components/CtaBand.astro';
 
-const topics = [
-  { title: 'Workspace setup', body: 'Set up your workspace, invite your team, and create your first project.' },
-  { title: 'Projects', body: 'Create tasks, set milestones, manage dependencies, and switch views.' },
-  { title: 'Sprint planning', body: 'Create sprints, manage your backlog, and track velocity.' },
-  { title: 'Client portal', body: 'Invite clients, manage their access, and configure budget visibility.' },
-  { title: 'Team chat', body: 'Use project-linked chat, @mentions, file sharing, and search.' },
-  { title: 'People & leave', body: 'Leave requests, holiday calendar, birthdays, and team availability.' },
-  { title: 'Timesheets', body: 'Log time, submit for approval, and export billing reports.' },
-  { title: 'Notice board', body: 'Post, manage, and archive important team and client announcements.' },
-  { title: 'Billing', body: 'Manage your plan, users, billing details, and invoices.' },
+type Topic = {
+  title: string;
+  body: string;
+  href: string;
+  icon: string;
+  articles: number;
+};
+
+const topics: Topic[] = [
+  {
+    title: 'Getting Started',
+    body: 'Set up your workspace, invite your team, and create your first project.',
+    href: '#',
+    icon: '/images/knowledge-base/icon-getting-started.svg',
+    articles: 5,
+  },
+  {
+    title: 'Projects & Tasks',
+    body: 'Create tasks, set milestones, manage dependencies, and switch views.',
+    href: '#',
+    icon: '/images/knowledge-base/icon-projects-tasks.svg',
+    articles: 4,
+  },
+  {
+    title: 'Sprint Planning',
+    body: 'Create sprints, manage your backlog, and track velocity.',
+    href: '#',
+    icon: '/images/knowledge-base/icon-sprint-planning.svg',
+    articles: 4,
+  },
+  {
+    title: 'Client Portal',
+    body: 'Invite clients, manage their access, and configure budget visibility.',
+    href: '#',
+    icon: '/images/knowledge-base/icon-client-portal.svg',
+    articles: 6,
+  },
+  {
+    title: 'Notice Board',
+    body: 'Post, manage, and archive important team and client announcements.',
+    href: '#',
+    icon: '/images/knowledge-base/icon-notice-board.svg',
+    articles: 3,
+  },
+  {
+    title: 'Team Chat',
+    body: 'Use project-linked chat, @mentions, file sharing, and search.',
+    href: '#',
+    icon: '/images/knowledge-base/icon-team-chat.svg',
+    articles: 3,
+  },
+  {
+    title: 'People Management',
+    body: 'Leave requests, holiday calendar, birthdays, and team availability.',
+    href: '#',
+    icon: '/images/knowledge-base/icon-people-management.svg',
+    articles: 3,
+  },
+  {
+    title: 'Timesheets',
+    body: 'Log time, submit for approval, and export billing reports.',
+    href: '#',
+    icon: '/images/knowledge-base/icon-timesheets.svg',
+    articles: 3,
+  },
+  {
+    title: 'Account & Billing',
+    body: 'Manage your plan, users, billing details, and invoices.',
+    href: '#',
+    icon: '/images/knowledge-base/icon-account-billing.svg',
+    articles: 3,
+  },
 ];
 ---
 
@@ -22,31 +83,270 @@ const topics = [
   description="What do you need help with? Browse Pixeldesk guides for setup, projects, sprints, clients, and more."
 >
   <Header current="resources" />
-  <main>
-    <section class="relative overflow-hidden hero-glow pt-28 pb-12 sm:pt-32">
-      <div class="container-pd text-center">
-        <p class="text-sm font-light text-purple">
-          <a href="/resources" class="hover:underline">Resources</a> / Knowledge Base
-        </p>
-        <h1 class="mt-3 heading-xl">Knowledge Base</h1>
-        <p class="mx-auto mt-5 max-w-md body-lg">What do you need help with?</p>
+  <main class="kb-page">
+    <section class="kb-hero relative overflow-hidden pt-[338.75px] pb-[143.75px]">
+      <div class="kb-hero__gradient" aria-hidden="true"></div>
+
+      <div class="pd-rail relative text-center">
+        <h1 class="kb-hero__title">Knowledge Base</h1>
+        <p class="kb-hero__subtitle">What do you need help with?</p>
+
+        <form class="kb-search mx-auto mt-[72.5px] w-full max-w-[702.5px]" role="search" action="/resources/knowledge-base" method="get">
+          <label class="sr-only" for="kb-search">Search knowledge base</label>
+          <div class="kb-search__field">
+            <input
+              id="kb-search"
+              name="q"
+              type="search"
+              placeholder=""
+              class="kb-search__input"
+            />
+            <span class="kb-search__icon" aria-hidden="true">
+              <img src="/images/resources/icon-search.svg" alt="" />
+            </span>
+          </div>
+        </form>
       </div>
     </section>
 
-    <section class="pb-16 sm:pb-20">
-      <div class="container-pd grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {
-          topics.map((topic) => (
-            <article class="card-surface p-6">
-              <h2 class="text-lg font-medium text-navy">{topic.title}</h2>
-              <p class="mt-3 text-sm font-light leading-relaxed text-navy/75">{topic.body}</p>
-            </article>
-          ))
-        }
+    <section class="kb-cards pb-[345px]">
+      <div class="pd-rail">
+        <div class="kb-grid">
+          {
+            topics.map((topic) => (
+              <a href={topic.href} class="kb-card">
+                <span class="kb-card__icon">
+                  <span class="kb-card__icon-glow" aria-hidden="true">
+                    <img src={topic.icon} alt="" />
+                  </span>
+                </span>
+                <h2 class="kb-card__title">{topic.title}</h2>
+                <p class="kb-card__body">{topic.body}</p>
+                <span class="kb-card__chip">{topic.articles} articles</span>
+              </a>
+            ))
+          }
+        </div>
       </div>
     </section>
-
-    <CtaBand title="Still stuck? We’re here to help." subtitle="Reach out to support or browse more resources anytime." />
   </main>
   <Footer />
 </BaseLayout>
+
+<style>
+  /* Figma Rectangle 11 — radial lavender hero wash (1512×1006) */
+  .kb-hero__gradient {
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: min(100vw, calc(1512px * var(--pd-scale, 1.25)));
+    height: calc(1006px * var(--pd-scale, 1.25));
+    transform: translateX(-50%);
+    background:
+      radial-gradient(
+        ellipse 346px 460px at 50% 93%,
+        rgba(255, 255, 255, 1) 31%,
+        rgba(218, 208, 255, 0.75) 48%,
+        rgba(182, 160, 255, 0.5) 65%,
+        rgba(108, 65, 255, 0) 100%
+      );
+    opacity: 0.96;
+  }
+
+  .kb-hero__title {
+    max-width: 888.75px;
+    margin-inline: auto;
+    font-size: 62.5px;
+    font-weight: 500;
+    line-height: 65px;
+    letter-spacing: 0;
+    color: #000945;
+    text-shadow: none;
+  }
+
+  .kb-hero__subtitle {
+    margin: 17.5px auto 0;
+    max-width: 892.5px;
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 30px;
+    letter-spacing: 0;
+    color: #000945;
+    text-shadow: none;
+  }
+
+  .kb-search__field {
+    position: relative;
+    height: 52.5px;
+    border-radius: 26.25px;
+    background: #fff;
+    box-shadow: 7.5px 7.5px 41.25px rgba(108, 65, 255, 0.21);
+  }
+
+  .kb-search__input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 52.5px;
+    padding: 0 56.25px 0 25px;
+    border: 0;
+    border-radius: 26.25px;
+    background: transparent;
+    font-size: 17.5px;
+    font-weight: 300;
+    line-height: 52.5px;
+    color: #000945;
+    outline: none;
+  }
+
+  .kb-search__input::placeholder {
+    color: #878787;
+  }
+
+  .kb-search__icon {
+    position: absolute;
+    top: 50%;
+    right: 26.25px;
+    display: flex;
+    width: 22.5px;
+    height: 22.5px;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .kb-search__icon img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .kb-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 347.5px);
+    gap: 35px;
+    justify-content: start;
+  }
+
+  .kb-card {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 18.75px;
+    width: 347.5px;
+    height: 255px;
+    padding: 25px;
+    border: 1.25px solid #e2e2e2;
+    border-radius: 18.75px;
+    background: #fff;
+    box-shadow: none;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .kb-card__icon {
+    position: relative;
+    flex-shrink: 0;
+    width: 51.25px;
+    height: 51.25px;
+  }
+
+  .kb-card__icon-glow {
+    position: absolute;
+    inset: -34.15%;
+  }
+
+  .kb-card__icon-glow img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+  }
+
+  .kb-card__title {
+    font-size: 25px;
+    font-weight: 500;
+    line-height: 30px;
+    letter-spacing: 0;
+    color: #000945;
+    text-shadow: none;
+  }
+
+  .kb-card__body {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 22.5px;
+    letter-spacing: 0;
+    color: #000945;
+    text-shadow: none;
+  }
+
+  .kb-card__chip {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    height: 22.5px;
+    padding: 0 12.5px;
+    border-radius: 50px;
+    background: rgba(108, 65, 255, 0.11);
+    color: #6c41ff;
+    font-size: 11.25px;
+    font-weight: 600;
+    line-height: 17.5px;
+    letter-spacing: 0;
+    text-shadow: none;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1.25px;
+    height: 1.25px;
+    padding: 0;
+    margin: -1.25px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 1199px) {
+    .kb-grid {
+      grid-template-columns: repeat(2, min(347.5px, 100%));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .kb-hero {
+      padding-top: 250px;
+      padding-bottom: 80px;
+    }
+
+    .kb-hero__title {
+      font-size: 50px;
+      line-height: 52px;
+    }
+
+    .kb-hero__subtitle {
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    .kb-search {
+      margin-top: 42.5px;
+    }
+
+    .kb-grid {
+      grid-template-columns: min(347.5px, 100%);
+    }
+
+    .kb-card {
+      width: 100%;
+      height: auto;
+      min-height: 255px;
+    }
+
+    .kb-cards {
+      padding-bottom: 120px;
+    }
+  }
+</style>

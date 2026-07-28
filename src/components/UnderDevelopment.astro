@@ -1,0 +1,102 @@
+---
+/** Figma PD Website UI 2026 Own — frame 2131:244 (UNDER DEVELOPMENT) */
+---
+
+<section class="under-dev" aria-labelledby="under-dev-heading">
+  <header class="under-dev__header">
+    <a href="/" class="under-dev__logo" aria-label="Pixeldesk home">
+      <img src="/images/logo.svg" alt="Pixeldesk" width="155" height="30" />
+    </a>
+  </header>
+
+  <div class="under-dev__content">
+    <img
+      class="under-dev__illustration"
+      src="/images/figma/under-development/illustration.svg"
+      alt=""
+      width="288"
+      height="205"
+      aria-hidden="true"
+    />
+
+    <div class="under-dev__copy">
+      <h1 id="under-dev-heading" class="under-dev__title">
+        <span class="under-dev__title-line">UNDER</span>
+        <span class="under-dev__title-line">DEVELOPMENT</span>
+      </h1>
+      <p class="under-dev__subtitle">we’re still working on it</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Figma 2131:244 — card 1010×779, logo 155×30, illustration 230×164, title 27.5px @ 1× */
+  .under-dev {
+    display: flex;
+    flex-direction: column;
+    min-height: inherit;
+    padding:
+      calc(20px * var(--pd-scale))
+      calc(33px * var(--pd-scale))
+      calc(40px * var(--pd-scale));
+  }
+
+  .under-dev__header {
+    flex-shrink: 0;
+  }
+
+  .under-dev__logo img {
+    display: block;
+    width: calc(155px * var(--pd-scale));
+    height: calc(30px * var(--pd-scale));
+  }
+
+  .under-dev__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: calc(24px * var(--pd-scale));
+    padding-block: calc(24px * var(--pd-scale));
+    text-align: center;
+  }
+
+  .under-dev__illustration {
+    display: block;
+    width: calc(230.186px * var(--pd-scale));
+    height: calc(163.728px * var(--pd-scale));
+    max-width: 100%;
+  }
+
+  .under-dev__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(8px * var(--pd-scale));
+  }
+
+  .under-dev__title {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: calc(27.5px * var(--pd-scale));
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 0;
+    color: var(--color-navy);
+  }
+
+  .under-dev__title-line {
+    display: block;
+  }
+
+  .under-dev__subtitle {
+    margin: 0;
+    font-size: calc(12px * var(--pd-scale));
+    font-weight: 400;
+    line-height: normal;
+    color: #565656;
+  }
+</style>

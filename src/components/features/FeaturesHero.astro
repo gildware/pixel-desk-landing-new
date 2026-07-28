@@ -1,126 +1,102 @@
 ---
+const ASSET = '/images/figma/features-hero';
+
+/** Figma Features frame — hero visual crop (Ellipse 11 top → fade bottom) */
+const FIGMA = { x: 251, y: 200, w: 1010, h: 483 };
+
+const figmaBox = (x, y, w, h) => ({
+  left: `${(((x - FIGMA.x) / FIGMA.w) * 100).toFixed(4)}%`,
+  top: `${(((y - FIGMA.y) / FIGMA.h) * 100).toFixed(4)}%`,
+  width: `${((w / FIGMA.w) * 100).toFixed(4)}%`,
+  height: `${((h / FIGMA.h) * 100).toFixed(4)}%`,
+});
+
+const dashBox = figmaBox(481, 358, 551, 308);
+const fadeBox = figmaBox(463, 447, 586, 236);
+
+/** Arc orbs left → right with Figma-exported SVG glyphs */
+const arcMarkers = [
+  { orb: figmaBox(337, 374, 46, 46), icon: { ...figmaBox(350, 386, 20.5, 20.5), src: `${ASSET}/icon-dashboard.svg` } },
+  { orb: figmaBox(414, 292, 46, 46), icon: { ...figmaBox(425, 305, 23, 19), src: `${ASSET}/icon-project.svg` } },
+  { orb: figmaBox(503, 235, 46, 46), icon: { ...figmaBox(515, 249, 22, 17.77), src: `${ASSET}/icon-sprint.svg` } },
+  { orb: figmaBox(609, 195, 46, 46), icon: { ...figmaBox(623, 210, 17.94, 15.25), src: `${ASSET}/icon-people.svg` } },
+  { orb: figmaBox(735, 180, 46, 46), icon: { ...figmaBox(747, 192, 23, 23), src: `${ASSET}/icon-portal.svg` } },
+  { orb: figmaBox(856, 195, 46, 46), icon: { ...figmaBox(869, 208, 19.7, 18.4), src: `${ASSET}/icon-notice.svg` } },
+  { orb: figmaBox(971, 235, 46, 46), icon: { ...figmaBox(983, 247, 21, 21), src: `${ASSET}/icon-timesheet.svg` } },
+  { orb: figmaBox(1058, 292, 46, 46), icon: { ...figmaBox(1071, 308, 20, 20), src: `${ASSET}/icon-chat.svg` } },
+  { orb: figmaBox(1134, 374, 46, 46), icon: { ...figmaBox(1147, 386, 20, 20), src: `${ASSET}/icon-feedback.svg` } },
+];
+
 const features = [
-  { label: 'Dashboard', icon: '/images/features/icons/dashboard.png' },
-  { label: 'Project Management', icon: '/images/features/icons/project.png' },
-  { label: 'Sprint Planning', icon: '/images/features/icons/sprint.png' },
-  { label: 'People Management', icon: '/images/features/icons/people.png' },
-  { label: 'Client Portal', icon: '/images/features/icons/portal.png' },
-  { label: 'Notice Board', icon: '/images/features/icons/notice.png' },
-  { label: 'Timesheets', icon: '/images/features/icons/timesheet.png' },
-  { label: 'Team Chat', icon: '/images/features/icons/chat.png' },
-  { label: 'Feedback System', icon: '/images/features/icons/feedback.png' },
+  { label: 'Dashboard', icon: `${ASSET}/pill-dashboard.svg` },
+  { label: 'Project Management', icon: `${ASSET}/pill-project.svg` },
+  { label: 'Sprint Planning', icon: `${ASSET}/pill-sprint.svg` },
+  { label: 'People Management', icon: `${ASSET}/pill-people.svg` },
+  { label: 'Client Portal', icon: `${ASSET}/pill-portal.svg` },
+  { label: 'Notice Board', icon: `${ASSET}/pill-notice.svg` },
+  { label: 'Timesheets', icon: `${ASSET}/pill-timesheet.svg` },
+  { label: 'Team Chat', icon: `${ASSET}/pill-chat.svg` },
+  { label: 'Feedback System', icon: `${ASSET}/pill-feedback.svg` },
 ];
 
 const row1 = features.slice(0, 5);
 const row2 = features.slice(5);
 
-/**
- * Arc glyphs match the design left→right:
- * layout, folder+gear, sliders, users, user+sync, megaphone, calendar↑, chat, star
- */
-const arcIconSrc = [
-  '/images/features/icons/dashboard.png',
-  '/images/features/icons/project.png',
-  '/images/features/icons/sprint-sliders.png',
-  '/images/features/icons/people.png',
-  '/images/features/icons/portal-user.png',
-  '/images/features/icons/notice.png',
-  '/images/features/icons/timesheet.png',
-  '/images/features/icons/chat.png',
-  '/images/features/icons/feedback.png',
-];
-
-/**
- * Design-matched ellipse (desktop ~920×580 visual):
- * - Near-circular on screen (RX/RY compensates for box aspect)
- * - Wide wrap: first/last icons ~12% / 88%, clear of dashboard sides
- * - Apex high (~5–7%), icons sit on dashboard top line (~30%)
- * - Stroke continues lower and fades around dashboard mid-height
- */
-const VISUAL_W = 920;
-const VISUAL_H = 580;
-const ASPECT = VISUAL_W / VISUAL_H;
-
-const ARC_RX = 52;
-const ARC_RY = +(ARC_RX * ASPECT).toFixed(2); // ≈ 82.5
-const ARC_CX = 50;
-const ARC_CY = 87;
-
-const ARC_LINE_START = Math.PI * 0.94;
-const ARC_LINE_END = Math.PI * 0.06;
-const ARC_ICON_START = Math.PI * 0.76;
-const ARC_ICON_END = Math.PI * 0.24;
-
-const arcPoint = (angle) => ({
-  x: ARC_CX + ARC_RX * Math.cos(angle),
-  y: ARC_CY - ARC_RY * Math.sin(angle),
-});
-
-const lineStart = arcPoint(ARC_LINE_START);
-const lineEnd = arcPoint(ARC_LINE_END);
-const arcPath = `M ${lineStart.x.toFixed(2)} ${lineStart.y.toFixed(2)} A ${ARC_RX} ${ARC_RY} 0 0 1 ${lineEnd.x.toFixed(2)} ${lineEnd.y.toFixed(2)}`;
-
-const arcIcons = arcIconSrc.map((icon, index) => {
-  const t = index / 8;
-  const angle = ARC_ICON_START + t * (ARC_ICON_END - ARC_ICON_START);
-  const { x, y } = arcPoint(angle);
-  return { icon, left: x, top: y };
-});
+const boxStyle = (box) =>
+  `left:${box.left};top:${box.top};width:${box.width};height:${box.height};`;
 ---
 
-<section class="features-hero relative pt-[147.5px] pb-12 sm:pt-[165px] sm:pb-16">
+<section class="features-hero relative pt-[147.5px] pb-12 sm:pt-[250px] sm:pb-[103.75px]">
   <div class="features-hero__glow" aria-hidden="true"></div>
 
   <div class="pd-rail relative z-[1]">
     <div class="features-hero__visual mx-auto" aria-label="Pixeldesk product features preview">
-      <!-- Arc stroke — ends fade out around dashboard mid-height -->
-      <div class="features-hero__arc-line-wrap" aria-hidden="true">
-        <svg class="features-hero__arc-line" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="fh-arc-fade" gradientUnits="userSpaceOnUse" x1="2" y1="50" x2="98" y2="50">
-              <stop offset="0%" stop-color="#fff" stop-opacity="0"></stop>
-              <stop offset="12%" stop-color="#fff" stop-opacity="1"></stop>
-              <stop offset="88%" stop-color="#fff" stop-opacity="1"></stop>
-              <stop offset="100%" stop-color="#fff" stop-opacity="0"></stop>
-            </linearGradient>
-            <mask id="fh-arc-mask" maskUnits="userSpaceOnUse">
-              <rect x="0" y="0" width="100" height="100" fill="url(#fh-arc-fade)"></rect>
-            </mask>
-          </defs>
-          <path
-            d={arcPath}
-            stroke="#D8D0FF"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            vector-effect="non-scaling-stroke"
-            mask="url(#fh-arc-mask)"
-          ></path>
-        </svg>
+      <!-- Figma Ellipse 11 — SVG arc (PNG export had opaque white fill) -->
+      <img
+        src={`${ASSET}/arc.svg`}
+        alt=""
+        class="features-hero__arc"
+        width="1010"
+        height="498"
+        aria-hidden="true"
+      />
+
+      <!-- Figma 2018:100 — dashboard with purple border + radius -->
+      <div class="features-hero__dash" style={boxStyle(dashBox)}>
+        <div class="features-hero__dash-frame">
+          <img
+            src={`${ASSET}/dashboard.png`}
+            alt="Pixeldesk dashboard showing deliverables, tasks, and utilization"
+            width="551"
+            height="308"
+            class="features-hero__dash-img"
+            fetchpriority="high"
+          />
+        </div>
       </div>
 
-      <!-- Dashboard screenshot — soft bottom fade into page -->
-      <div class="features-hero__dash">
-        <img
-          src="/images/features/dashboard-fade.png"
-          alt="Pixeldesk dashboard showing deliverables, tasks, and utilization"
-          width="986"
-          height="549"
-          class="features-hero__dash-img"
-          fetchpriority="high"
-        />
-      </div>
+      <!-- Figma 2018:101 — Rectangle 18 white gradient fade (SVG export) -->
+      <img
+        src={`${ASSET}/dashboard-fade.svg`}
+        alt=""
+        class="features-hero__dash-fade"
+        style={boxStyle(fadeBox)}
+        width="586"
+        height="236"
+        aria-hidden="true"
+      />
 
-      <!-- Icon orbs on top so they stay visible beside the image -->
+      <!-- Figma Ellipse 12…20 — white circle + purple glow (74px asset in 46px slot) -->
       <ul class="features-hero__arc-icons" aria-hidden="true">
         {
-          arcIcons.map((item) => (
-            <li
-              class="features-hero__arc-icon"
-              style={`left:${item.left.toFixed(2)}%;top:${item.top.toFixed(2)}%;`}
-            >
-              <span class="features-hero__arc-orb">
-                <img src={item.icon} alt="" width="16" height="16" />
-              </span>
+          arcMarkers.map((item) => (
+            <li class="features-hero__arc-marker">
+              <div class="features-hero__arc-orb-slot" style={boxStyle(item.orb)}>
+                <div class="features-hero__arc-orb-wrap">
+                  <img src={`${ASSET}/orb.svg`} alt="" class="features-hero__arc-orb" width="74" height="74" />
+                </div>
+              </div>
+              <img src={item.icon.src} alt="" class="features-hero__arc-glyph" style={boxStyle(item.icon)} />
             </li>
           ))
         }
@@ -139,7 +115,7 @@ const arcIcons = arcIconSrc.map((icon, index) => {
     </div>
 
     <div class="features-hero__pills">
-      <div class="features-hero__pill-row">
+      <div class="features-hero__pill-row features-hero__pill-row--1">
         {
           row1.map((pill) => (
             <span class="features-hero__pill">
@@ -149,7 +125,7 @@ const arcIcons = arcIconSrc.map((icon, index) => {
           ))
         }
       </div>
-      <div class="features-hero__pill-row">
+      <div class="features-hero__pill-row features-hero__pill-row--2">
         {
           row2.map((pill) => (
             <span class="features-hero__pill">
@@ -166,176 +142,160 @@ const arcIcons = arcIconSrc.map((icon, index) => {
 <style>
   .features-hero {
     --fh-purple: #6c41ff;
-    --fh-purple-soft: #efeaff;
+    --fh-purple-soft: rgba(108, 65, 255, 0.11);
     --fh-navy: #000945;
-    --fh-body: #3d3d3d;
     overflow: visible;
+    background: #fff;
   }
 
-  /* Matches design: cool lavender pooled in top corners, fading to white by mid-hero.
-     Sampled from design: corners #ece7fe / #ebe6fe, center under nav white, no warm peach. */
+  /* Figma Rectangle 11 — lavender in top corners; title area stays clean white */
   .features-hero__glow {
     pointer-events: none;
     position: absolute;
     inset: 0;
     background:
       radial-gradient(ellipse 54% 42% at 0% 0%, #ece7fe 0%, rgba(236, 231, 254, 0.62) 28%, transparent 70%),
-      radial-gradient(ellipse 54% 42% at 100% 0%, #ebe6fe 0%, rgba(235, 230, 254, 0.62) 28%, transparent 70%),
-      radial-gradient(ellipse 78% 26% at 50% 0%, rgba(240, 236, 253, 0.4) 0%, transparent 60%);
+      radial-gradient(ellipse 54% 42% at 100% 0%, #ebe6fe 0%, rgba(235, 230, 254, 0.62) 28%, transparent 70%);
   }
 
   .features-hero__visual {
     position: relative;
-    width: min(100%, 1150px);
-    aspect-ratio: 920 / 580;
+    width: 100%;
+    max-width: calc(1010px * var(--pd-scale, 1.25));
+    aspect-ratio: 1010 / 483;
     overflow: visible;
   }
 
-  .features-hero__arc-line-wrap {
+  .features-hero__arc {
     position: absolute;
-    inset: 0;
-    z-index: 0;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
     pointer-events: none;
+    z-index: 0;
   }
 
-  .features-hero__arc-line {
+  .features-hero__dash {
     position: absolute;
-    inset: 0;
+    z-index: 1;
+  }
+
+  /* Figma 2018:100 — border + radius only (fade is separate Rectangle 18 SVG) */
+  .features-hero__dash-frame {
     width: 100%;
     height: 100%;
-    overflow: visible;
+    border: 8.75px solid rgba(108, 65, 255, 0.1);
+    border-radius: 17.5px;
+    overflow: hidden;
+  }
+
+  .features-hero__dash-img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  .features-hero__dash-fade {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+    object-fit: cover;
   }
 
   .features-hero__arc-icons {
     position: absolute;
     inset: 0;
-    z-index: 2;
+    z-index: 3;
     margin: 0;
     padding: 0;
     list-style: none;
     pointer-events: none;
   }
 
-  .features-hero__arc-icon {
+  .features-hero__arc-marker {
+    position: static;
+  }
+
+  /* Figma Ellipse 12 — 46px slot; glow wrapper extends -30.43% per side */
+  .features-hero__arc-orb-slot {
     position: absolute;
-    width: 42.5px;
-    height: 42.5px;
-    transform: translate(-50%, -50%);
+    z-index: 0;
+  }
+
+  .features-hero__arc-orb-wrap {
+    position: absolute;
+    inset: -30.43%;
   }
 
   .features-hero__arc-orb {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 42.5px;
-    height: 42.5px;
-    border-radius: 1248.75px;
-    background: #fff;
-    border: 1.25px solid #ddd4ff;
-    box-shadow: 0 2.5px 15px rgba(108, 65, 255, 0.1);
-  }
-
-  .features-hero__arc-orb img {
-    display: block;
-    width: 18.75px;
-    height: 18.75px;
-  }
-
-  .features-hero__dash {
-    position: absolute;
-    left: 50%;
-    top: 30%;
-    z-index: 1;
-    width: 47%;
-    max-width: 600px;
-    transform: translateX(-50%);
-  }
-
-  .features-hero__dash-img {
     display: block;
     width: 100%;
-    height: auto;
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      #000 0%,
-      #000 40%,
-      rgba(0, 0, 0, 0.88) 55%,
-      rgba(0, 0, 0, 0.45) 75%,
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      to bottom,
-      #000 0%,
-      #000 40%,
-      rgba(0, 0, 0, 0.88) 55%,
-      rgba(0, 0, 0, 0.45) 75%,
-      transparent 100%
-    );
-    filter: drop-shadow(0 22.5px 60px rgba(0, 9, 69, 0.12));
+    height: 100%;
+    max-width: none;
+    pointer-events: none;
   }
 
-  @media (min-width: 640px) {
-    .features-hero__arc-icon,
-    .features-hero__arc-orb {
-      width: 45px;
-      height: 45px;
-    }
-
-    .features-hero__arc-orb img {
-      width: 20px;
-      height: 20px;
-    }
+  .features-hero__arc-glyph {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    object-fit: contain;
   }
 
-  /* Pull copy into the soft dashboard fade — matches design nesting */
+  /* Figma 2018:102 — plain text, no background; sits over fade wash */
   .features-hero__copy {
     position: relative;
-    z-index: 3;
-    margin-top: -147.5px;
-    max-width: 900px;
+    z-index: 5;
+    margin-top: -71.25px;
+    max-width: 888.75px;
+    background: transparent;
   }
 
   .features-hero__title {
     color: var(--fh-navy);
     font-family: var(--font-sans);
     font-size: 42.5px;
-    font-weight: 600;
+    font-weight: 500;
     line-height: 1.18;
     letter-spacing: -0.02em;
+    background: transparent;
   }
 
   @media (min-width: 640px) {
     .features-hero__title {
       font-size: 60px;
-      line-height: 67.5px;
+      line-height: 65px;
     }
   }
 
   .features-hero__subtitle {
-    margin: 17.5px auto 0;
-    max-width: 850px;
-    color: var(--fh-body);
+    margin: 23.75px auto 0;
+    max-width: 892.5px;
+    color: var(--fh-navy);
     font-family: var(--font-sans);
-    font-size: 18.75px;
+    font-size: 20px;
     font-weight: 300;
-    line-height: 27.5px;
+    line-height: 30px;
   }
 
   .features-hero__cta {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin-top: 25px;
-    height: 30px;
-    padding: 0 17.5px;
-    border-radius: 1248.75px;
+    margin-top: 67.5px;
+    height: 25px;
+    padding: 0 26.875px;
+    border-radius: 62.5px;
     background: var(--fh-purple);
     color: #fff;
     font-family: var(--font-sans);
-    font-size: 12.5px;
-    font-weight: 600;
+    font-size: 11.25px;
+    font-weight: 500;
     letter-spacing: 0.02em;
-    line-height: 1;
+    line-height: 17.5px;
     text-transform: uppercase;
   }
 
@@ -343,9 +303,9 @@ const arcIcons = arcIconSrc.map((icon, index) => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12.5px;
+    gap: 18.75px;
     width: min(100%, 1025px);
-    margin: 25px auto 0;
+    margin: 21.25px auto 0;
   }
 
   .features-hero__pill-row {
@@ -353,7 +313,14 @@ const arcIcons = arcIconSrc.map((icon, index) => {
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+  }
+
+  .features-hero__pill-row--1 {
+    gap: 22.5px;
+  }
+
+  .features-hero__pill-row--2 {
+    gap: 20px;
   }
 
   @media (min-width: 900px) {
@@ -365,67 +332,72 @@ const arcIcons = arcIconSrc.map((icon, index) => {
   .features-hero__pill {
     display: inline-flex;
     align-items: center;
-    gap: 7.5px;
-    height: 35px;
-    padding: 0 15px 0 11.25px;
-    border-radius: 1248.75px;
+    gap: 12.5px;
+    height: 32.5px;
+    padding: 0 13.75px;
+    border-radius: 10px;
     background: var(--fh-purple-soft);
     color: var(--fh-purple);
     font-family: var(--font-sans);
     font-size: 15px;
     font-weight: 500;
-    line-height: 1;
+    line-height: 15px;
     white-space: nowrap;
   }
 
   .features-hero__pill-icon {
-    width: 18.75px;
-    height: 18.75px;
+    width: 15px;
+    height: 15px;
     flex-shrink: 0;
     display: block;
   }
 
   @media (max-width: 639px) {
     .features-hero__visual {
-      width: min(100%, 100%);
-      aspect-ratio: 920 / 540;
-    }
-
-    .features-hero__dash {
-      width: 58%;
-      top: 28%;
+      aspect-ratio: 1010 / 520;
     }
 
     .features-hero__copy {
-      margin-top: -70px;
+      margin-top: -40px;
     }
 
-    .features-hero__arc-icon,
-    .features-hero__arc-orb {
-      width: 35px;
-      height: 35px;
-    }
-
-    .features-hero__arc-orb img {
-      width: 15px;
-      height: 15px;
-    }
-
-    .features-hero__title {
-      font-weight: 600;
+    .features-hero__dash-frame {
+      border-width: 6px;
+      border-radius: 12px;
     }
 
     .features-hero__subtitle {
       margin-top: 15px;
+      font-size: 17.5px;
+      line-height: 26.25px;
     }
 
     .features-hero__cta {
-      margin-top: 20px;
+      margin-top: 40px;
+      height: 22.5px;
+      font-size: 10px;
     }
 
     .features-hero__pills {
-      margin-top: 20px;
+      margin-top: 17.5px;
+      gap: 12.5px;
+    }
+
+    .features-hero__pill-row--1,
+    .features-hero__pill-row--2 {
       gap: 10px;
+    }
+
+    .features-hero__pill {
+      height: 30px;
+      font-size: 13.75px;
+      gap: 10px;
+      padding: 0 11.25px;
+    }
+
+    .features-hero__pill-icon {
+      width: 13.75px;
+      height: 13.75px;
     }
   }
 </style>

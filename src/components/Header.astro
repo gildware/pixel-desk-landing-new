@@ -8,7 +8,7 @@ const { current = 'home' } = Astro.props;
 const loginUrl = import.meta.env.PUBLIC_LOGIN_URL || '/login';
 
 const links = [
-  { href: '/', label: 'Home', key: 'home' },
+  { href: '/home', label: 'Home', key: 'home' },
   { href: '/features', label: 'Features', key: 'features' },
   { href: '/pricing', label: 'Pricing', key: 'pricing' },
   { href: '/resources', label: 'Resources', key: 'resources' },
@@ -16,30 +16,26 @@ const links = [
 ---
 
 <header class="pointer-events-none absolute inset-x-0 top-0 z-50">
-  <div class="pd-frame pointer-events-auto pt-[72.5px] lg:pt-[72.5px]">
+  <div class="pd-frame pointer-events-auto pt-[72.5px]">
     <div class="pd-rail">
-      <nav class="pd-nav-shell flex items-center justify-between gap-4 px-5" aria-label="Primary">
+      <nav class="pd-nav-shell flex items-center justify-between gap-4" aria-label="Primary">
         <a href="/" class="shrink-0" aria-label="Pixeldesk home">
           <img src="/images/logo.svg" alt="Pixeldesk" width="155" height="30" class="h-[37.5px] w-[193.75px]" />
         </a>
 
-        <ul class="hidden items-center gap-[58.75px] text-[15px] font-light leading-[17.5px] text-navy md:flex">
-          {
-            links.map((link) => (
-              <li>
-                <a
-                  href={link.href}
-                  class:list={[current === link.key && 'font-medium text-purple']}
-                  aria-current={current === link.key ? 'page' : undefined}
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
+        <div class="flex items-center gap-3 sm:gap-4 md:gap-8 lg:gap-[50.25px]">
+          <ul class="hidden items-center gap-[58.75px] text-[15px] font-light leading-[17.5px] text-navy md:flex">
+            {
+              links.map((link) => (
+                <li>
+                  <a href={link.href} aria-current={current === link.key ? 'page' : undefined}>
+                    {link.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
 
-        <div class="flex items-center gap-2">
           <a href={loginUrl} class="pd-btn-login hidden sm:inline-flex">Log in</a>
           <button
             type="button"

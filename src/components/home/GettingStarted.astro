@@ -1,8 +1,7 @@
 ---
 /**
- * LOCKED: full-overlap sticky image stack — do not rewrite the scroll model.
- * Images cover 100% (no peeks). Copy + steps stay pinned; last card exits together.
- * Scroll gap between swaps controlled by --slot-run.
+ * Native sticky stack — peek model + Why exit-lock.
+ * Step 1 via --card-pin-offset; finale = last card only (no empty runway).
  */
 const steps = [
   {
@@ -42,16 +41,16 @@ const lastStep = steps[steps.length - 1];
 const lastIndex = steps.length - 1;
 ---
 
-<section class="bg-white pt-10 pb-2 sm:pt-14 sm:pb-4">
+<section class="bg-white pt-10 pb-2 sm:pt-14 sm:pb-4 lg:pb-[160px]">
   <div class="pd-rail">
     <div class="gs-stack" style={`--stack-count: ${steps.length};`} data-gs-stack>
       <div class="gs-stack__deck" data-gs-deck>
         <aside class="gs-stack__copy" data-gs-copy>
           <span class="gs-label">Getting started</span>
-          <h2 class="mt-[13.75px] max-w-[587.5px] text-[42.5px] font-medium leading-[47.5px] text-navy sm:text-[45px] sm:leading-[50px]">
+          <h2 class="mt-[26.25px] max-w-[587.5px] text-[50px] font-medium leading-[56.25px] text-navy">
             Up and running in minutes.
           </h2>
-          <p class="mt-3 max-w-[465px] text-[15px] font-light leading-[21px] text-navy">
+          <p class="mt-[26.25px] max-w-[465px] text-[17.5px] font-light leading-[23.75px] text-navy">
             No lengthy onboarding. No IT ticket. No consultant required. Pixeldesk is designed to be productive from day
             one.
           </p>
@@ -81,7 +80,7 @@ const lastIndex = steps.length - 1;
         {
           leadSteps.flatMap((step, i) => [
             <article
-              class="gs-stack__card"
+              class:list={['gs-stack__card', i === 0 && 'is-active']}
               style={`--i: ${i};`}
               data-gs-card
               data-index={i}
@@ -118,7 +117,6 @@ const lastIndex = steps.length - 1;
               decoding="async"
             />
           </article>
-          <div class="gs-stack__finale-pad" aria-hidden="true"></div>
         </div>
         </div>
 
@@ -144,50 +142,13 @@ const lastIndex = steps.length - 1;
 
     const pinned = [copy, ...leadCards];
     let locking = false;
+    let lastScrollY = window.scrollY;
+    let offScreenAbove = false;
 
-    // Pin first preview to step 1 — layout + sticky (same as before peek stack).
-    const syncCardPin = () => {
-      const step0 = root.querySelector('[data-gs-step]');
-      if (!step0 || window.matchMedia('(max-width: 1023px)').matches) {
-        root.style.removeProperty('--card-pin-offset');
-        return;
-      }
-      const offset = Math.max(
-        0,
-        Math.round(step0.getBoundingClientRect().top - copy.getBoundingClientRect().top),
-      );
-      root.style.setProperty('--card-pin-offset', `${offset}px`);
-    };
+    const stickyTopFor = (el) => parseFloat(getComputedStyle(el).top) || 0;
 
-    const activate = (index) => {
-      steps.forEach((step, i) => {
-        const active = i === index;
-        step.classList.toggle('is-active', active);
-        const marker = step.querySelector('.gs-step__marker');
-        if (marker) marker.textContent = active ? String(i + 1) : '';
-      });
-      allCards.forEach((card, i) => {
-        const covered = i < index;
-        card.classList.toggle('is-covered', covered);
-        card.setAttribute('aria-hidden', covered ? 'true' : 'false');
-      });
-    };
-
-    const syncActiveStep = () => {
-      const stickyTop = parseFloat(getComputedStyle(root).getPropertyValue('--card-pin-top')) ||
-        parseFloat(getComputedStyle(finale).top) || 0;
-      let active = 0;
-      allCards.forEach((card, i) => {
-        if (card.classList.contains('gs-stack__card--finale')) {
-          const finaleTop = finale.getBoundingClientRect().top;
-          if (finaleTop <= stickyTop + 1) active = i;
-          return;
-        }
-        const top = card.getBoundingClientRect().top;
-        if (top <= stickyTop + 1) active = i;
-      });
-      activate(active);
-    };
+    const stackedOffsetFor = (el, finaleStickyTop) =>
+      parseFloat(getComputedStyle(el).top) - finaleStickyTop;
 
     const unlock = () => {
       if (!locking) return;
@@ -209,8 +170,90 @@ const lastIndex = steps.length - 1;
       root.querySelectorAll('[data-gs-ghost]').forEach((g) => g.remove());
     };
 
+    const lockElements = (useStackedOffsets, stickyTop, finaleTop) => {
+      locking = true;
+
+      pinned.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        el.dataset.exitOffset = useStackedOffsets
+          ? String(stackedOffsetFor(el, stickyTop))
+          : String(rect.top - finaleTop);
+        el.classList.add('is-exit-locked');
+
+        const ghost = document.createElement('div');
+        ghost.setAttribute('data-gs-ghost', '');
+        ghost.setAttribute('aria-hidden', 'true');
+        ghost.style.height = `${el.offsetHeight}px`;
+        ghost.style.width = `${el.offsetWidth}px`;
+        ghost.style.pointerEvents = 'none';
+        ghost.style.flexShrink = '0';
+        const elStyle = getComputedStyle(el);
+        ghost.style.marginTop = elStyle.marginTop;
+        ghost.style.marginBottom = elStyle.marginBottom;
+        if (el.classList.contains('gs-stack__copy')) {
+          ghost.style.gridColumn = '1';
+          ghost.style.gridRow = '1 / -1';
+        }
+        el.parentNode.insertBefore(ghost, el);
+
+        el.style.position = 'fixed';
+        el.style.left = `${rect.left}px`;
+        el.style.width = `${rect.width}px`;
+        el.style.top = `${rect.top}px`;
+        el.style.right = 'auto';
+        el.style.margin = '0';
+        el.style.zIndex = el.classList.contains('gs-stack__copy')
+          ? '30'
+          : getComputedStyle(el).zIndex || '10';
+        if (el.classList.contains('gs-stack__copy')) {
+          el.style.maxHeight = `${rect.height}px`;
+        }
+      });
+    };
+
+    const syncLockedPositions = (finaleTop) => {
+      pinned.forEach((el) => {
+        const offset = parseFloat(el.dataset.exitOffset || '0');
+        el.style.top = `${finaleTop + offset}px`;
+      });
+    };
+
+    // Align card 0 with step 1.
+    const syncStackLayout = () => {
+      const step0 = root.querySelector('[data-gs-step]');
+      if (!step0 || window.matchMedia('(max-width: 1023px)').matches) {
+        root.style.removeProperty('--card-pin-offset');
+        return;
+      }
+      const offset = Math.max(
+        0,
+        Math.round(step0.getBoundingClientRect().top - copy.getBoundingClientRect().top),
+      );
+      root.style.setProperty('--card-pin-offset', `${offset}px`);
+    };
+
+    const syncActiveStep = () => {
+      let active = 0;
+      allCards.forEach((card, i) => {
+        if (card.classList.contains('gs-stack__card--finale')) {
+          if (finale.getBoundingClientRect().top <= stickyTopFor(finale) + 1) active = i;
+          return;
+        }
+        if (card.getBoundingClientRect().top <= stickyTopFor(card) + 1) active = i;
+      });
+      allCards.forEach((card, i) => {
+        card.classList.toggle('is-active', i === active);
+      });
+      steps.forEach((step, i) => {
+        const on = i === active;
+        step.classList.toggle('is-active', on);
+        const marker = step.querySelector('.gs-step__marker');
+        if (marker) marker.textContent = on ? String(i + 1) : '';
+      });
+    };
+
     const updateExitLock = () => {
-      if (window.matchMedia('(max-width: 1023px)').matches) {
+      if (window.matchMedia('(max-width: 1278.75px)').matches) {
         unlock();
         return;
       }
@@ -218,63 +261,48 @@ const lastIndex = steps.length - 1;
       const rootBox = root.getBoundingClientRect();
       const finaleTop = finale.getBoundingClientRect().top;
       const stickyTop = parseFloat(getComputedStyle(finale).top) || 0;
+      const delta = window.scrollY - lastScrollY;
+      const scrollingUp = delta < -1;
 
-      if (rootBox.bottom < 0 || rootBox.top > window.innerHeight) {
+      if (rootBox.bottom < 0) {
+        offScreenAbove = true;
         unlock();
         return;
       }
 
-      // Hysteresis: avoid lock/unlock flicker when the finale hovers at its sticky edge.
+      if (rootBox.top > window.innerHeight) {
+        offScreenAbove = false;
+        unlock();
+        return;
+      }
+
       const exitThreshold = stickyTop - 0.5;
       const reenterThreshold = stickyTop + 2;
-      const exiting = locking ? finaleTop < reenterThreshold : finaleTop < exitThreshold;
-      if (!exiting) {
+      // GS pins lower than Why — require clearly past pin before exit-lock (avoids jump at stack).
+      const exiting = locking
+        ? finaleTop < reenterThreshold
+        : finaleTop < exitThreshold && finaleTop < stickyTop - 15;
+      const enteringFromAbove =
+        scrollingUp && offScreenAbove && rootBox.bottom > 0 && rootBox.top < 0;
+
+      if (locking && scrollingUp && finaleTop >= exitThreshold) {
+        unlock();
+        offScreenAbove = false;
+        return;
+      }
+
+      const shouldLock = exiting || enteringFromAbove || (locking && scrollingUp);
+      if (!shouldLock) {
+        if (!enteringFromAbove) offScreenAbove = false;
         unlock();
         return;
       }
 
-      // Lock once the finale unsticks; ghosts preserve layout so lock/unlock won't oscillate.
       if (!locking) {
-        locking = true;
-
-        pinned.forEach((el) => {
-          const rect = el.getBoundingClientRect();
-          el.dataset.exitOffset = String(rect.top - finaleTop);
-          el.classList.add('is-exit-locked');
-
-          const ghost = document.createElement('div');
-          ghost.setAttribute('data-gs-ghost', '');
-          ghost.setAttribute('aria-hidden', 'true');
-          ghost.style.height = `${el.offsetHeight}px`;
-          ghost.style.width = `${el.offsetWidth}px`;
-          ghost.style.pointerEvents = 'none';
-          ghost.style.flexShrink = '0';
-          const elStyle = getComputedStyle(el);
-          ghost.style.marginTop = elStyle.marginTop;
-          ghost.style.marginBottom = elStyle.marginBottom;
-          if (el.classList.contains('gs-stack__copy')) {
-            ghost.style.gridColumn = '1';
-            ghost.style.gridRow = '1 / -1';
-          }
-          el.parentNode.insertBefore(ghost, el);
-
-          el.style.position = 'fixed';
-          el.style.left = `${rect.left}px`;
-          el.style.width = `${rect.width}px`;
-          el.style.top = `${rect.top}px`;
-          el.style.right = 'auto';
-          el.style.margin = '0';
-          el.style.zIndex = getComputedStyle(el).zIndex || '10';
-          if (el.classList.contains('gs-stack__copy')) {
-            el.style.maxHeight = `${rect.height}px`;
-          }
-        });
+        lockElements(enteringFromAbove, stickyTop, finaleTop);
       }
 
-      pinned.forEach((el) => {
-        const offset = parseFloat(el.dataset.exitOffset || '0');
-        el.style.top = `${finaleTop + offset}px`;
-      });
+      syncLockedPositions(finaleTop);
     };
 
     const update = () => {
@@ -291,16 +319,22 @@ const lastIndex = steps.length - 1;
         requestAnimationFrame(() => {
           ticking = false;
           update();
+          lastScrollY = window.scrollY;
         });
       },
       { passive: true },
     );
     window.addEventListener('resize', () => {
       unlock();
-      syncCardPin();
+      syncStackLayout();
       update();
     });
-    syncCardPin();
+    window.visualViewport?.addEventListener('resize', () => {
+      unlock();
+      syncStackLayout();
+      update();
+    });
+    syncStackLayout();
     update();
   })();
 </script>
@@ -309,27 +343,26 @@ const lastIndex = steps.length - 1;
   .gs-label {
     display: inline-flex;
     align-items: center;
-    height: 35px;
-    padding: 0 17.5px;
+    height: 37.5px;
+    padding: 6.25px 18.75px;
     border-radius: 50px;
     border: none;
-    background: #dcd4fb;
-    color: #685ba3;
-    font-size: 16.25px;
-    font-weight: 400;
-    line-height: 28.75px;
+    background: rgba(108, 65, 255, 0.12);
+    color: #6c41ff;
+    font-size: 17.5px;
+    font-weight: 500;
+    line-height: 31.25px;
   }
 
   .gs-stack {
-    /* 0 peek = full overlap; --slot-run controls scroll gap between swaps */
     --stack-peek: 0px;
     --stack-gap: 1.5rem;
-    --card-h: 450px;
+    --card-h: 397.5px;
     --header-h: 1.25rem;
     --pin-top: calc(var(--header-h) + 0.5rem);
     --card-pin-offset: 0px;
     --card-pin-top: calc(var(--pin-top) + var(--card-pin-offset));
-    --slot-run: 36vh;
+    --slot-run: 60vh;
     position: relative;
     width: 100%;
     overflow-x: clip;
@@ -355,9 +388,14 @@ const lastIndex = steps.length - 1;
     overflow: visible;
   }
 
+  .gs-stack__copy.is-exit-locked {
+    z-index: 30;
+    background: #fff;
+  }
+
   .gs-stack__card {
     position: sticky;
-    top: var(--card-pin-top);
+    top: calc(var(--card-pin-top) + var(--i) * var(--stack-peek));
     z-index: calc(10 + var(--i));
     height: var(--card-h);
     margin: 0;
@@ -365,10 +403,14 @@ const lastIndex = steps.length - 1;
     border-radius: 17.5px;
     border: 1.25px solid #e2e2e2;
     background: #fff;
+    box-shadow: none;
+  }
+
+  .gs-stack__card.is-active {
     box-shadow: 7.5px 7.5px 31.25px rgba(0, 0, 0, 0.08);
   }
 
-  /* Keep first preview aligned with step 1 before sticky engages */
+  /* Push card 0 down to step 1; sticky base matches --card-pin-top */
   .gs-stack__card[data-index='0'] {
     margin-top: var(--card-pin-offset);
   }
@@ -394,11 +436,6 @@ const lastIndex = steps.length - 1;
     );
   }
 
-  .gs-stack__card.is-covered {
-    visibility: hidden;
-    pointer-events: none;
-  }
-
   .gs-stack__img {
     display: block;
     width: 100%;
@@ -408,26 +445,28 @@ const lastIndex = steps.length - 1;
     background: #fff;
   }
 
-  .gs-stack__spacer {
-    height: var(--slot-run);
+  .gs-stack__spacer:not(.gs-stack__spacer--hold) {
+    /* Spread step-offset scroll evenly — avoids a lump/jump on the last pin */
+    height: calc(var(--slot-run) + var(--card-pin-offset) / (var(--stack-count) - 1));
     flex-shrink: 0;
     pointer-events: none;
   }
 
-  /* Pull each card up out of its scroll slot so the stack reads as
-     card → small gap → next card (spacers still drive sticky scroll). */
+  .gs-stack__spacer--hold {
+    height: 12vh;
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+
+  /* Pull each card / finale up out of its scroll slot — same formula as Why stack. */
   .gs-stack__spacer:not(.gs-stack__spacer--hold) + .gs-stack__card,
   .gs-stack__spacer:not(.gs-stack__spacer--hold) + .gs-stack__finale {
     margin-top: calc(-1 * var(--slot-run) + var(--stack-gap));
   }
 
-  .gs-stack__spacer--hold {
-    height: 3vh;
-  }
-
   .gs-stack__finale {
     position: sticky;
-    top: var(--card-pin-top);
+    top: calc(var(--card-pin-top) + var(--i) * var(--stack-peek));
     z-index: calc(10 + var(--i));
   }
 
@@ -437,20 +476,14 @@ const lastIndex = steps.length - 1;
     z-index: 1;
   }
 
-  .gs-stack__finale-pad {
-    height: 32px;
-    pointer-events: none;
-    flex-shrink: 0;
-  }
-
   /* Timeline — in-flow rail (matches design: outlined active ring + dots) */
   .gs-steps {
-    --rail-size: 35px;
-    --dot-size: 11.25px;
-    --rail-gap: 22.5px;
+    --rail-size: 36.25px;
+    --dot-size: 12.5px;
+    --rail-gap: 11.25px;
     --rail-pad: 7.5px;
     position: relative;
-    margin: 1.75rem 0 0;
+    margin: 83.75px 0 0;
     /* room for ring stroke + white halo so overflow never clips the "1" */
     padding: 5px 0 2.5px var(--rail-pad);
     list-style: none;
@@ -474,11 +507,11 @@ const lastIndex = steps.length - 1;
     grid-template-columns: var(--rail-size) minmax(0, 1fr);
     column-gap: var(--rail-gap);
     align-items: start;
-    min-height: 58px;
+    min-height: 73.75px;
   }
 
   .gs-step + .gs-step {
-    margin-top: 18px;
+    margin-top: 27.5px;
   }
 
   .gs-step__marker {
@@ -521,11 +554,11 @@ const lastIndex = steps.length - 1;
     width: var(--rail-size);
     height: var(--rail-size);
     margin: 0;
-    border: 2.5px solid #6c41ff;
+    border: 1.875px solid #6c41ff;
     background: #fff;
     color: #6c41ff;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1;
     padding-top: 0.63px;
     box-shadow: 0 0 0 5px #fff;
@@ -538,35 +571,31 @@ const lastIndex = steps.length - 1;
 
   .gs-step__title {
     margin: 0;
-    color: #6b6b7b;
-    font-size: 19px;
-    font-weight: 500;
-    line-height: 23.75px;
+    color: #444;
+    font-size: 22.5px;
+    font-weight: 600;
+    line-height: 27.5px;
   }
 
   .gs-step__body {
-    margin: 5px 0 0;
+    margin: 6.25px 0 0;
     max-width: 480px;
-    color: #9a9aab;
-    font-size: 13.5px;
-    font-weight: 300;
-    line-height: 17.5px;
+    color: #000945;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 20px;
   }
 
   .gs-step.is-active .gs-step__title {
     color: #6c41ff;
   }
 
-  .gs-step.is-active .gs-step__body {
-    color: rgba(0, 9, 69, 0.78);
-  }
-
   @media (min-width: 1024px) {
     .gs-stack__deck {
       display: grid;
-      grid-template-columns: 516.25px minmax(0, 680px);
+      grid-template-columns: 527.5px minmax(0, 680px);
       justify-content: space-between;
-      column-gap: 3.3rem;
+      column-gap: 87.5px;
       align-items: start;
     }
 
@@ -574,8 +603,10 @@ const lastIndex = steps.length - 1;
       grid-column: 1;
       grid-row-start: 1;
       grid-row-end: -1;
-      width: 516.25px;
+      width: 527.5px;
       margin-bottom: 0;
+      z-index: 20;
+      background: #fff;
     }
 
     .gs-stack__cards {
@@ -583,7 +614,7 @@ const lastIndex = steps.length - 1;
     }
 
     .gs-stack__spacer--hold {
-      grid-column: 2;
+      grid-column: 1 / -1;
     }
 
     .gs-stack__card,
@@ -595,12 +626,12 @@ const lastIndex = steps.length - 1;
 
   @media (max-width: 1023px) {
     .gs-stack {
-      --card-h: min(350px, calc(100dvh - 12rem));
+      --card-h: min(375px, calc(100dvh - var(--header-h) - 10rem));
+      --stack-peek: 0px;
       --header-h: 1rem;
       --pin-top: 1rem;
       --card-pin-offset: 0px;
-      --card-pin-top: auto;
-      --slot-run: 40vh;
+      --slot-run: clamp(20rem, 65vh, 28rem);
     }
 
     .gs-stack__copy {
@@ -629,13 +660,17 @@ const lastIndex = steps.length - 1;
     }
 
     .gs-stack__spacer,
-    .gs-stack__finale-pad {
+    .gs-stack__spacer--hold {
       display: none;
     }
 
     .gs-stack__spacer:not(.gs-stack__spacer--hold) + .gs-stack__card,
     .gs-stack__spacer:not(.gs-stack__spacer--hold) + .gs-stack__finale {
       margin-top: 0;
+    }
+
+    .gs-stack__spacer:not(.gs-stack__spacer--hold) {
+      height: var(--slot-run);
     }
 
     .gs-stack__card[data-index='0'] {

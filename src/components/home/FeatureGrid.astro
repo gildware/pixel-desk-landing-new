@@ -1,35 +1,45 @@
 ---
 const features = [
   {
-    icon: '/images/icons/dashboard.svg',
+    icon: '/images/figma/feature-workspace/dashboard.svg',
+    iconWidth: 43.75,
+    iconHeight: 43.75,
     label: 'Dashboard',
     title: 'Your data, your way.',
     body: 'Pixeldesk was built to answer all of these — from a single, customizable workspace that works for PMs, teams, and clients simultaneously.',
     tags: ['Real-time', 'Customizable', 'Role-based'],
   },
   {
-    icon: '/images/icons/dashboard.svg',
+    icon: '/images/figma/feature-workspace/projects.svg',
+    iconWidth: 50.22,
+    iconHeight: 42.72,
     label: 'Projects',
     title: 'Ship projects on time. Every time.',
     body: 'Transparent timeline views — from creation to delivery.',
     tags: ['Tasks', 'Milestones', 'Kanban'],
   },
   {
-    icon: '/images/icons/dashboard.svg',
+    icon: '/images/figma/feature-workspace/timesheets.svg',
+    iconWidth: 45.21,
+    iconHeight: 45.21,
     label: 'Timesheets',
     title: 'Log time. Bill accurately.',
     body: 'Task-linked time logging with manager approvals, billing reports, and excel exports.',
     tags: ['Billing', 'Approval flow'],
   },
   {
-    icon: '/images/icons/dashboard.svg',
+    icon: '/images/figma/feature-workspace/client-portal.svg',
+    iconWidth: 51.25,
+    iconHeight: 48.74,
     label: 'Client Portal',
     title: 'Give clients a seat — without losing control.',
     body: 'Live project status, budget view, live feedback, shareable link, and Excel export — all from one client login.',
     tags: ['Live status', 'Budget', 'Excel export'],
   },
   {
-    icon: '/images/icons/dashboard.svg',
+    icon: '/images/figma/feature-workspace/notice-board.svg',
+    iconWidth: 48.2,
+    iconHeight: 45,
     label: 'Notice Board',
     title: 'Important updates, impossible to miss.',
     body: 'Dashboard-pinned announcements for teams and clients — sprint alerts, holidays, policy updates.',
@@ -38,29 +48,37 @@ const features = [
 ];
 ---
 
-<section class="feature-workspace relative overflow-hidden py-16 sm:py-20">
-  <div class="feature-workspace__glow" aria-hidden="true"></div>
+<section class="feature-workspace relative overflow-hidden">
   <div class="pd-rail relative z-[1]">
     <span class="feature-workspace__label">Everything your team needs</span>
     <h2 class="feature-workspace__title mt-[13.75px]">
       One workspace. Every role covered.
     </h2>
-    <p class="feature-workspace__subtitle mt-3 max-w-[525px]">
+    <p class="feature-workspace__subtitle mt-[13.75px] max-w-[511.25px]">
       From sprint planning to birthday reminders — Pixeldesk handles the work around the work.
     </p>
 
-    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="feature-workspace__grid mt-[72.5px]">
       {
         features.map((feature) => (
-          <article class="feature-workspace__card flex min-h-[350px] flex-col justify-between px-6 py-5">
-            <div class="flex size-[43.75px] items-center justify-center">
-              <img src={feature.icon} alt="" width="35" height="35" class="size-[43.75px]" />
+          <article class="feature-workspace__card">
+            <div
+              class="feature-workspace__icon"
+              style={`width: ${feature.iconWidth}px; height: ${feature.iconHeight}px`}
+            >
+              <img
+                src={feature.icon}
+                alt=""
+                width={feature.iconWidth}
+                height={feature.iconHeight}
+                class="block max-h-full max-w-full"
+              />
             </div>
-            <div class="mt-6 flex flex-col gap-3">
+            <div class="feature-workspace__card-content">
               <span class="feature-workspace__chip-outline w-fit">{feature.label}</span>
               <h3 class="feature-workspace__card-title">{feature.title}</h3>
               <p class="feature-workspace__card-body">{feature.body}</p>
-              <div class="flex flex-wrap gap-2">
+              <div class="feature-workspace__tags">
                 {feature.tags.map((tag) => (
                   <span class="feature-workspace__tag">{tag}</span>
                 ))}
@@ -71,10 +89,30 @@ const features = [
       }
 
       <a href="/features" class="feature-workspace__cta">
-        <p class="feature-workspace__cta-title">
-          Many more features that make your project hassle free
-        </p>
-        <span class="feature-workspace__cta-link">See All Features →</span>
+        <div class="feature-workspace__cta-bg-wrap" aria-hidden="true">
+          <img
+            src="/images/figma/feature-workspace/cta-bg-layer.png"
+            alt=""
+            class="feature-workspace__cta-bg"
+            width="770"
+            height="380"
+          />
+        </div>
+        <div class="feature-workspace__cta-content">
+          <p class="feature-workspace__cta-title">
+            Many more features that make your project hassle free
+          </p>
+          <span class="feature-workspace__cta-link">
+            See All Features
+            <img
+              src="/images/figma/feature-workspace/cta-arrow.svg"
+              alt=""
+              width="27.5"
+              height="17.5"
+              class="feature-workspace__cta-arrow"
+            />
+          </span>
+        </div>
       </a>
     </div>
   </div>
@@ -82,127 +120,138 @@ const features = [
 
 <style>
   .feature-workspace {
-    --fw-navy: #121328;
-    --fw-heading: #14203a;
-    --fw-body: #5a676d;
-    --fw-muted: #878999;
-    --fw-purple: #6c41ff;
-    --fw-purple-soft: #685ba3;
-    --fw-label-bg: #dcd4fb;
-    --fw-tag-bg: #f2e8fe;
-    --fw-tag-text: #7b6bb8;
-    /* Sit above WhyExists sticky peeks when the two sections overlap on scroll-back */
+    /* Frame 2022:2223 — exported from Figma at 2× */
     position: relative;
     z-index: 2;
     isolation: isolate;
-    background:
-      radial-gradient(ellipse 80% 70% at 8% 92%, #fee5c6 0%, rgba(254, 229, 198, 0.55) 35%, transparent 62%),
-      radial-gradient(ellipse 75% 65% at 94% 8%, #daf5fd 0%, rgba(218, 245, 253, 0.65) 40%, transparent 65%),
-      radial-gradient(ellipse 60% 55% at 6% 14%, #deeae0 0%, rgba(222, 234, 224, 0.7) 45%, transparent 70%),
-      radial-gradient(ellipse 55% 50% at 88% 88%, #fef4f2 0%, rgba(254, 244, 242, 0.8) 40%, transparent 65%),
-      radial-gradient(ellipse 40% 35% at 50% 45%, #ffffff 0%, transparent 70%),
-      linear-gradient(160deg, #e8f3ee 0%, #eaf7fb 28%, #f5f3f0 62%, #fdf3e8 100%);
-  }
-
-  .feature-workspace__glow {
-    pointer-events: none;
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.55) 0%, transparent 40%),
-      radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.4) 0%, transparent 35%);
+    padding-top: 146.5px;
+    padding-bottom: 274px;
+    background: #fff url('/images/figma/feature-workspace/section-bg.png') center top / cover no-repeat;
   }
 
   .feature-workspace__label {
     display: inline-flex;
     align-items: center;
     height: 37.5px;
-    padding: 0 18.75px;
+    padding: 6.25px 18.75px;
     border-radius: 50px;
-    border: none;
-    background: var(--fw-label-bg);
-    color: var(--fw-purple-soft);
+    background: rgba(255, 255, 255, 0.82);
+    color: #6c41ff;
     font-family: var(--font-sans);
     font-size: 17.5px;
-    font-weight: 400;
+    font-weight: 500;
     line-height: 31.25px;
   }
 
   .feature-workspace__title {
-    max-width: 800px;
-    color: var(--fw-heading);
+    max-width: 862.5px;
+    color: #000945;
     font-family: var(--font-sans);
     font-size: 50px;
-    font-weight: 600;
+    font-weight: 500;
     line-height: 58.75px;
-    letter-spacing: -0.02em;
-  }
-
-  @media (min-width: 640px) {
-    .feature-workspace__title {
-      font-size: 52.5px;
-    }
+    letter-spacing: 0;
   }
 
   .feature-workspace__subtitle {
-    color: var(--fw-body);
+    color: #000945;
     font-family: var(--font-sans);
-    font-size: 20px;
+    font-size: 17.5px;
     font-weight: 300;
-    line-height: 27.5px;
+    line-height: 23.75px;
+  }
+
+  .feature-workspace__grid {
+    display: grid;
+    column-gap: 33.75px;
+    row-gap: 41.25px;
+  }
+
+  @media (min-width: 640px) {
+    .feature-workspace__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .feature-workspace__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
 
   .feature-workspace__card {
+    display: flex;
+    min-height: 350px;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 22.5px 26.25px;
     background: #fff;
-    border: none;
-    border-radius: 27.5px;
-    box-shadow:
-      0 5px 30px rgba(18, 19, 40, 0.06),
-      0 1.25px 3.75px rgba(18, 19, 40, 0.04);
+    border: 0.625px solid #e2e2e2;
+    border-radius: 18.75px;
+    box-shadow: 6.25px 6.25px 9.375px rgba(0, 0, 0, 0.16);
+  }
+
+  .feature-workspace__icon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .feature-workspace__card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
   }
 
   .feature-workspace__chip-outline {
     display: inline-flex;
     align-items: center;
     height: 27.5px;
-    padding: 0 17.5px;
+    padding: 6.25px 18.75px;
     border-radius: 50px;
-    border: 1.25px solid #c5c7d1;
-    color: #6b6e7e;
+    border: 0.625px solid #878787;
+    color: #878787;
     font-family: var(--font-sans);
     font-size: 13.75px;
-    font-weight: 500;
+    font-weight: 600;
     line-height: 17.5px;
   }
 
   .feature-workspace__card-title {
-    color: var(--fw-navy);
+    color: #000945;
     font-family: var(--font-sans);
     font-size: 27.5px;
-    font-weight: 600;
-    line-height: 32.5px;
-    letter-spacing: -0.01em;
+    font-weight: 500;
+    line-height: 30px;
+    letter-spacing: 0;
   }
 
   .feature-workspace__card-body {
-    color: var(--fw-body);
+    color: #000945;
     font-family: var(--font-sans);
     font-size: 15px;
     font-weight: 300;
     line-height: 21.25px;
   }
 
+  .feature-workspace__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
   .feature-workspace__tag {
     display: inline-flex;
     align-items: center;
-    height: 25px;
-    padding: 0 12.5px;
+    height: 22.5px;
+    padding: 6.25px 12.5px;
     border-radius: 50px;
-    background: var(--fw-tag-bg);
-    color: var(--fw-tag-text);
+    background: rgba(108, 65, 255, 0.11);
+    color: #6c41ff;
     font-family: var(--font-sans);
-    font-size: 12.5px;
-    font-weight: 500;
+    font-size: 11.25px;
+    font-weight: 600;
     line-height: 17.5px;
   }
 
@@ -211,52 +260,70 @@ const features = [
     display: flex;
     min-height: 350px;
     flex-direction: column;
-    justify-content: space-between;
+    align-items: flex-start;
+    justify-content: center;
     overflow: hidden;
-    border-radius: 27.5px;
-    padding: 35px 30px;
+    border: 0.625px solid #e2e2e2;
+    border-radius: 18.75px;
+    box-shadow: 6.25px 6.25px 18.75px rgba(0, 0, 0, 0.16);
+    padding: 93.75px 38.75px;
     color: #fff;
-    background: linear-gradient(145deg, #56358c 0%, #7a45b8 32%, #c46a9e 68%, #e27ea0 100%);
-    box-shadow: 0 12.5px 35px rgba(86, 53, 140, 0.28);
     text-decoration: none;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .feature-workspace__cta::before {
-    content: '';
+  /* Frame 927 bg — exact Figma placement so pendant lines sit above title text */
+  .feature-workspace__cta-bg-wrap {
+    pointer-events: none;
     position: absolute;
     inset: 0;
-    opacity: 0.22;
-    background-image:
-      radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.35) 0 1.25px, transparent 1.88px),
-      radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.25) 0 1.25px, transparent 1.88px),
-      linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, 0.08) 50%, transparent 60%);
-    background-size: 22.5px 22.5px, 27.5px 27.5px, 100% 100%;
-    pointer-events: none;
+    overflow: hidden;
+    border-radius: 18.75px;
+  }
+
+  .feature-workspace__cta-bg {
+    position: absolute;
+    top: 0;
+    left: -58.63%;
+    width: 181.6%;
+    height: 101.79%;
+    max-width: none;
+  }
+
+  .feature-workspace__cta-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 21.25px;
   }
 
   .feature-workspace__cta:hover {
     transform: translateY(-2.5px);
-    box-shadow: 0 17.5px 40px rgba(86, 53, 140, 0.34);
+    box-shadow: 6.25px 8.75px 22.5px rgba(0, 0, 0, 0.2);
   }
 
   .feature-workspace__cta-title {
-    position: relative;
-    z-index: 1;
-    max-width: 300px;
+    max-width: 258.75px;
     font-family: var(--font-sans);
     font-size: 27.5px;
-    font-weight: 600;
-    line-height: 37.5px;
-    letter-spacing: -0.01em;
+    font-weight: 400;
+    line-height: 28.75px;
+    letter-spacing: 0;
   }
 
   .feature-workspace__cta-link {
-    position: relative;
-    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 21.25px;
     font-family: var(--font-sans);
-    font-size: 17.5px;
-    font-weight: 400;
-    line-height: 25px;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 30px;
+  }
+
+  .feature-workspace__cta-arrow {
+    display: block;
+    flex-shrink: 0;
   }
 </style>

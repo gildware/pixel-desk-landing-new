@@ -3,22 +3,21 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Faq from '../components/Faq.astro';
-import CtaBand from '../components/CtaBand.astro';
 import FeaturesHero from '../components/features/FeaturesHero.astro';
 import FeatureCards from '../components/features/FeatureCards.astro';
 
 const faqs = [
   {
     q: 'What is the client portal in Pixeldesk?',
-    a: 'The client portal is a dedicated login for clients with live visibility into project status, monthly budget, and milestone progress — without any access to your internal workspace.',
+    a: 'The client portal is a dedicated login for clients with live visibility into project status, monthly budget, and milestone progress — without any access to your internal workspace. Clients can submit feedback on deliverables, share a tracker summary as a link, or download it as an Excel file. They see only their own project data and cannot edit tasks or access team chat.',
   },
   {
     q: 'How does the Notice Board work in Pixeldesk?',
-    a: 'Admins and PMs post announcements targeted at teams, projects, or client portals. Notices can be pinned so they stay visible on dashboards.',
+    a: 'Critical announcements get buried in email and disappear in chat. Admins and PMs can target notices at specific teams, projects, or client portals. Pin updates directly to user dashboards so critical information remains visible until acknowledged or archived.',
   },
   {
     q: 'Does Pixeldesk have built-in team chat?',
-    a: 'Yes. Chat is project-linked so conversations stay with the work they belong to.',
+    a: 'Yes. Built-in chat ties every conversation to the project it belongs to, with file sharing and searchable history — so context never leaves the workspace.',
   },
   {
     q: 'Can I export project data from Pixeldesk?',
@@ -26,7 +25,11 @@ const faqs = [
   },
   {
     q: 'Does Pixeldesk support agile sprint planning?',
-    a: 'Yes. Manage backlog, create sprints, and track delivery across agile cycles.',
+    a: 'Yes. Create sprints, manage your backlog, track velocity, and move work between backlog and sprint with drag-and-drop.',
+  },
+  {
+    q: 'How does the timesheet connect to budgets and feedback?',
+    a: 'Every hour logged automatically updates the project timeline and recalculates effort consumption against budget in real time. Client feedback feeds into a running satisfaction score on the portal, while timesheet completion gates workflow — team members cannot move to a new project until their timesheet is complete.',
   },
 ];
 ---
@@ -39,8 +42,7 @@ const faqs = [
   <main>
     <FeaturesHero />
     <FeatureCards />
-    <Faq items={faqs} title="Feature questions, answered." />
-    <CtaBand />
+    <Faq items={faqs} title="Features, explained." layout="centered" />
   </main>
   <Footer />
 </BaseLayout>

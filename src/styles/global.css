@@ -66,6 +66,7 @@
 
   .pd-nav-shell {
     height: 75px;
+    padding-inline: 26.25px;
     border-radius: 35px;
     background: #fff;
     box-shadow: 7.5px 7.5px 41.25px rgba(0, 0, 0, 0.08);
@@ -114,11 +115,12 @@
     height: 37.5px;
     padding: 0 18.75px;
     border-radius: 50px;
-    border: 0.63px solid #e2e2e2;
-    background: #fff;
-    color: #000945;
+    /* Frame 924 — same purple pill as Getting started / FeatureGrid labels */
+    border: none;
+    background: #dcd4fb;
+    color: #685ba3;
     font-size: 17.5px;
-    font-weight: 300;
+    font-weight: 400;
     line-height: 31.25px;
   }
 
@@ -155,10 +157,20 @@
     line-height: 17.5px;
   }
 
-  .pd-hero-gradient {
-    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 1512 853' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect width='100%' height='100%' fill='url(%23g)' opacity='0.76'/><defs><radialGradient id='g' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(2.8831e-14 -195.3 346.19 1.4216e-13 756 790.26)'><stop stop-color='rgba(255,255,255,1)' offset='0.30769'/><stop stop-color='rgba(218,208,255,0.75)' offset='0.48077'/><stop stop-color='rgba(182,160,255,0.5)' offset='0.65385'/><stop stop-color='rgba(108,65,255,0)' offset='1'/></radialGradient></defs></svg>");
-    background-size: 100% 100%;
+  /* Figma Rectangle 20 — full-width top glow on every page (1512×853) */
+  .pd-page-top-bg {
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-width: 100vw;
+    height: calc(853 / 1512 * 100vw);
+    z-index: 0;
+    background-image: url('/images/figma/rectangle-20.svg');
     background-repeat: no-repeat;
+    background-position: top center;
+    background-size: 100% 100%;
   }
 
   .faq-icon {
@@ -173,7 +185,6 @@
 
   .faq-icon-v {
     transform-origin: center;
-    transition: opacity 0.25s ease, transform 0.25s ease;
   }
 
   .faq-item.is-open .faq-icon-v {
@@ -184,7 +195,7 @@
   .faq-panel {
     display: grid;
     grid-template-rows: 0fr;
-    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: grid-template-rows 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .faq-item.is-open .faq-panel {
@@ -196,8 +207,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .faq-panel,
-    .faq-icon-v {
+    .faq-panel {
       transition: none;
     }
   }

@@ -10,29 +10,87 @@ const {
 } = Astro.props;
 ---
 
-<section class="pb-16 sm:pb-24">
+<section class="cta-band">
   <div class="pd-rail">
-    <div class="rounded-[17.5px] bg-purple px-6 py-12 text-center text-white sm:px-10 sm:py-14">
-      <h2 class="mx-auto max-w-[520px] text-[40px] font-medium leading-[43.75px] sm:text-[45px] sm:leading-[43.75px]">
-        {title}
-      </h2>
-      <p class="mx-auto mt-4 max-w-[568.75px] text-[17.5px] font-light leading-[21.25px] text-white/90">
-        {subtitle}
-      </p>
-      <div class="mt-8 flex flex-wrap items-center justify-center gap-[28.75px]">
-        <a
-          href="/pricing"
-          class="inline-flex h-[42.5px] min-w-[183.75px] items-center justify-center rounded-[31.25px] bg-white px-5 text-[17.5px] font-normal text-purple"
-        >
-          Start free today
-        </a>
-        <a
-          href="#"
-          class="inline-flex h-[42.5px] min-w-[183.75px] items-center justify-center rounded-[31.25px] border border-white/50 bg-transparent px-5 text-[17.5px] font-normal text-white"
-        >
-          Book a live demo
-        </a>
+    <div class="cta-band__panel">
+      <h2 class="cta-band__title">{title}</h2>
+      <p class="cta-band__subtitle">{subtitle}</p>
+      <div class="cta-band__actions">
+        <a href="/pricing" class="cta-band__btn">Start free today</a>
+        <a href="#" class="cta-band__btn">Book a live demo</a>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  .cta-band {
+    padding-bottom: 180px;
+  }
+
+  /* Rectangle 13 — Frame 948 */
+  .cta-band__panel {
+    display: flex;
+    min-height: 312.5px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 46.25px 40px;
+    border-radius: 35px;
+    background: #6c41ff;
+    color: #fff;
+    text-align: center;
+  }
+
+  .cta-band__title {
+    margin: 0;
+    max-width: 520px;
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 43.75px;
+  }
+
+  .cta-band__subtitle {
+    margin: 10px 0 0;
+    max-width: 568.75px;
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 17.5px;
+    font-weight: 300;
+    line-height: 21.25px;
+  }
+
+  .cta-band__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 28.75px;
+    margin-top: 37.5px;
+  }
+
+  .cta-band__btn {
+    display: inline-flex;
+    width: 183.75px;
+    height: 42.5px;
+    align-items: center;
+    justify-content: center;
+    padding: 12.5px;
+    border: 1px solid #fff;
+    border-radius: 31.25px;
+    background: transparent;
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 17.5px;
+    font-weight: 400;
+    line-height: 17.5px;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .cta-band__btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+</style>

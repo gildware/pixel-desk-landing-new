@@ -2,57 +2,63 @@
   "content": {
     "x0": 0,
     "y0": 0,
-    "x1": 1023,
-    "y1": 804
+    "x1": 499,
+    "y1": 455.5
   },
   "parts": {
-    "stars": {
-      "left": 64.91,
-      "top": 46.02,
-      "width": 10.26,
-      "height": 2.99
-    },
-    "folder": {
-      "left": 24.93,
-      "top": 53.61,
-      "width": 5.96,
-      "height": 7.84
-    },
-    "people": {
-      "left": 52.79,
-      "top": 46.27,
-      "width": 26.1,
-      "height": 28.36
-    },
-    "plant": {
-      "left": 55.33,
-      "top": 68.78,
-      "width": 7.72,
-      "height": 7.96
+    "purple-b": {
+      "left": 0,
+      "top": 8.46,
+      "width": 71.68,
+      "height": 54.88
     },
     "purple-a": {
-      "left": 37.83,
-      "top": 61.69,
-      "width": 23.75,
-      "height": 31.09
+      "left": 28.32,
+      "top": 37.96,
+      "width": 71.68,
+      "height": 54.88
     },
-    "purple-b": {
-      "left": 21.8,
-      "top": 26.99,
-      "width": 36.46,
-      "height": 35.82
+    "project": {
+      "left": 22.38,
+      "top": 0,
+      "width": 39.6,
+      "height": 43.39
     },
-    "purple-c": {
-      "left": 57.67,
-      "top": 31.59,
-      "width": 20.43,
-      "height": 36.44
+    "map": {
+      "left": 6.21,
+      "top": 54.23,
+      "width": 31.29,
+      "height": 26.25
+    },
+    "today": {
+      "left": 57.43,
+      "top": 72.02,
+      "width": 36.63,
+      "height": 27.98
+    },
+    "people": {
+      "left": 58.61,
+      "top": 41.22,
+      "width": 34.06,
+      "height": 31.57
+    },
+    "stars": {
+      "left": 73.15,
+      "top": 33.37,
+      "width": 14.21,
+      "height": 2.61
+    },
+    "folder": {
+      "left": 13.83,
+      "top": 43.47,
+      "width": 7.82,
+      "height": 8.78
     },
     "sprint": {
-      "left": 29.52,
-      "top": 84.33,
-      "width": 8.02,
-      "height": 3.36
+      "left": 20.24,
+      "top": 82.33,
+      "width": 11.42,
+      "height": 3.73
     }
   }
 }

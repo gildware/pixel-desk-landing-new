@@ -4,47 +4,61 @@ type Bullet = { label: string; detail: string };
 type FeatureCard = {
   icon: string;
   label: string;
-  title: string;
+  title: string | string[];
   body: string;
   bullets?: Bullet[];
   tags: string[];
-  span?: 'third' | 'half' | 'wide';
-  mediaHeight?: number;
-  layout?: 'stack' | 'split';
+  span: 'third' | 'half' | 'wide';
+  /** Figma Rectangle 25 — 1× media height; rendered at ×1.25 */
+  mediaHeight: number;
+  /** Figma 2018:527–535 — white→transparent fade on gray (1× size) */
+  mediaFadeSize: number;
+  mediaFadeEdge?: 'top' | 'left';
+  /** Figma image fill for fades that aren't a simple CSS gradient (e.g. 2018:531) */
+  mediaFadeSrc?: string;
+  labelTall?: boolean;
+  /** Figma tag rows are single-line (flex nowrap) */
+  tagsNowrap?: boolean;
 };
+
+const s = (px: number) => px * 1.25;
 
 const cards: FeatureCard[] = [
   {
-    icon: '/images/features/icons/dashboard.png',
+    icon: '/images/features/card-icons/dashboard.svg',
     label: 'Dashboard',
     title: 'Smart Dashboard — Your workspace, your way.',
     body: 'The Pixeldesk built around a flexible widget system, each person configures their own workspace. Everything is drag-and-drop, role-based, and updates in real time. A fully customizable dashboard that updates in real time.',
     tags: ['Drag-and-drop', 'Real-time', 'Customizable'],
     span: 'third',
     mediaHeight: 134,
+    mediaFadeSize: 82,
   },
   {
-    icon: '/images/features/icons/project.png',
+    icon: '/images/features/card-icons/project.svg',
     label: 'Project Management',
-    title: 'Full project lifecycle. One place.',
+    title: ['Full project lifecycle.', 'One place.'],
     body: 'Create tasks, assign owners, set priorities, define dependencies, and mark milestones — then track progress across timeline views. When a task runs behind, Pixeldesk surfaces it early so the team can respond before it becomes a blocker.',
     tags: ['Timeline', 'Dependencies', 'Milestones'],
     span: 'third',
     mediaHeight: 134,
+    mediaFadeSize: 82,
   },
   {
-    icon: '/images/features/icons/sprint.png',
+    icon: '/images/features/card-icons/sprint.svg',
     label: 'Sprint Planning',
-    title: 'Agile delivery for every team.',
+    title: ['Agile delivery for', 'every team.'],
     body: 'Large projects become manageable when broken into focused cycles. Tasks move between backlog and sprint with simple drag-and-drop. Keep teams focused, improve delivery speed, and adapt quickly as priorities evolve.',
     tags: ['Agile', 'Backlog', 'Velocity', 'Sprint goals'],
     span: 'third',
-    mediaHeight: 134,
+    mediaHeight: 132,
+    mediaFadeSize: 82,
+    tagsNowrap: true,
   },
   {
-    icon: '/images/features/icons/portal.png',
+    icon: '/images/features/card-icons/portal.svg',
     label: 'Client Portal',
-    title: 'Total transparency. Zero chaos.',
+    title: ['Total transparency.', 'Zero chaos.'],
     body: 'Instead of weekly update emails and scheduled status calls, clients get their own dedicated login and can check in whenever they need to.',
     bullets: [
       { label: 'Live project status', detail: 'Real-time milestone and sprint progress, anytime' },
@@ -55,9 +69,11 @@ const cards: FeatureCard[] = [
     tags: ['Live status', 'Budget', 'Feedback', 'Excel export', 'Shareable link'],
     span: 'half',
     mediaHeight: 164,
+    mediaFadeSize: 118,
+    labelTall: true,
   },
   {
-    icon: '/images/features/icons/people.png',
+    icon: '/images/features/card-icons/people.svg',
     label: 'People Management',
     title: 'A workplace that genuinely cares for its people.',
     body: 'Help managers plan resources effectively while creating a more organized and people-focused work environment.',
@@ -69,46 +85,65 @@ const cards: FeatureCard[] = [
     ],
     tags: ['Leave', 'Holidays', 'Birthdays', 'Availability'],
     span: 'half',
-    mediaHeight: 164,
+    mediaHeight: 166,
+    mediaFadeSize: 92,
+    labelTall: true,
   },
   {
-    icon: '/images/features/icons/notice.png',
+    icon: '/images/features/card-icons/notice.svg',
     label: 'Notice Board',
     title: 'Important updates that actually get seen.',
     body: 'Critical announcements get buried in email and disappear in chat. Admins and PMs can target notices at specific teams, projects, or client portals. Pin updates directly to user dashboards so critical information remains visible until acknowledged or archived.',
     tags: ['Announcements', 'Star Marked'],
     span: 'third',
     mediaHeight: 140,
+    mediaFadeSize: 118,
   },
   {
-    icon: '/images/features/icons/chat.png',
+    icon: '/images/features/card-icons/chat.svg',
     label: 'Team Chat',
     title: 'Every conversation, connected to its project.',
     body: "When team communication is scattered across external tools, context gets lost constantly. Pixeldesk's built-in chat ties every conversation directly to the project it belongs to. A dedicated chat spaces linked to every project.",
     tags: ['Per-project', 'File sharing', 'Chat history'],
     span: 'third',
     mediaHeight: 140,
+    mediaFadeSize: 110,
   },
   {
-    icon: '/images/features/icons/timesheet.png',
+    icon: '/images/features/card-icons/timesheet.svg',
     label: 'Timesheets',
     title: 'Timesheet that drives the whole project.',
     body: "Every hour logged automatically updates the project's actual timeline and recalculates project effort consumption in real time. Team members cannot move to a new project until their timesheet is complete, which enforces workflow discipline without the manager having to chase anyone.",
     tags: ['Workflow discipline', 'Feedback-linked'],
     span: 'third',
-    mediaHeight: 140,
+    mediaHeight: 120.75,
+    mediaFadeSize: 88,
   },
   {
-    icon: '/images/features/icons/feedback.png',
+    icon: '/images/features/card-icons/feedback.svg',
     label: 'Feedback System',
     title: 'Feedback that accumulates — and actually means something.',
     body: "A single end-of-project survey only captures how the client felt on delivery day. Pixeldesk's feedback system works differently — clients submit feedback at any point during the project, and every submission is averaged into a running satisfaction score that reflects the full experience.",
     tags: ['Team notices', 'Client-facing', 'Dashboard-pinned'],
     span: 'wide',
-    layout: 'split',
     mediaHeight: 223,
+    mediaFadeSize: 157,
+    mediaFadeEdge: 'left',
+    mediaFadeSrc: '/images/features/card-media-overlays/wide-feedback.png',
   },
 ];
+
+function mediaStyle(card: FeatureCard) {
+  const edge = card.mediaFadeEdge ?? 'top';
+  const fadePx = s(card.mediaFadeSize);
+  return edge === 'left'
+    ? `--media-h: ${s(card.mediaHeight)}px; --fade-w: ${fadePx}px`
+    : `--media-h: ${s(card.mediaHeight)}px; --fade-h: ${fadePx}px`;
+}
+
+function fadeClass(card: FeatureCard) {
+  return ['feature-card__media-fade', `feature-card__media-fade--${card.mediaFadeEdge ?? 'top'}`];
+}
 
 const row1 = cards.slice(0, 3);
 const row2 = cards.slice(3, 5);
@@ -116,167 +151,302 @@ const row3 = cards.slice(5, 8);
 const row4 = cards.slice(8);
 ---
 
-<section class="feature-cards pb-16 sm:pb-20">
+<section class="feature-cards">
   <div class="pd-rail">
-    <div class="feature-cards__grid">
-      {
-        row1.map((card) => (
-          <article class="feature-card feature-card--third">
-            <div class="feature-card__icon" aria-hidden="true">
-              <img src={card.icon} alt="" width="22" height="22" />
-            </div>
-            <span class="feature-card__label">{card.label}</span>
-            <h2 class="feature-card__title">{card.title}</h2>
-            <p class="feature-card__body">{card.body}</p>
-            <div class="feature-card__footer">
-              <div class="feature-card__tags">
-                {card.tags.map((tag) => (
-                  <span class="feature-card__tag">{tag}</span>
-                ))}
-              </div>
-              <div
-                class="feature-card__media"
-                style={`--media-h: ${card.mediaHeight}px`}
-                aria-hidden="true"
-              />
-            </div>
-          </article>
-        ))
-      }
-
-      {
-        row2.map((card) => (
-          <article class="feature-card feature-card--half">
-            <div class="feature-card__icon" aria-hidden="true">
-              <img src={card.icon} alt="" width="22" height="22" />
-            </div>
-            <span class="feature-card__label">{card.label}</span>
-            <h2 class="feature-card__title">{card.title}</h2>
-            <p class="feature-card__body">{card.body}</p>
-            {card.bullets && (
-              <ul class="feature-card__bullets">
-                {card.bullets.map((item) => (
-                  <li>
-                    <span class="feature-card__bullet-label">{item.label}</span>
-                    <span class="feature-card__bullet-detail">— {item.detail}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div class="feature-card__footer">
-              <div class="feature-card__tags">
-                {card.tags.map((tag) => (
-                  <span class="feature-card__tag">{tag}</span>
-                ))}
-              </div>
-              <div
-                class="feature-card__media"
-                style={`--media-h: ${card.mediaHeight}px`}
-                aria-hidden="true"
-              />
-            </div>
-          </article>
-        ))
-      }
-
-      {
-        row3.map((card) => (
-          <article class="feature-card feature-card--third">
-            <div class="feature-card__icon" aria-hidden="true">
-              <img src={card.icon} alt="" width="22" height="22" />
-            </div>
-            <span class="feature-card__label">{card.label}</span>
-            <h2 class="feature-card__title">{card.title}</h2>
-            <p class="feature-card__body">{card.body}</p>
-            <div class="feature-card__footer">
-              <div class="feature-card__tags">
-                {card.tags.map((tag) => (
-                  <span class="feature-card__tag">{tag}</span>
-                ))}
-              </div>
-              <div
-                class="feature-card__media"
-                style={`--media-h: ${card.mediaHeight}px`}
-                aria-hidden="true"
-              />
-            </div>
-          </article>
-        ))
-      }
-
-      {
-        row4.map((card) => (
-          <article class="feature-card feature-card--wide">
-            <div class="feature-card__copy">
+    <div class="feature-cards__rows">
+      <div class="feature-cards__row feature-cards__row--3">
+        {
+          row1.map((card) => (
+            <article class="feature-card feature-card--third">
               <div class="feature-card__icon" aria-hidden="true">
-                <img src={card.icon} alt="" width="22" height="22" />
+                <img src={card.icon} alt="" decoding="async" />
+              </div>
+              <span class="feature-card__label">{card.label}</span>
+              <h2 class="feature-card__title">
+                {Array.isArray(card.title) ? (
+                  <>
+                    {card.title[0]}
+                    <br />
+                    {card.title[1]}
+                  </>
+                ) : (
+                  card.title
+                )}
+              </h2>
+              <p class="feature-card__body">{card.body}</p>
+              <div class="feature-card__footer">
+                <div class:list={['feature-card__tags', card.tagsNowrap && 'feature-card__tags--nowrap']}>
+                  {card.tags.map((tag) => (
+                    <span class="feature-card__tag">{tag}</span>
+                  ))}
+                </div>
+                <div
+                  class="feature-card__media"
+                  style={mediaStyle(card)}
+                  aria-hidden="true"
+                >
+                  {
+                    card.mediaFadeSrc ? (
+                      <img
+                        src={card.mediaFadeSrc}
+                        alt=""
+                        class:list={fadeClass(card)}
+                        decoding="async"
+                      />
+                    ) : (
+                      <div class:list={fadeClass(card)} aria-hidden="true" />
+                    )
+                  }
+                </div>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="feature-cards__row feature-cards__row--2">
+        {
+          row2.map((card) => (
+            <article class="feature-card feature-card--half">
+              <div class="feature-card__icon" aria-hidden="true">
+                <img src={card.icon} alt="" decoding="async" />
+              </div>
+              <span class:list={['feature-card__label', card.labelTall && 'feature-card__label--tall']}>
+                {card.label}
+              </span>
+              <h2 class="feature-card__title">
+                {Array.isArray(card.title) ? (
+                  <>
+                    {card.title[0]}
+                    <br />
+                    {card.title[1]}
+                  </>
+                ) : (
+                  card.title
+                )}
+              </h2>
+              <p class="feature-card__body">{card.body}</p>
+              {card.bullets && (
+                <ul class="feature-card__bullets">
+                  {card.bullets.map((item) => (
+                    <li>
+                      <span class="feature-card__bullet-label">{item.label}</span>
+                      <span class="feature-card__bullet-detail"> — {item.detail}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div class="feature-card__footer">
+                <div class="feature-card__tags">
+                  {card.tags.map((tag) => (
+                    <span class="feature-card__tag">{tag}</span>
+                  ))}
+                </div>
+                <div
+                  class="feature-card__media"
+                  style={mediaStyle(card)}
+                  aria-hidden="true"
+                >
+                  {
+                    card.mediaFadeSrc ? (
+                      <img
+                        src={card.mediaFadeSrc}
+                        alt=""
+                        class:list={fadeClass(card)}
+                        decoding="async"
+                      />
+                    ) : (
+                      <div class:list={fadeClass(card)} aria-hidden="true" />
+                    )
+                  }
+                </div>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="feature-cards__row feature-cards__row--3">
+        {
+          row3.map((card) => (
+            <article class="feature-card feature-card--third">
+              <div class="feature-card__icon" aria-hidden="true">
+                <img src={card.icon} alt="" decoding="async" />
               </div>
               <span class="feature-card__label">{card.label}</span>
               <h2 class="feature-card__title">{card.title}</h2>
               <p class="feature-card__body">{card.body}</p>
-              <div class="feature-card__tags">
-                {card.tags.map((tag) => (
-                  <span class="feature-card__tag">{tag}</span>
-                ))}
+              <div class="feature-card__footer">
+                <div class="feature-card__tags">
+                  {card.tags.map((tag) => (
+                    <span class="feature-card__tag">{tag}</span>
+                  ))}
+                </div>
+                <div
+                  class="feature-card__media"
+                  style={mediaStyle(card)}
+                  aria-hidden="true"
+                >
+                  {
+                    card.mediaFadeSrc ? (
+                      <img
+                        src={card.mediaFadeSrc}
+                        alt=""
+                        class:list={fadeClass(card)}
+                        decoding="async"
+                      />
+                    ) : (
+                      <div class:list={fadeClass(card)} aria-hidden="true" />
+                    )
+                  }
+                </div>
               </div>
-            </div>
-            <div
-              class="feature-card__media feature-card__media--side"
-              style={`--media-h: ${card.mediaHeight}px`}
-              aria-hidden="true"
-            />
-          </article>
-        ))
-      }
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="feature-cards__row feature-cards__row--wide">
+        {
+          row4.map((card) => (
+            <article class="feature-card feature-card--wide">
+              <div class="feature-card__copy">
+                <div class="feature-card__icon" aria-hidden="true">
+                  <img src={card.icon} alt="" decoding="async" />
+                </div>
+                <span class="feature-card__label">{card.label}</span>
+                <h2 class="feature-card__title">{card.title}</h2>
+                <p class="feature-card__body">{card.body}</p>
+                <div class="feature-card__tags">
+                  {card.tags.map((tag) => (
+                    <span class="feature-card__tag">{tag}</span>
+                  ))}
+                </div>
+              </div>
+              <div
+                class="feature-card__media feature-card__media--side"
+                style={mediaStyle(card)}
+                aria-hidden="true"
+              >
+                {
+                  card.mediaFadeSrc ? (
+                    <img
+                      src={card.mediaFadeSrc}
+                      alt=""
+                      class:list={fadeClass(card)}
+                      decoding="async"
+                    />
+                  ) : (
+                    <div class:list={fadeClass(card)} aria-hidden="true" />
+                  )
+                }
+              </div>
+            </article>
+          ))
+        }
+      </div>
     </div>
   </div>
 </section>
 
 <style>
-  .feature-cards__grid {
-    display: grid;
-    gap: 35px;
-    grid-template-columns: 1fr;
+  .feature-cards__rows {
+    position: relative;
+    display: flex;
+    flex-direction: column;
     width: 100%;
     max-width: 1112.5px;
     margin-inline: auto;
   }
 
-  @media (min-width: 720px) {
-    .feature-cards__grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+  .feature-cards__row {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+  }
 
-    .feature-card--wide {
-      grid-column: 1 / -1;
-    }
+  .feature-cards__row + .feature-cards__row {
+    margin-top: 35px;
+  }
+
+  .feature-cards__row--2 + .feature-cards__row--3 {
+    margin-top: 45px;
+  }
+
+  .feature-cards__row--3 + .feature-cards__row--wide {
+    margin-top: 37.5px;
   }
 
   @media (min-width: 1024px) {
-    .feature-cards__grid {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
+    .feature-cards__row--3,
+    .feature-cards__row--2 {
+      flex-direction: row;
+    }
+
+    .feature-cards__row--3 {
       gap: 35px;
     }
 
+    .feature-cards__row--2 {
+      gap: 38.75px;
+    }
+
     .feature-card--third {
-      grid-column: span 2;
+      flex: 0 0 347.5px;
+      width: 347.5px;
     }
 
     .feature-card--half {
-      grid-column: span 3;
+      flex: 0 0 537.5px;
+      width: 537.5px;
     }
 
     .feature-card--wide {
-      grid-column: 1 / -1;
+      width: 100%;
+    }
+
+    /* Figma row 1 fixed card heights (490 / 490 / 488 at 1×) */
+    .feature-cards__rows > .feature-cards__row:nth-child(1) .feature-card--third {
+      height: 612.5px;
+    }
+
+    .feature-cards__rows > .feature-cards__row:nth-child(1) .feature-card--third:nth-child(3) {
+      height: 610px;
+    }
+
+    /* Figma row 2 half cards (536 / 537 at 1×) */
+    .feature-cards__rows > .feature-cards__row:nth-child(2) .feature-card--half {
+      height: 670px;
+    }
+
+    .feature-cards__rows > .feature-cards__row:nth-child(2) .feature-card--half:nth-child(2) {
+      height: 671.25px;
+    }
+
+    /* Figma row 3 third cards (496 / 496 / 495 at 1×) */
+    .feature-cards__rows > .feature-cards__row:nth-child(3) .feature-card--third:nth-child(1),
+    .feature-cards__rows > .feature-cards__row:nth-child(3) .feature-card--third:nth-child(2) {
+      height: 620px;
+    }
+
+    .feature-cards__rows > .feature-cards__row:nth-child(3) .feature-card--third:nth-child(3) {
+      height: 618.75px;
+    }
+
+    /* Figma wide feedback card (263 at 1×) */
+    .feature-cards__rows > .feature-cards__row:nth-child(4) .feature-card--wide {
+      height: 328.75px;
     }
   }
 
   .feature-card {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    align-self: stretch;
-    height: 100%;
     gap: 18.75px;
     padding: 25px;
     background: #fff;
@@ -296,13 +466,13 @@ const row4 = cards.slice(8);
 
   .feature-card--wide {
     flex-direction: column;
+    gap: 18.75px;
   }
 
   @media (min-width: 900px) {
     .feature-card--wide {
       flex-direction: row;
       align-items: stretch;
-      max-width: 1112.5px;
     }
   }
 
@@ -322,24 +492,26 @@ const row4 = cards.slice(8);
     }
   }
 
-  /* Same glyph assets as hero pills — soft lavender orb + purple line icon */
+  /* Figma Group 688 — 41px core, 69px asset incl. glow (×1.25 → 86.25px) */
   .feature-card__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative;
     width: 51.25px;
     height: 51.25px;
     flex-shrink: 0;
-    border-radius: 1248.75px;
-    background: rgba(108, 65, 255, 0.1);
-    box-shadow: 0 0 22.5px rgba(108, 65, 255, 0.18);
+    overflow: visible;
   }
 
   .feature-card__icon img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
     display: block;
-    width: 27.5px;
-    height: 27.5px;
+    width: 86.25px;
+    height: 86.25px;
+    max-width: none;
+    transform: translate(-50%, -50%);
     object-fit: contain;
+    pointer-events: none;
   }
 
   .feature-card__label {
@@ -355,6 +527,12 @@ const row4 = cards.slice(8);
     font-weight: 500;
     line-height: 15px;
     white-space: nowrap;
+  }
+
+  .feature-card__label--tall {
+    height: 33.75px;
+    padding-top: 1.25px;
+    padding-bottom: 1.25px;
   }
 
   .feature-card__title {
@@ -378,12 +556,20 @@ const row4 = cards.slice(8);
 
   .feature-card__bullets {
     margin: 0;
-    padding-left: 1.1em;
+    padding-left: 22.5px;
     list-style: disc;
     color: #000945;
     font-family: var(--font-sans);
     font-size: 15px;
     line-height: 22.5px;
+  }
+
+  .feature-card__bullets li + li {
+    margin-top: 0;
+  }
+
+  .feature-card__bullets li::marker {
+    color: #000945;
   }
 
   .feature-card__bullet-label {
@@ -402,6 +588,11 @@ const row4 = cards.slice(8);
     width: 100%;
   }
 
+  /* Figma 2018:371 — sprint tags single row, no wrap */
+  .feature-card__tags--nowrap {
+    flex-wrap: nowrap;
+  }
+
   .feature-card__tag {
     display: inline-flex;
     align-items: center;
@@ -417,50 +608,50 @@ const row4 = cards.slice(8);
     white-space: nowrap;
   }
 
-  /* Soft translucent/blurred top — matches Figma gray media fade */
+  /* Figma Rectangle 25 — flat #d9d9d9 + gradient fade overlay (2018:527–535) */
   .feature-card__media {
     position: relative;
+    overflow: hidden;
     width: 100%;
     height: var(--media-h, 167.5px);
     flex-shrink: 0;
-    overflow: hidden;
     border-radius: 0 0 12.5px 12.5px;
     background: #d9d9d9;
-    -webkit-mask-image: linear-gradient(
-      180deg,
-      transparent 0%,
-      rgba(0, 0, 0, 0.18) 12%,
-      rgba(0, 0, 0, 0.55) 32%,
-      rgba(0, 0, 0, 0.88) 58%,
-      #000 78%
-    );
-    mask-image: linear-gradient(
-      180deg,
-      transparent 0%,
-      rgba(0, 0, 0, 0.18) 12%,
-      rgba(0, 0, 0, 0.55) 32%,
-      rgba(0, 0, 0, 0.88) 58%,
-      #000 78%
-    );
   }
 
-  .feature-card__media::after {
-    content: '';
+  /* Figma 2018:527–535 — white→transparent gradient on top edge of gray */
+  .feature-card__media-fade {
     position: absolute;
-    inset: 0;
     pointer-events: none;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.65) 0%,
-      rgba(255, 255, 255, 0.2) 28%,
-      rgba(255, 255, 255, 0) 55%
-    );
-    filter: blur(10px);
+  }
+
+  .feature-card__media-fade--top {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: var(--fade-h);
+    background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  .feature-card__media-fade--left {
+    left: 0;
+    top: 0;
+    width: var(--fade-w);
+    height: 100%;
+  }
+
+  div.feature-card__media-fade--left {
+    background: linear-gradient(90deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  img.feature-card__media-fade--left,
+  img.feature-card__media-fade--top {
+    display: block;
+    object-fit: fill;
   }
 
   .feature-card__media--side {
     border-radius: 0 12.5px 12.5px 0;
-    min-height: 225px;
   }
 
   @media (min-width: 900px) {
@@ -468,38 +659,14 @@ const row4 = cards.slice(8);
       flex: 1 1 auto;
       width: auto;
       height: var(--media-h, 278.75px);
-      min-height: var(--media-h, 278.75px);
-      align-self: stretch;
-      -webkit-mask-image: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(0, 0, 0, 0.18) 10%,
-        rgba(0, 0, 0, 0.55) 28%,
-        rgba(0, 0, 0, 0.88) 52%,
-        #000 72%
-      );
-      mask-image: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(0, 0, 0, 0.18) 10%,
-        rgba(0, 0, 0, 0.55) 28%,
-        rgba(0, 0, 0, 0.88) 52%,
-        #000 72%
-      );
-    }
-
-    .feature-card__media--side::after {
-      background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0.65) 0%,
-        rgba(255, 255, 255, 0.2) 28%,
-        rgba(255, 255, 255, 0) 55%
-      );
+      max-height: var(--media-h, 278.75px);
+      align-self: center;
     }
   }
 
   @media (max-width: 899px) {
     .feature-card__media--side {
+      width: 100%;
       border-radius: 0 0 12.5px 12.5px;
     }
   }

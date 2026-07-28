@@ -8,6 +8,7 @@ type ResourceCard = {
   body: string;
   href: string;
   icon: string;
+  tall?: boolean;
 };
 
 type ResourceSection = {
@@ -32,6 +33,7 @@ const sections: ResourceSection[] = [
         body: 'Browse through our FAQs and find information that helps you to quickly resolve most common problems.',
         href: '/#faq',
         icon: '/images/resources/icon-faqs.svg',
+        tall: true,
       },
       {
         title: 'Community',
@@ -56,6 +58,7 @@ const sections: ResourceSection[] = [
         body: 'Browse through our FAQs and find information that helps you to quickly resolve most common problems.',
         href: '#',
         icon: '/images/resources/icon-extension.svg',
+        tall: true,
       },
     ],
   },
@@ -68,6 +71,7 @@ const sections: ResourceSection[] = [
         body: 'Watch our videos to get started with PixelDesk. Find the best tips and tricks for some of our most important features.',
         href: '#',
         icon: '/images/resources/icon-video.svg',
+        tall: true,
       },
     ],
   },
@@ -86,10 +90,17 @@ const sections: ResourceSection[] = [
         body: 'Read insightful articles by the PixelDesk team as they discuss a wide range of topics, from product news to project management.',
         href: '#',
         icon: '/images/resources/icon-blogs.svg',
+        tall: true,
       },
     ],
   },
 ];
+
+const gridClass = {
+  1: 'resources-grid--1',
+  2: 'resources-grid--2',
+  3: 'resources-grid--3',
+} as const;
 ---
 
 <BaseLayout
@@ -98,18 +109,17 @@ const sections: ResourceSection[] = [
 >
   <Header current="resources" />
   <main class="resources-page">
-    <section class="resources-hero relative overflow-hidden pt-[175px] pb-10 sm:pt-[200px] sm:pb-12">
-      <div class="resources-hero__glow" aria-hidden="true"></div>
-      <div class="pd-rail relative z-[1] text-center">
-        <h1 class="text-[50px] font-medium leading-[60px] tracking-tight text-navy sm:text-[62.5px] sm:leading-[65px]">
-          Resources
-        </h1>
-        <p class="mx-auto mt-4 max-w-[892.5px] text-[18.75px] font-light leading-[30px] text-navy sm:mt-5 sm:text-[20px]">
+    <section class="resources-hero relative overflow-hidden pt-[338.75px] pb-[101.25px]">
+      <div class="resources-hero__gradient" aria-hidden="true"></div>
+
+      <div class="pd-rail relative text-center">
+        <h1 class="resources-hero__title">Resources</h1>
+        <p class="resources-hero__subtitle">
           Built for three audiences at once — the Project Manager who needs control, the team that needs clarity, and the
           client who needs confidence in what’s being delivered.
         </p>
 
-        <form class="resources-search mx-auto mt-8 w-full max-w-[702.5px]" role="search" action="/resources" method="get">
+        <form class="resources-search mx-auto mt-[42.5px] w-full max-w-[702.5px]" role="search" action="/resources" method="get">
           <label class="sr-only" for="resource-search">Search resources</label>
           <div class="resources-search__field">
             <input
@@ -117,50 +127,33 @@ const sections: ResourceSection[] = [
               name="q"
               type="search"
               placeholder=""
-              class="h-[52.5px] w-full rounded-full border-0 bg-white px-5 pr-12 text-[17.5px] font-light text-navy outline-none placeholder:text-label"
+              class="resources-search__input"
             />
             <span class="resources-search__icon" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <circle cx="8" cy="8" r="5.5" stroke="#000945" stroke-width="1.2"></circle>
-                <path d="M12.5 12.5 16 16" stroke="#000945" stroke-width="1.2" stroke-linecap="round"></path>
-              </svg>
+              <img src="/images/resources/icon-search.svg" alt="" />
             </span>
           </div>
         </form>
       </div>
     </section>
 
-    <section class="pb-20 sm:pb-24">
-      <div class="pd-rail space-y-12 sm:space-y-[62.5px]">
+    <section class="resources-cards pb-[285px]">
+      <div class="pd-rail resources-sections">
         {
           sections.map((section) => (
-            <div>
-              <h2 class="text-[25px] font-medium leading-[30px] text-navy">{section.heading}</h2>
-              <div
-                class:list={[
-                  'mt-4 grid gap-5 sm:gap-7',
-                  section.cols === 3 && 'sm:grid-cols-2 lg:grid-cols-3',
-                  section.cols === 2 && 'sm:grid-cols-2 lg:grid-cols-3',
-                  section.cols === 1 && 'sm:grid-cols-2 lg:grid-cols-3',
-                ]}
-              >
+            <div class="resources-section">
+              <h2 class="resources-section__heading">{section.heading}</h2>
+              <div class:list={['resources-grid', gridClass[section.cols]]}>
                 {section.cards.map((card) => (
-                  <a
-                    href={card.href}
-                    class="resources-card group flex min-h-[277.5px] flex-col gap-[18.75px] rounded-[18.75px] border border-line bg-white p-5 transition hover:-translate-y-0.5"
-                  >
-                    <span class="relative size-[51.25px] shrink-0">
-                      <img
-                        src={card.icon}
-                        alt=""
-                        width="69"
-                        height="69"
-                        class="absolute inset-[-17.5px] size-[86.25px] max-w-none"
-                      />
+                  <a href={card.href} class:list={['resources-card', card.tall && 'resources-card--tall']}>
+                    <span class="resources-card__icon">
+                      <span class="resources-card__icon-glow" aria-hidden="true">
+                        <img src={card.icon} alt="" />
+                      </span>
                     </span>
-                    <h3 class="text-[25px] font-medium leading-[30px] text-navy">{card.title}</h3>
-                    <p class="flex-1 text-[15px] font-light leading-[22.5px] text-navy">{card.body}</p>
-                    <span class="pd-chip w-fit">Learn More</span>
+                    <h3 class="resources-card__title">{card.title}</h3>
+                    <p class="resources-card__body">{card.body}</p>
+                    <span class="resources-card__chip">Learn More</span>
                   </a>
                 ))}
               </div>
@@ -174,38 +167,201 @@ const sections: ResourceSection[] = [
 </BaseLayout>
 
 <style>
-  .resources-hero__glow {
+  /* Figma Rectangle 11 — radial lavender hero wash (1512×1006) */
+  .resources-hero__gradient {
     pointer-events: none;
     position: absolute;
-    inset: 0;
-    height: min(1257.5px, 100%);
-    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 1512 1006' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect width='100%' height='100%' fill='url(%23g)' opacity='0.96'/><defs><radialGradient id='g' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(2.8831e-14 -230.33 346.19 1.6766e-13 756 932.01)'><stop stop-color='rgba(255,255,255,1)' offset='0.30769'/><stop stop-color='rgba(218,208,255,0.75)' offset='0.48077'/><stop stop-color='rgba(182,160,255,0.5)' offset='0.65385'/><stop stop-color='rgba(108,65,255,0)' offset='1'/></radialGradient></defs></svg>");
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
+    top: 0;
+    left: 50%;
+    width: min(100vw, calc(1512px * var(--pd-scale, 1.25)));
+    height: calc(1006px * var(--pd-scale, 1.25));
+    transform: translateX(-50%);
+    background:
+      radial-gradient(
+        ellipse 346px 460px at 50% 93%,
+        rgba(255, 255, 255, 1) 31%,
+        rgba(218, 208, 255, 0.75) 48%,
+        rgba(182, 160, 255, 0.5) 65%,
+        rgba(108, 65, 255, 0) 100%
+      );
+    opacity: 0.96;
+  }
+
+  .resources-hero__title {
+    max-width: 888.75px;
+    margin-inline: auto;
+    font-size: 62.5px;
+    font-weight: 500;
+    line-height: 65px;
+    letter-spacing: 0;
+    color: #000945;
+    text-shadow: none;
+  }
+
+  .resources-hero__subtitle {
+    margin: 17.5px auto 0;
+    max-width: 892.5px;
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 30px;
+    letter-spacing: 0;
+    color: #000945;
+    text-shadow: none;
   }
 
   .resources-search__field {
     position: relative;
+    height: 52.5px;
     border-radius: 26.25px;
     background: #fff;
+    /* Figma Group 701 filter: dx/dy 6, blur 16.5, #6c41ff @ 21% (×1.25) */
     box-shadow: 7.5px 7.5px 41.25px rgba(108, 65, 255, 0.21);
+  }
+
+  .resources-search__input {
+    box-sizing: border-box;
+    width: 100%;
+    height: 52.5px;
+    padding: 0 56.25px 0 25px;
+    border: 0;
+    border-radius: 26.25px;
+    background: transparent;
+    font-size: 17.5px;
+    font-weight: 300;
+    line-height: 52.5px;
+    color: #000945;
+    outline: none;
+  }
+
+  .resources-search__input::placeholder {
+    color: #878787;
   }
 
   .resources-search__icon {
     position: absolute;
     top: 50%;
-    right: 22.5px;
+    right: 26.25px;
     display: flex;
+    width: 22.5px;
+    height: 22.5px;
     transform: translateY(-50%);
     pointer-events: none;
   }
 
-  .resources-card {
-    box-shadow: none;
+  .resources-search__icon img {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
 
-  .resources-card:hover {
-    box-shadow: 6.25px 6.25px 20px rgba(0, 0, 0, 0.06);
+  .resources-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 62.5px;
+  }
+
+  .resources-section__heading {
+    font-size: 25px;
+    font-weight: 500;
+    line-height: 30px;
+    letter-spacing: 0;
+    color: #000945;
+    text-shadow: none;
+  }
+
+  .resources-grid {
+    display: grid;
+    gap: 35px;
+    margin-top: 12.5px;
+    justify-content: start;
+  }
+
+  .resources-grid--3 {
+    grid-template-columns: repeat(3, 347.5px);
+  }
+
+  .resources-grid--2 {
+    grid-template-columns: repeat(2, 347.5px);
+  }
+
+  .resources-grid--1 {
+    grid-template-columns: 347.5px;
+  }
+
+  .resources-card {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 18.75px;
+    width: 347.5px;
+    height: 277.5px;
+    padding: 25px;
+    border: 1.25px solid #e2e2e2;
+    border-radius: 18.75px;
+    background: #fff;
+    box-shadow: none;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .resources-card--tall {
+    height: auto;
+    min-height: 277.5px;
+  }
+
+  /* Figma Group 688 — 41px layout slot; 69px asset bleeds via inset -34.15% wrapper (×1.25) */
+  .resources-card__icon {
+    position: relative;
+    flex-shrink: 0;
+    width: 51.25px;
+    height: 51.25px;
+  }
+
+  .resources-card__icon-glow {
+    position: absolute;
+    inset: -34.15%;
+  }
+
+  .resources-card__icon-glow img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+  }
+
+  .resources-card__title {
+    font-size: 25px;
+    font-weight: 500;
+    line-height: 30px;
+    letter-spacing: 0;
+    color: #000945;
+    text-shadow: none;
+  }
+
+  .resources-card__body {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 22.5px;
+    letter-spacing: 0;
+    color: #000945;
+    text-shadow: none;
+  }
+
+  .resources-card__chip {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    height: 22.5px;
+    padding: 0 12.5px;
+    border-radius: 50px;
+    background: rgba(108, 65, 255, 0.11);
+    color: #6c41ff;
+    font-size: 11.25px;
+    font-weight: 600;
+    line-height: 17.5px;
+    letter-spacing: 0;
+    text-shadow: none;
   }
 
   .sr-only {
@@ -218,5 +374,42 @@ const sections: ResourceSection[] = [
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
+  }
+
+  @media (max-width: 1199px) {
+    .resources-grid--3 {
+      grid-template-columns: repeat(2, min(347.5px, 100%));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .resources-hero {
+      padding-top: 250px;
+      padding-bottom: 80px;
+    }
+
+    .resources-hero__title {
+      font-size: 50px;
+      line-height: 52px;
+    }
+
+    .resources-hero__subtitle {
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    .resources-grid--3,
+    .resources-grid--2,
+    .resources-grid--1 {
+      grid-template-columns: min(347.5px, 100%);
+    }
+
+    .resources-card {
+      width: 100%;
+    }
+
+    .resources-cards {
+      padding-bottom: 120px;
+    }
   }
 </style>

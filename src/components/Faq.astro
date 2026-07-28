@@ -7,23 +7,26 @@ interface FaqItem {
 interface Props {
   items: FaqItem[];
   title?: string;
+  layout?: 'split' | 'centered';
 }
 
-const { items, title = 'Common questions, answered.' } = Astro.props;
+const { items, title = 'Common questions, answered.', layout = 'split' } = Astro.props;
 
-/** Match Figma: keep phrase before the comma on one line, then break. */
+/** Match Figma split layout: keep phrase before the comma on one line, then break. */
 const commaIdx = title.indexOf(', ');
 const titleLines =
-  commaIdx === -1
+  layout === 'centered' || commaIdx === -1
     ? [title]
     : [title.slice(0, commaIdx + 1), title.slice(commaIdx + 2)];
+
+const lastIndex = items.length - 1;
 ---
 
-<section id="faq" class="scroll-mt-24 pt-2 pb-16 sm:pt-4 sm:pb-24">
-  <div class="pd-rail grid gap-8 lg:grid-cols-[475px_737.5px] lg:justify-between lg:gap-10">
-    <div>
-      <span class="pd-section-label">FAQ</span>
-      <h2 class="mt-[13.75px] text-[50px] font-medium leading-[58.75px] text-navy sm:text-[52.5px]">
+<section id="faq" class:list={['faq', 'scroll-mt-24', { 'faq--centered': layout === 'centered' }]}>
+  <div class="pd-rail faq__layout">
+    <div class="faq__intro">
+      <span class="faq__label">FAQ</span>
+      <h2 class="faq__title">
         {
           titleLines.map((line, i) => (
             <>
@@ -35,39 +38,51 @@ const titleLines =
       </h2>
     </div>
 
-    <div class="divide-y divide-[#ececec] rounded-[17.5px] border border-line bg-white" data-faq-list>
+    <div class="faq__list" data-faq-list>
       {
         items.map((item, i) => (
-          <div class:list={['faq-item', 'px-5', 'py-3.5', { 'is-open': i === 0 }]}>
-            <button
-              type="button"
-              class="faq-trigger flex w-full cursor-pointer items-center justify-between gap-4 text-left text-[20px] font-medium leading-[25px] text-navy"
-              aria-expanded={i === 0 ? 'true' : 'false'}
+          <div
+            class:list={[
+              'faq-entry',
+              { 'is-open': i === 0, 'is-first': i === 0, 'is-last': i === lastIndex },
+            ]}
+          >
+            <div
+              class:list={[
+                'faq-item',
+                'faq-item--question',
+                { 'is-open': i === 0 },
+              ]}
             >
-              <span>{item.q}</span>
-              <span class="faq-icon" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1" />
-                  <path
-                    class="faq-icon-h"
-                    d="M6 10h8"
-                    stroke="currentColor"
-                    stroke-width="1"
-                    stroke-linecap="round"
+              <button
+                type="button"
+                class="faq-trigger"
+                aria-expanded={i === 0 ? 'true' : 'false'}
+              >
+                <span class="faq-trigger__text">{item.q}</span>
+                <span class="faq-icon" aria-hidden="true">
+                  <img
+                    src="/images/figma/faq/icon-minus.svg"
+                    alt=""
+                    width="25"
+                    height="25"
+                    class="faq-icon__minus"
                   />
-                  <path
-                    class="faq-icon-v"
-                    d="M10 6v8"
-                    stroke="currentColor"
-                    stroke-width="1"
-                    stroke-linecap="round"
+                  <img
+                    src="/images/figma/faq/icon-plus.svg"
+                    alt=""
+                    width="25"
+                    height="25"
+                    class="faq-icon__plus"
                   />
-                </svg>
-              </span>
-            </button>
-            <div class="faq-panel" role="region">
-              <div class="faq-panel-inner">
-                <p class="pb-1 pt-3 text-[17.5px] font-light leading-[20px] text-navy/80">{item.a}</p>
+                </span>
+              </button>
+            </div>
+            <div class:list={['faq-item', 'faq-item--answer', { 'is-open': i === 0 }]}>
+              <div class="faq-panel" role="region">
+                <div class="faq-panel-inner">
+                  <p class="faq-answer">{item.a}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -77,29 +92,255 @@ const titleLines =
   </div>
 </section>
 
+<style>
+  .faq {
+    padding-bottom: 160px;
+  }
+
+  .faq--centered {
+    padding-top: 195px;
+    padding-bottom: 295px;
+  }
+
+  .faq__layout {
+    display: grid;
+    gap: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    .faq__layout {
+      grid-template-columns: 446.25px 782.5px;
+      justify-content: space-between;
+      gap: 31.25px;
+      align-items: start;
+    }
+
+    /* Home split FAQ — list aligns with title, not label (Figma 2022:2372–2375) */
+    .faq:not(.faq--centered) .faq__list {
+      margin-top: 63.75px;
+    }
+  }
+
+  .faq--centered .faq__layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0;
+  }
+
+  .faq--centered .faq__intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .faq--centered .faq__title {
+    margin-top: 7.5px;
+    max-width: none;
+  }
+
+  .faq--centered .faq__list {
+    width: 100%;
+    max-width: 776.25px;
+    margin-top: 38.75px;
+    text-align: left;
+  }
+
+  /* Frame 939 — light purple tint pill, not solid fill */
+  .faq__label {
+    display: inline-flex;
+    align-items: center;
+    height: 37.5px;
+    padding: 6.25px 18.75px;
+    border-radius: 50px;
+    background: rgba(108, 65, 255, 0.12);
+    color: #6c41ff;
+    font-family: var(--font-sans);
+    font-size: 17.5px;
+    font-weight: 500;
+    line-height: 31.25px;
+  }
+
+  .faq__title {
+    margin-top: 26.25px;
+    max-width: 446.25px;
+    color: #000945;
+    font-family: var(--font-sans);
+    font-size: 50px;
+    font-weight: 500;
+    line-height: 58.75px;
+    letter-spacing: 0;
+  }
+
+  .faq__list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .faq-entry {
+    border: 0.375px solid #878787;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  .faq-entry + .faq-entry {
+    margin-top: -0.375px;
+  }
+
+  .faq-entry.is-first {
+    border-radius: 18.75px 18.75px 0 0;
+  }
+
+  .faq-entry.is-last {
+    border-radius: 0 0 18.75px 18.75px;
+  }
+
+  .faq-entry.is-first.is-last {
+    border-radius: 18.75px;
+  }
+
+  .faq-item {
+    background: #fff;
+  }
+
+  .faq-entry:has(.faq-item--answer.is-open) .faq-item--question {
+    border-bottom: 0.375px solid #878787;
+  }
+
+  .faq-trigger {
+    display: flex;
+    width: 100%;
+    cursor: pointer;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 17.5px 25px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    color: #000945;
+    font-family: var(--font-sans);
+    font-size: 17.5px;
+    font-weight: 600;
+    line-height: 25px;
+  }
+
+  .faq-trigger__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .faq-icon {
+    position: relative;
+    display: flex;
+    width: 25px;
+    height: 25px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .faq-icon__minus,
+  .faq-icon__plus {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 25px;
+    height: 25px;
+    transition: opacity 0.35s ease;
+  }
+
+  .faq-icon__minus {
+    opacity: 0;
+  }
+
+  .faq-icon__plus {
+    opacity: 1;
+  }
+
+  .faq-item--question.is-open .faq-icon__minus {
+    opacity: 1;
+  }
+
+  .faq-item--question.is-open .faq-icon__plus {
+    opacity: 0;
+  }
+
+  .faq-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .faq-item--answer.is-open .faq-panel {
+    grid-template-rows: 1fr;
+  }
+
+  .faq-answer {
+    margin: 0;
+    padding: 17.5px 25px;
+    color: #000945;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 20px;
+  }
+
+  .faq-panel-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-panel,
+    .faq-icon__minus,
+    .faq-icon__plus {
+      transition: none;
+    }
+  }
+</style>
+
 <script>
   function initFaqAccordion() {
     document.querySelectorAll('[data-faq-list]').forEach((list) => {
       if (list instanceof HTMLElement && list.dataset.faqBound === 'true') return;
       if (list instanceof HTMLElement) list.dataset.faqBound = 'true';
 
-      list.querySelectorAll('.faq-item').forEach((item) => {
-        const trigger = item.querySelector('.faq-trigger');
+      const questionItems = list.querySelectorAll('.faq-item--question');
+
+      questionItems.forEach((questionItem) => {
+        const trigger = questionItem.querySelector('.faq-trigger');
+        const answerItem = questionItem.nextElementSibling;
+        const entry = questionItem.closest('.faq-entry');
         if (!(trigger instanceof HTMLButtonElement)) return;
+        if (!(answerItem instanceof HTMLElement) || !answerItem.classList.contains('faq-item--answer')) return;
 
         trigger.addEventListener('click', () => {
-          const willOpen = !item.classList.contains('is-open');
+          const willOpen = !questionItem.classList.contains('is-open');
 
-          list.querySelectorAll('.faq-item.is-open').forEach((openItem) => {
-            if (openItem === item) return;
-            openItem.classList.remove('is-open');
-            const openTrigger = openItem.querySelector('.faq-trigger');
+          list.querySelectorAll('.faq-item--question.is-open').forEach((openQuestion) => {
+            if (openQuestion === questionItem) return;
+            openQuestion.classList.remove('is-open');
+            const openTrigger = openQuestion.querySelector('.faq-trigger');
+            const openAnswer = openQuestion.nextElementSibling;
+            const openEntry = openQuestion.closest('.faq-entry');
             if (openTrigger instanceof HTMLButtonElement) {
               openTrigger.setAttribute('aria-expanded', 'false');
             }
+            if (openAnswer instanceof HTMLElement) {
+              openAnswer.classList.remove('is-open');
+            }
+            if (openEntry instanceof HTMLElement) {
+              openEntry.classList.remove('is-open');
+            }
           });
 
-          item.classList.toggle('is-open', willOpen);
+          questionItem.classList.toggle('is-open', willOpen);
+          answerItem.classList.toggle('is-open', willOpen);
+          if (entry instanceof HTMLElement) {
+            entry.classList.toggle('is-open', willOpen);
+          }
           trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
         });
       });

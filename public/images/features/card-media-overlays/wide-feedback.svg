@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 157 223" preserveAspectRatio="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="pd-wide-blur" x1="0" y1="0" x2="1" y2="0">
+      <stop stop-color="white"/>
+      <stop offset="1" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="157" height="223" fill="url(#pd-wide-blur)"/>
+</svg>

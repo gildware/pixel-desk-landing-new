@@ -2,42 +2,46 @@
 const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companies'];
 ---
 
-<section class="pd-hero-gradient relative overflow-hidden pb-10 pt-[175px] sm:pt-[200px]">
-  <div class="pd-rail grid items-center gap-10 lg:grid-cols-[526.25px_1fr] lg:gap-16">
-    <div class="pl-5 lg:pl-5">
-      <h1 class="max-w-[526.25px] text-[50px] font-medium leading-[60px] tracking-tight text-navy sm:text-[60px] sm:leading-[65px]">
-        Where projects get done — and <span class="text-purple">teams actually thrive.</span>
+<section class="pd-hero-gradient relative overflow-x-hidden pb-0 pt-[361.25px]">
+  <div
+    class="pd-rail grid items-start gap-y-8 lg:grid-cols-[528.75px_623.75px] lg:gap-x-[110px] lg:gap-y-0"
+  >
+    <div class="hero-copy pl-[2.5px]">
+      <h1 class="hero-copy__title">
+        Where projects get<br class="hero-copy__br" />
+        done — and <span class="text-purple">teams<br class="hero-copy__br" />actually thrive.</span>
       </h1>
-      <p class="mt-5 max-w-[501.25px] text-[20px] font-light leading-[31.25px] text-navy">
+      <p class="hero-copy__body">
         Managing a project means juggling tasks, timelines, team wellbeing, and client expectations all at once.
         Pixeldesk brings every piece of that picture into a single, intelligent workspace — so nothing slips through
         the gaps and everyone always knows where things stand.
       </p>
-      <a href="/pricing" class="pd-btn-primary mt-8">Start for free</a>
+      <a href="/pricing" class="hero-copy__cta">Start for free</a>
     </div>
 
-    <div class="hero-visual relative mx-auto aspect-[499/486] w-full max-w-[650px]" data-hero-visual aria-label="Pixeldesk product preview">
-      <div class="hero-decor hero-decor--purple-a" aria-hidden="true"></div>
-      <div class="hero-decor hero-decor--purple-b" aria-hidden="true"></div>
-
+    <div
+      class="hero-visual relative mx-auto aspect-[499/455.5] w-full max-w-[623.75px] shrink-0 overflow-visible lg:-mt-[61.25px] lg:mx-0 lg:w-[623.75px] lg:max-w-none lg:justify-self-start"
+      data-hero-visual
+      aria-label="Pixeldesk product preview"
+    >
       <img
-        src="/images/figma/hero-parts/project.svg"
+        src="/images/figma/hero-parts/purple-b.svg"
         alt=""
-        width="228"
-        height="228"
-        class="hero-part hero-part--project"
-        style="--from-x: 0px; --from-y: -37.5px; --delay: 120ms;"
+        width="358"
+        height="250"
+        class="hero-part hero-part--purple-b"
+        style="--from-x: 18px; --from-y: -10px; --delay: 0ms;"
         loading="eager"
         decoding="async"
       />
 
       <img
-        src="/images/figma/hero-parts/folder.svg"
+        src="/images/figma/hero-parts/purple-a.svg"
         alt=""
-        width="83"
-        height="84"
-        class="hero-part hero-part--folder"
-        style="--from-x: -25px; --from-y: 0px; --delay: 200ms;"
+        width="358"
+        height="250"
+        class="hero-part hero-part--purple-a"
+        style="--from-x: -16px; --from-y: 14px; --delay: 40ms;"
         loading="eager"
         decoding="async"
       />
@@ -45,10 +49,43 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
       <img
         src="/images/figma/hero-parts/map.svg"
         alt=""
-        width="187"
-        height="150"
+        width="156"
+        height="120"
         class="hero-part hero-part--map"
-        style="--from-x: -35px; --from-y: 12.5px; --delay: 260ms;"
+        style="--from-x: -35px; --from-y: 12.5px; --delay: 180ms;"
+        loading="eager"
+        decoding="async"
+      />
+
+      <img
+        src="/images/figma/hero-parts/people.svg"
+        alt=""
+        width="170"
+        height="144"
+        class="hero-part hero-part--people"
+        style="--from-x: 30px; --from-y: -5px; --delay: 320ms;"
+        loading="eager"
+        decoding="async"
+      />
+
+      <img
+        src="/images/figma/hero-parts/today.svg"
+        alt=""
+        width="183"
+        height="127"
+        class="hero-part hero-part--today"
+        style="--from-x: 30px; --from-y: 35px; --delay: 400ms;"
+        loading="eager"
+        decoding="async"
+      />
+
+      <img
+        src="/images/figma/hero-parts/project.svg"
+        alt=""
+        width="198"
+        height="198"
+        class="hero-part hero-part--project"
+        style="--from-x: 0px; --from-y: -37.5px; --delay: 80ms;"
         loading="eager"
         decoding="async"
       />
@@ -59,29 +96,18 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
         width="71"
         height="12"
         class="hero-part hero-part--stars"
-        style="--from-x: 0px; --from-y: -17.5px; --delay: 320ms;"
+        style="--from-x: 0px; --from-y: -17.5px; --delay: 260ms;"
         loading="eager"
         decoding="async"
       />
 
       <img
-        src="/images/figma/hero-parts/people.svg"
+        src="/images/figma/hero-parts/folder.svg"
         alt=""
-        width="171"
-        height="145"
-        class="hero-part hero-part--people"
-        style="--from-x: 30px; --from-y: -5px; --delay: 380ms;"
-        loading="eager"
-        decoding="async"
-      />
-
-      <img
-        src="/images/figma/hero-parts/today.svg"
-        alt=""
-        width="222"
-        height="158"
-        class="hero-part hero-part--today"
-        style="--from-x: 30px; --from-y: 35px; --delay: 460ms;"
+        width="39"
+        height="40"
+        class="hero-part hero-part--folder"
+        style="--from-x: -25px; --from-y: 0px; --delay: 140ms;"
         loading="eager"
         decoding="async"
       />
@@ -92,34 +118,43 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
         width="57"
         height="17"
         class="hero-part hero-part--sprint"
-        style="--from-x: 0px; --from-y: 17.5px; --delay: 520ms;"
+        style="--from-x: 0px; --from-y: 17.5px; --delay: 560ms;"
         loading="eager"
         decoding="async"
       />
     </div>
   </div>
 
-  <div class="pd-rail mt-14 text-center sm:mt-16">
-    <p class="inline-flex rounded-full bg-[#6C41FF1C] px-3 py-1 text-[13.75px] font-medium text-purple">
-      Useful tool for
-    </p>
-    <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-5">
+  <div class="pd-rail hero-audience mt-[188.125px] text-center">
+    <img
+      src="/images/figma/useful-tool-for.png"
+      alt="Useful tool for"
+      width="91"
+      height="18"
+      class="hero-audience__label"
+      decoding="async"
+    />
+    <div class="hero-audience__grid">
       {
         audiences.map((name) => (
-          <div class="hero-audience-card flex min-h-[100px] items-center justify-center rounded-xl bg-[#f3f4f6] px-4 py-8 text-center text-[17.5px] font-medium leading-snug text-navy sm:min-h-[112.5px] sm:py-10 sm:text-[18.75px]">
-            {name}
-          </div>
+          <div class="hero-audience-card">{name}</div>
         ))
       }
     </div>
+
+    <img
+      src="/images/dashboard-preview.svg"
+      alt="Pixeldesk dashboard showing project summaries, status, and team widgets"
+      width="931"
+      height="543"
+      class="hero-dashboard-preview"
+      loading="lazy"
+      decoding="async"
+    />
   </div>
 </section>
 
 <style is:global>
-  .hero-visual {
-    --card-shadow: 5px 5px 18.75px rgba(0, 0, 0, 0.12);
-  }
-
   .hero-part {
     position: absolute;
     opacity: 0;
@@ -128,6 +163,9 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
       opacity 1.35s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0ms),
       transform 1.35s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0ms);
     will-change: transform, opacity;
+    display: block;
+    height: auto;
+    object-fit: contain;
   }
 
   .hero-visual.is-ready .hero-part {
@@ -135,119 +173,189 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
     transform: translate3d(0, 0, 0);
   }
 
-  .hero-decor {
-    position: absolute;
-    pointer-events: none;
-  }
-
-  .hero-decor--purple-a {
-    top: 4%;
-    left: 2%;
+  /* PD-Website-UI-2026 Home hero — layout.json (499×455.5) */
+  .hero-part--purple-b {
+    top: 8.46%;
+    left: 0;
     z-index: 0;
-    width: 78%;
-    height: 62%;
-    border-radius: 46% 54% 48% 52% / 52% 44% 56% 48%;
-    background:
-      radial-gradient(ellipse 70% 60% at 42% 45%, rgba(186, 168, 255, 0.85) 0%, rgba(186, 168, 255, 0.4) 42%, transparent 70%);
-    filter: blur(1.25px);
+    width: 71.68%;
+    height: 54.88%;
   }
 
-  .hero-decor--purple-b {
-    right: -4%;
-    bottom: 0;
+  .hero-part--purple-a {
+    top: 37.96%;
+    left: 28.32%;
     z-index: 0;
-    width: 74%;
-    height: 68%;
-    border-radius: 54% 46% 42% 58% / 48% 56% 44% 52%;
-    background:
-      radial-gradient(ellipse 65% 55% at 58% 48%, rgba(108, 65, 255, 0.5) 0%, rgba(150, 120, 240, 0.28) 45%, transparent 72%);
-    filter: blur(1.25px);
-  }
-
-  /* Positions mapped from Figma Group 643 (~499×486). Card SVG widths scaled for filter padding. */
-  .hero-part--project {
-    top: 0;
-    left: 20%;
-    z-index: 6;
-    width: min(48%, 310px);
-    height: auto;
-    display: block;
-    object-fit: contain;
-  }
-
-  .hero-part--folder {
-    top: 42%;
-    left: 9%;
-    z-index: 7;
-    width: 55px;
-    height: auto;
-    display: block;
-    object-fit: contain;
+    width: 71.68%;
+    height: 54.88%;
   }
 
   .hero-part--map {
-    top: 50%;
-    left: 2%;
-    z-index: 5;
-    width: min(39%, 252px);
-    height: auto;
-    display: block;
-    object-fit: contain;
-  }
-
-  .hero-part--stars {
-    top: 28%;
-    left: 70%;
-    z-index: 4;
-    width: min(16%, 115px);
-    height: auto;
-    display: block;
-    object-fit: contain;
+    top: 54.23%;
+    left: 6.21%;
+    z-index: 2;
+    width: 31.29%;
+    height: 26.25%;
   }
 
   .hero-part--people {
-    top: 30%;
-    left: 56%;
-    z-index: 3;
-    width: min(40%, 250px);
-    height: auto;
-    display: block;
-    object-fit: contain;
+    top: 41.22%;
+    left: 58.61%;
+    z-index: 4;
+    width: 34.06%;
+    height: 31.57%;
   }
 
   .hero-part--today {
-    top: 64%;
-    right: 0;
-    bottom: auto;
+    top: 72.02%;
+    left: 57.43%;
     z-index: 6;
-    width: min(46%, 296px);
-    height: auto;
-    display: block;
-    object-fit: contain;
+    width: 36.63%;
+    height: 27.98%;
+  }
+
+  .hero-part--project {
+    top: 0;
+    left: 22.38%;
+    z-index: 7;
+    width: 39.6%;
+    height: 43.39%;
+  }
+
+  .hero-part--stars {
+    top: 33.37%;
+    left: 73.15%;
+    z-index: 8;
+    width: 14.21%;
+    height: 2.61%;
+  }
+
+  .hero-part--folder {
+    top: 43.47%;
+    left: 13.83%;
+    z-index: 9;
+    width: 7.82%;
+    height: 8.78%;
   }
 
   .hero-part--sprint {
-    top: 78%;
-    left: 18%;
-    bottom: auto;
-    z-index: 8;
-    width: 85px;
-    height: auto;
+    top: 82.33%;
+    left: 20.24%;
+    z-index: 9;
+    width: 11.42%;
+    height: 3.73%;
+  }
+
+  /* Frame 923 — Figma export @ 73×14 (×1.25 → 91.25×17.5) */
+  .hero-audience__label {
+    display: inline-block;
+    width: 91.25px;
+    height: 17.5px;
+    margin: 0;
+    vertical-align: middle;
+  }
+
+  /* Frame 979 — 691×84 row, Frame 925 cards 160×84, gap 17 */
+  .hero-audience__grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 21.25px;
+    max-width: 863.75px;
+    margin: 38.75px auto 0;
+  }
+
+  /* image 1 (2022:2173): 191px below cards → visible top; SVG has 19px top bleed */
+  .hero-dashboard-preview {
     display: block;
-    object-fit: contain;
+    width: 100%;
+    max-width: 1163.75px;
+    height: auto;
+    margin: 238.75px auto 0;
   }
 
+  /* Frame 925 — rx=10, fill #F0F0F0, label 15/25 Outfit Medium #000945 */
   .hero-audience-card {
-    transition:
-      transform 0.25s ease,
-      box-shadow 0.25s ease,
-      background-color 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 200px;
+    height: 105px;
+    border-radius: 12.5px;
+    background: #f0f0f0;
+    color: #000945;
+    font-size: 18.75px;
+    font-weight: 500;
+    line-height: 31.25px;
+    text-align: center;
   }
 
-  .hero-audience-card:hover {
-    transform: translateY(-4px);
-    background-color: #eceef1;
-    box-shadow: 0 6px 16px rgba(0, 9, 69, 0.08);
+  @media (min-width: 1024px) {
+    .hero-audience__grid {
+      flex-wrap: nowrap;
+    }
+  }
+
+  /* Left hero copy — Figma nodes 2022:1561–1564 @ --pd-scale (×1.25) */
+  .hero-copy__title {
+    max-width: 526.25px;
+    font-size: 55px;
+    font-weight: 500;
+    line-height: 60px;
+    letter-spacing: 0;
+    color: #000945;
+  }
+
+  .hero-copy__br {
+    display: none;
+  }
+
+  .hero-copy__body {
+    margin-top: 23.75px;
+    margin-left: 1.25px;
+    max-width: 501.25px;
+    font-size: 17.5px;
+    font-weight: 300;
+    line-height: 25px;
+    color: #000945;
+  }
+
+  /* Frame 957: no fill, 1px #6c41ff stroke, radius 25, navy label */
+  .hero-copy__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    margin-top: 41.25px;
+    min-width: 163.75px;
+    height: 42.5px;
+    padding: 0 30px;
+    border-radius: 31.25px;
+    background: transparent;
+    color: #000945;
+    font-size: 17.5px;
+    font-weight: 400;
+    line-height: 17.5px;
+    white-space: nowrap;
+    border: 1.25px solid #6c41ff;
+    transition: background 0.15s ease;
+  }
+
+  .hero-copy__cta:hover {
+    background: rgba(108, 65, 255, 0.08);
+  }
+
+  @media (min-width: 640px) {
+    .hero-copy__br {
+      display: block;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .pd-hero-gradient {
+      padding-top: 200px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -257,14 +365,6 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
       transition: none;
     }
 
-    .hero-audience-card {
-      transition: none;
-    }
-
-    .hero-audience-card:hover {
-      transform: none;
-      box-shadow: none;
-    }
   }
 </style>
 

@@ -65,7 +65,7 @@ const plans: Plan[] = [
     priceLabel: '₹599',
     priceAnnual: '₹599',
     priceMonthly: '₹749',
-    priceSub: 'Billed annually (₹7,188/user/year) · ₹749/user/mo billed monthly',
+    priceSub: 'Billed annually (₹7,188/user/year + 18% GST) · $11.99 USD approx · ₹749/user/mo billed monthly',
     blurb: 'For growing agencies, product teams, and consultancies managing multiple clients, sprints, and projects.',
     bestFor: 'Best for: Teams of 5–100 · Includes 14-day free trial',
     cta: 'Start 14-day free trial',
@@ -144,6 +144,7 @@ const plans: Plan[] = [
     bestFor: 'Best for: Teams of 100+ · Volume discounts available',
     cta: 'Talk to sales',
     href: '#',
+    footnote: 'Custom quote — Usually shared within 4 business hrs.',
     groups: [
       {
         title: 'Everything in Growth, plus:',
@@ -245,7 +246,7 @@ function cellContent(value: Cell) {
   <Header current="pricing" />
   <main class="pricing-page">
     <section class="pricing-hero">
-      <div class="pricing-hero__glow" aria-hidden="true"></div>
+      <div class="pricing-hero__gradient" aria-hidden="true"></div>
       <div class="pricing-shell pricing-hero__content">
         <h1 class="pricing-hero__title">
           Transparent pricing.<br />Everything included. No surprises.
@@ -268,7 +269,7 @@ function cellContent(value: Cell) {
             <span class="billing-toggle__knob"></span>
           </button>
           <span class="billing-toggle__label" data-billing-label="monthly">Monthly billing</span>
-          <span class="billing-toggle__save">Save 20% annually</span>
+          <span class="billing-toggle__save">Save 20% and more</span>
         </div>
       </div>
     </section>
@@ -462,7 +463,7 @@ function cellContent(value: Cell) {
     --pp-body: #3d3d3d;
     --pp-muted: #5f616d;
     --pp-label: #878787;
-    --pp-line: #e8e8ec;
+    --pp-line: #e2e2e2;
     --pp-surface: #f7f6fb;
     --pp-green: #16a34a;
     background: #fff;
@@ -486,18 +487,28 @@ function cellContent(value: Cell) {
   .pricing-hero {
     position: relative;
     overflow: hidden;
-    padding: 195px 0 10px;
+    padding: 338.75px 0 75px;
     text-align: center;
   }
 
-  .pricing-hero__glow {
+  /* Figma Rectangle 11 — radial lavender hero wash (1512×1006) */
+  .pricing-hero__gradient {
     pointer-events: none;
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 50%;
+    width: min(100vw, calc(1512px * var(--pd-scale, 1.25)));
+    height: calc(1006px * var(--pd-scale, 1.25));
+    transform: translateX(-50%);
     background:
-      radial-gradient(ellipse 90% 80% at 50% -10%, rgba(218, 208, 255, 0.85) 0%, rgba(218, 208, 255, 0.35) 38%, transparent 68%),
-      radial-gradient(ellipse 45% 40% at 8% 12%, rgba(255, 236, 210, 0.28) 0%, transparent 58%),
-      linear-gradient(180deg, #efeaff 0%, #f7f4ff 38%, #ffffff 100%);
+      radial-gradient(
+        ellipse 346px 460px at 50% 93%,
+        rgba(255, 255, 255, 1) 31%,
+        rgba(218, 208, 255, 0.75) 48%,
+        rgba(182, 160, 255, 0.5) 65%,
+        rgba(108, 65, 255, 0) 100%
+      );
+    opacity: 0.96;
   }
 
   .pricing-hero__content {
@@ -507,41 +518,24 @@ function cellContent(value: Cell) {
 
   .pricing-hero__title {
     margin: 0 auto;
-    max-width: 900px;
+    max-width: 958.75px;
     color: var(--pp-navy);
-    font-size: 42.5px;
+    font-size: 62.5px;
     font-weight: 500;
-    line-height: 1.18;
-    letter-spacing: -0.02em;
-  }
-
-  @media (min-width: 640px) {
-    .pricing-hero {
-      padding-top: 225px;
-      padding-bottom: 15px;
-    }
-
-    .pricing-hero__title {
-      font-size: 60px;
-      line-height: 1.12;
-    }
+    line-height: 65px;
+    letter-spacing: 0;
+    text-shadow: none;
   }
 
   .pricing-hero__subtitle {
-    margin: 22.5px auto 0;
-    max-width: 700px;
-    color: var(--pp-muted);
-    font-size: 18.75px;
+    margin: 43.75px auto 0;
+    max-width: 667.5px;
+    color: var(--pp-navy);
+    font-size: 20px;
     font-weight: 300;
     line-height: 30px;
-  }
-
-  @media (min-width: 640px) {
-    .pricing-hero__subtitle {
-      margin-top: 27.5px;
-      font-size: 20px;
-      line-height: 32.5px;
-    }
+    letter-spacing: 0;
+    text-shadow: none;
   }
 
   /* —— Billing toggle —— */
@@ -551,7 +545,7 @@ function cellContent(value: Cell) {
     justify-content: center;
     flex-wrap: wrap;
     gap: 15px;
-    margin-top: 50px;
+    margin-top: 75px;
   }
 
   .billing-toggle__label {
@@ -627,7 +621,8 @@ function cellContent(value: Cell) {
 
   @media (min-width: 960px) {
     .pricing-plans__grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(3, 403.75px);
+      justify-content: center;
       gap: 25px;
     }
   }
@@ -639,9 +634,10 @@ function cellContent(value: Cell) {
     height: auto;
     padding: 35px 27.5px 27.5px;
     border-radius: 22.5px;
-    border: 1.25px solid #ebeaf0;
+    border: 1.25px solid var(--pp-line);
     background: #fff;
     box-shadow: 0 10px 35px rgba(0, 9, 69, 0.04);
+    text-shadow: none;
   }
 
   .plan-card--featured {
@@ -661,13 +657,14 @@ function cellContent(value: Cell) {
     height: 32.5px;
     padding: 0 15px;
     border-radius: 1248.75px;
-    background: #e6a817;
+    background: var(--pp-purple);
     color: #fff;
     font-size: 12.5px;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     white-space: nowrap;
+    text-shadow: none;
   }
 
   .plan-card__name {
@@ -717,10 +714,11 @@ function cellContent(value: Cell) {
 
   .plan-card__best {
     margin: 17.5px 0 0;
-    color: #3b82f6;
+    color: var(--pp-purple);
     font-size: 15px;
     font-weight: 500;
     line-height: 22.5px;
+    text-shadow: none;
   }
 
   .plan-card__body {
@@ -775,7 +773,7 @@ function cellContent(value: Cell) {
   }
 
   .plan-card__icon--check {
-    color: #3b82f6;
+    color: var(--pp-purple);
   }
 
   .plan-card__icon--cross {
@@ -855,23 +853,21 @@ function cellContent(value: Cell) {
   .pricing-compare__title {
     margin: 17.5px 0 0;
     color: var(--pp-navy);
-    font-size: 40px;
+    font-size: 62.5px;
     font-weight: 500;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-  }
-
-  @media (min-width: 640px) {
-    .pricing-compare__title {
-      font-size: 50px;
-    }
+    line-height: 65px;
+    letter-spacing: 0;
+    text-shadow: none;
   }
 
   .pricing-compare__subtitle {
     margin: 12.5px 0 0;
     color: var(--pp-muted);
-    font-size: 18.75px;
+    font-size: 20px;
     font-weight: 300;
+    line-height: 30px;
+    letter-spacing: 0;
+    text-shadow: none;
   }
 
   .compare-table-wrap {
@@ -934,7 +930,7 @@ function cellContent(value: Cell) {
 
   .compare-table__check {
     display: inline-flex;
-    color: var(--pp-green);
+    color: var(--pp-purple);
   }
 
   .compare-table__cross {
@@ -968,6 +964,33 @@ function cellContent(value: Cell) {
   .compare-table__price-val.is-accent {
     color: var(--pp-purple);
   }
+
+  @media (max-width: 767px) {
+    .pricing-hero {
+      padding-top: 250px;
+      padding-bottom: 60px;
+    }
+
+    .pricing-hero__title {
+      font-size: 50px;
+      line-height: 52px;
+    }
+
+    .pricing-hero__subtitle {
+      margin-top: 35px;
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    .billing-toggle {
+      margin-top: 50px;
+    }
+
+    .pricing-compare__title {
+      font-size: 50px;
+      line-height: 52px;
+    }
+  }
 </style>
 
 <script>
@@ -978,8 +1001,8 @@ function cellContent(value: Cell) {
   const growthSub = document.querySelector('[data-price-sub="growth"]');
 
   const subCopy = {
-    annual: 'Billed annually (₹7,188/user/year) · ₹749/user/mo billed monthly',
-    monthly: 'Billed monthly · ₹599/user/mo with annual billing',
+    annual: 'Billed annually (₹7,188/user/year + 18% GST) · $11.99 USD approx · ₹749/user/mo billed monthly',
+    monthly: 'Billed monthly · ₹749/user/mo · ₹599/user/mo with annual billing',
   };
 
   function setBilling(mode) {
