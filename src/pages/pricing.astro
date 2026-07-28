@@ -497,7 +497,8 @@ function cellContent(value: Cell) {
     position: absolute;
     top: 0;
     left: 50%;
-    width: min(100vw, calc(1512px * var(--pd-scale, 1.25)));
+    width: 100%;
+    max-width: calc(1512px * var(--pd-scale, 1.25));
     height: calc(1006px * var(--pd-scale, 1.25));
     transform: translateX(-50%);
     background:
@@ -621,9 +622,14 @@ function cellContent(value: Cell) {
 
   @media (min-width: 960px) {
     .pricing-plans__grid {
-      grid-template-columns: repeat(3, 403.75px);
-      justify-content: center;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 25px;
+    }
+
+    .plan-card {
+      width: 100%;
+      max-width: 403.75px;
+      justify-self: center;
     }
   }
 
@@ -871,10 +877,14 @@ function cellContent(value: Cell) {
   }
 
   .compare-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     overflow-x: auto;
     border-radius: 20px;
     background: #fff;
     border: 1.25px solid var(--pp-line);
+    -webkit-overflow-scrolling: touch;
   }
 
   .compare-table {

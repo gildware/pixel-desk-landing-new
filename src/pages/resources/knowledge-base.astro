@@ -140,7 +140,8 @@ const topics: Topic[] = [
     position: absolute;
     top: 0;
     left: 50%;
-    width: min(100vw, calc(1512px * var(--pd-scale, 1.25)));
+    width: 100%;
+    max-width: calc(1512px * var(--pd-scale, 1.25));
     height: calc(1006px * var(--pd-scale, 1.25));
     transform: translateX(-50%);
     background:
@@ -222,9 +223,9 @@ const topics: Topic[] = [
 
   .kb-grid {
     display: grid;
-    grid-template-columns: repeat(3, 347.5px);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 35px;
-    justify-content: start;
+    width: 100%;
   }
 
   .kb-card {
@@ -232,7 +233,8 @@ const topics: Topic[] = [
     display: flex;
     flex-direction: column;
     gap: 18.75px;
-    width: 347.5px;
+    width: 100%;
+    max-width: 347.5px;
     height: 255px;
     padding: 25px;
     border: 1.25px solid #e2e2e2;
@@ -311,7 +313,7 @@ const topics: Topic[] = [
 
   @media (max-width: 1199px) {
     .kb-grid {
-      grid-template-columns: repeat(2, min(347.5px, 100%));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
@@ -336,7 +338,11 @@ const topics: Topic[] = [
     }
 
     .kb-grid {
-      grid-template-columns: min(347.5px, 100%);
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .kb-card {
+      max-width: none;
     }
 
     .kb-card {

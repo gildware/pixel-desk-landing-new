@@ -86,8 +86,8 @@ const columns = [
 
   @media (min-width: 768px) {
     .site-footer__grid {
-      grid-template-columns: 1fr repeat(3, auto);
-      column-gap: 81.25px;
+      grid-template-columns: minmax(0, 1fr) repeat(3, auto);
+      column-gap: clamp(2rem, 5vw, 81.25px);
       row-gap: 0;
     }
   }
@@ -171,7 +171,7 @@ const columns = [
   }
 
   .site-footer__motto {
-    white-space: nowrap;
+    text-align: inherit;
   }
 
   @media (min-width: 640px) {

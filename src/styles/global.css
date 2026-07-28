@@ -21,6 +21,8 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    overflow-x: clip;
+    max-width: 100%;
     /* Scaled to match 125% zoom typography/spacing at 100% browser zoom */
     --pd-scale: 1.25;
     --pd-rail-max: calc(1010px * var(--pd-scale));
@@ -38,6 +40,8 @@
     font-family: var(--font-sans);
     color: var(--color-navy);
     background: #fff;
+    overflow-x: clip;
+    max-width: 100%;
   }
 }
 
@@ -55,6 +59,7 @@
     max-width: var(--pd-rail-max);
     margin-inline: auto;
     padding-inline: var(--pd-page-gutter);
+    min-width: 0;
   }
 
   @media (min-width: 1375px) {
@@ -70,6 +75,13 @@
     border-radius: 35px;
     background: #fff;
     box-shadow: 7.5px 7.5px 41.25px rgba(0, 0, 0, 0.08);
+  }
+
+  @media (max-width: 639px) {
+    .pd-nav-shell {
+      height: 62.5px;
+      padding-inline: 18.75px;
+    }
   }
 
   .pd-btn-primary {
@@ -164,8 +176,9 @@
     top: 0;
     left: 0;
     width: 100%;
-    min-width: 100vw;
+    max-width: 100%;
     height: calc(853 / 1512 * 100vw);
+    max-height: calc(853px * var(--pd-scale));
     z-index: 0;
     background-image: url('/images/figma/rectangle-20.svg');
     background-repeat: no-repeat;

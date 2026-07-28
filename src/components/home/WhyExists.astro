@@ -54,7 +54,7 @@ const lastStat = stats[stats.length - 1];
 const lastIndex = stats.length - 1;
 ---
 
-<section class="why-exists pb-10 sm:pb-12 pt-12 lg:pt-[301.25px]">
+<section class="why-exists overflow-x-clip pb-10 sm:pb-12 pt-12 lg:pt-[301.25px]">
   <div class="pd-rail">
     <div class="why-stack" style={`--stack-count: ${stats.length};`} data-why-stack>
       <div class="why-stack__deck" data-why-deck>
@@ -164,7 +164,10 @@ const lastIndex = stats.length - 1;
     );
     if (!finale || !copy || !leadCards.length) return;
 
-    const pinned = [copy, ...leadCards];
+    const pinned = () =>
+      window.matchMedia('(max-width: 1023px)').matches
+        ? leadCards
+        : [copy, ...leadCards];
     let locking = false;
     let lastScrollY = window.scrollY;
     let offScreenAbove = false;
@@ -175,7 +178,7 @@ const lastIndex = stats.length - 1;
     const unlock = () => {
       if (!locking) return;
       locking = false;
-      pinned.forEach((el) => {
+      pinned().forEach((el) => {
         el.style.transform = '';
         el.style.position = '';
         el.style.left = '';
@@ -195,7 +198,7 @@ const lastIndex = stats.length - 1;
     const lockElements = (useStackedOffsets, stickyTop, finaleTop) => {
       locking = true;
 
-      pinned.forEach((el) => {
+      pinned().forEach((el) => {
         const rect = el.getBoundingClientRect();
         el.dataset.exitOffset = useStackedOffsets
           ? String(stackedOffsetFor(el, stickyTop))
@@ -234,14 +237,14 @@ const lastIndex = stats.length - 1;
     };
 
     const syncLockedPositions = (finaleTop) => {
-      pinned.forEach((el) => {
+      pinned().forEach((el) => {
         const offset = parseFloat(el.dataset.exitOffset || '0');
         el.style.top = `${finaleTop + offset}px`;
       });
     };
 
     const updateExitLock = () => {
-      if (window.matchMedia('(max-width: 1278.75px)').matches) {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         unlock();
         return;
       }
@@ -396,22 +399,26 @@ const lastIndex = stats.length - 1;
     height: var(--card-h);
     margin: 0;
     border-radius: 12.5px;
-    padding: 2rem;
+    padding: 55px;
     box-shadow: 6.25px 6.25px 9.38px rgba(0, 0, 0, 0.16);
     color: #fff;
     opacity: 1;
     background-clip: padding-box;
+    overflow: hidden;
   }
 
   .why-card__layout {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 40px;
     height: 100%;
-    flex-direction: column;
-    gap: 1.25rem;
+    align-items: start;
   }
 
   .why-card__value {
-    margin: 0;
+    grid-column: 1;
+    grid-row: 1;
+    margin: 11.25px 0 0;
     flex-shrink: 0;
     color: #fff;
     letter-spacing: -1.25px;
@@ -434,36 +441,44 @@ const lastIndex = stats.length - 1;
   }
 
   .why-card__content {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     min-width: 0;
+    min-height: 0;
   }
 
   .why-card__title {
     margin: 0;
-    max-width: 507.5px;
     color: #fff;
     font-family: var(--font-sans);
     font-size: 42.5px;
     font-weight: 300;
     line-height: 45px;
+    overflow-wrap: anywhere;
   }
 
   .why-card__body {
-    margin: 1.25rem 0 0;
-    max-width: 493.75px;
+    margin: 25px 0 0;
     color: #fff;
     font-family: var(--font-sans);
     font-size: 17.5px;
     font-weight: 300;
     line-height: 27.5px;
+    overflow-wrap: anywhere;
   }
 
   .why-card__source {
-    margin: 2rem 0 0;
+    margin: 0;
+    margin-top: auto;
+    padding-top: 15px;
     color: rgba(255, 255, 255, 0.5);
     font-family: var(--font-sans);
     font-size: 11.25px;
     font-weight: 300;
     line-height: 12.5px;
+    overflow-wrap: anywhere;
   }
 
   .why-stack__cards {
@@ -484,7 +499,13 @@ const lastIndex = stats.length - 1;
   }
 
   .why-stack__spacer--hold {
-    height: 12vh;
+    height: var(--hold-run, 12vh);
+  }
+
+  @media (max-width: 1299px) {
+    .why-stack {
+      --hold-run: calc(12vh + 280px);
+    }
   }
 
   .why-stack__finale {
@@ -577,21 +598,10 @@ const lastIndex = stats.length - 1;
     min-width: 283.75px;
   }
 
-  @media (min-width: 640px) {
-    .why-stack__card {
-      padding: 55px;
-    }
-
-    .why-card__layout {
-      flex-direction: row;
-      gap: 55px;
-    }
-  }
-
   @media (min-width: 1024px) {
     .why-stack__deck {
       display: grid;
-      grid-template-columns: 428.75px minmax(0, 761.25px);
+      grid-template-columns: minmax(0, 428.75px) minmax(0, 1fr);
       justify-content: space-between;
       column-gap: 2rem;
       align-items: start;
@@ -640,33 +650,236 @@ const lastIndex = stats.length - 1;
   }
 
   @media (max-width: 1023px) {
+    .why-exists__title {
+      font-size: clamp(32px, 8.5vw, 50px);
+      line-height: 1.15;
+    }
+
+    .why-exists__body {
+      margin-top: 1.5rem;
+    }
+
     .why-stack {
-      --card-h: min(375px, calc(100dvh - var(--header-h) - 10rem));
-      --stack-peek: 12.5px;
+      --card-h: 397.5px;
+      --stack-peek: 10px;
       --header-h: 1rem;
-      --slot-run: 65vh;
+      --slot-run: 50vh;
     }
 
     .why-stack__copy {
       position: relative;
       top: auto;
+      margin-bottom: 0.5rem;
+    }
+
+    .why-stack__finale {
+      position: sticky;
+      top: calc(var(--header-h) + var(--i) * var(--stack-peek));
+      z-index: calc(10 + var(--i));
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .why-stack__finale .why-stack__card--finale {
+      position: relative !important;
+      top: auto !important;
+      z-index: auto;
     }
 
     .why-stack__cta {
       width: 100%;
       margin-left: 0;
       margin-right: 0;
-      padding-left: 0;
-      padding-right: 0;
+      padding-inline: 0;
+      padding-top: 0;
+      margin-top: 1.25rem;
+    }
+
+    .why-stack__cta-pill {
+      position: relative;
+      left: auto;
+      top: auto;
+      transform: none;
+      width: 100%;
+      z-index: 2;
+      margin-bottom: -2.5rem;
+    }
+
+    .why-stack__pill {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 17.5px;
+      padding: 1rem 1.25rem;
+      text-align: center;
+    }
+
+    .why-stack__pill-icon {
+      width: 42px;
+      height: 42px;
+    }
+
+    .why-stack__pill-text {
+      font-size: 16px;
+      line-height: 24px;
+      text-align: center;
+    }
+
+    .why-stack__cta-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
     }
 
     .why-stack__navy {
-      padding: 64px 24px 40px;
+      width: 100%;
+      padding: 3.5rem 24px 2.5rem;
+      margin-top: 0;
+      text-align: center;
     }
 
     .why-stack__navy-text {
-      font-size: 22.5px;
-      line-height: 32.5px;
+      font-size: 18px;
+      line-height: 26px;
+      text-align: center;
+    }
+
+    .why-stack__btn {
+      margin-top: -1rem;
+      min-width: 0;
+      width: auto;
+      max-width: none;
+      height: 36px;
+      padding: 0 1.25rem;
+      font-size: 14px;
+      line-height: 14px;
+      border-radius: 24px;
+      box-sizing: border-box;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .why-stack {
+      --card-h: 397.5px;
+      --stack-peek: 8px;
+      --slot-run: 42vh;
+    }
+
+    .why-stack__card {
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    .why-card__layout {
+      grid-template-columns: 1fr;
+      column-gap: 0;
+      row-gap: 12px;
+    }
+
+    .why-card__value {
+      margin: 0;
+      grid-column: 1;
+    }
+
+    .why-card__value-num {
+      font-size: 48px;
+      line-height: 38px;
+    }
+
+    .why-card__value-suffix {
+      font-size: 22px;
+      line-height: 38px;
+    }
+
+    .why-card__content {
+      grid-column: 1;
+    }
+
+    .why-card__title {
+      font-size: 22px;
+      line-height: 26px;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+
+    .why-card__body {
+      margin-top: 12px;
+      font-size: 13px;
+      line-height: 20px;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+
+    .why-card__source {
+      padding-top: 12px;
+      font-size: 9px;
+      line-height: 11px;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+
+    .why-stack__pill-text {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .why-stack__navy {
+      padding-inline: 1.25rem;
+    }
+
+    .why-stack__navy-text {
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    .why-stack__btn {
+      height: 34px;
+      padding: 0 1rem;
+      font-size: 13px;
+      line-height: 13px;
+    }
+  }
+
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .why-stack__card {
+      padding: 40px;
+    }
+
+    .why-card__layout {
+      column-gap: 28px;
+    }
+
+    .why-card__value {
+      margin-top: 6px;
+    }
+
+    .why-card__value-num {
+      font-size: 56px;
+      line-height: 40px;
+    }
+
+    .why-card__value-suffix {
+      font-size: 26px;
+      line-height: 40px;
+    }
+
+    .why-card__title {
+      font-size: 34px;
+      line-height: 38px;
+    }
+
+    .why-card__body {
+      margin-top: 18px;
+      font-size: 15px;
+      line-height: 23px;
+    }
+
+    .why-card__source {
+      padding-top: 12px;
+      font-size: 10px;
+      line-height: 11px;
     }
   }
 

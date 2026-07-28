@@ -173,7 +173,8 @@ const gridClass = {
     position: absolute;
     top: 0;
     left: 50%;
-    width: min(100vw, calc(1512px * var(--pd-scale, 1.25)));
+    width: 100%;
+    max-width: calc(1512px * var(--pd-scale, 1.25));
     height: calc(1006px * var(--pd-scale, 1.25));
     transform: translateX(-50%);
     background:
@@ -272,20 +273,20 @@ const gridClass = {
   .resources-grid {
     display: grid;
     gap: 35px;
+    width: 100%;
     margin-top: 12.5px;
-    justify-content: start;
   }
 
   .resources-grid--3 {
-    grid-template-columns: repeat(3, 347.5px);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .resources-grid--2 {
-    grid-template-columns: repeat(2, 347.5px);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .resources-grid--1 {
-    grid-template-columns: 347.5px;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .resources-card {
@@ -293,7 +294,8 @@ const gridClass = {
     display: flex;
     flex-direction: column;
     gap: 18.75px;
-    width: 347.5px;
+    width: 100%;
+    max-width: 347.5px;
     height: 277.5px;
     padding: 25px;
     border: 1.25px solid #e2e2e2;
@@ -378,7 +380,7 @@ const gridClass = {
 
   @media (max-width: 1199px) {
     .resources-grid--3 {
-      grid-template-columns: repeat(2, min(347.5px, 100%));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
@@ -401,11 +403,11 @@ const gridClass = {
     .resources-grid--3,
     .resources-grid--2,
     .resources-grid--1 {
-      grid-template-columns: min(347.5px, 100%);
+      grid-template-columns: minmax(0, 1fr);
     }
 
     .resources-card {
-      width: 100%;
+      max-width: none;
     }
 
     .resources-cards {

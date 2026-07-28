@@ -31,7 +31,7 @@ const lastIndex = items.length - 1;
           titleLines.map((line, i) => (
             <>
               {i > 0 && <br />}
-              <span class="whitespace-nowrap">{line}</span>
+              <span>{line}</span>
             </>
           ))
         }
@@ -109,10 +109,15 @@ const lastIndex = items.length - 1;
 
   @media (min-width: 1024px) {
     .faq__layout {
-      grid-template-columns: 446.25px 782.5px;
+      grid-template-columns: minmax(0, 446.25px) minmax(0, 1fr);
       justify-content: space-between;
       gap: 31.25px;
       align-items: start;
+    }
+
+    .faq__list {
+      min-width: 0;
+      width: 100%;
     }
 
     /* Home split FAQ — list aligns with title, not label (Figma 2022:2372–2375) */
