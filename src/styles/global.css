@@ -186,6 +186,274 @@
     background-size: 100% 100%;
   }
 
+  /* Figma 2037:15 Login — Rectangle 21 card + form controls */
+  .auth-shell {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    max-width: calc(1010px * var(--pd-scale));
+    min-height: min(calc(779px * var(--pd-scale)), calc(100dvh - 2rem));
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: calc(28px * var(--pd-scale));
+    background: #fff;
+    box-shadow: calc(6px * var(--pd-scale)) calc(6px * var(--pd-scale))
+      calc(33px * var(--pd-scale)) rgba(0, 0, 0, 0.08);
+  }
+
+  @media (min-width: 768px) {
+    .auth-shell {
+      min-height: min(calc(779px * var(--pd-scale)), calc(100dvh - 4rem));
+    }
+  }
+
+  .auth-shell__header {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    padding: calc(20px * var(--pd-scale)) calc(33px * var(--pd-scale)) calc(10px * var(--pd-scale));
+  }
+
+  .auth-shell__logo {
+    display: block;
+    height: calc(30px * var(--pd-scale));
+    width: auto;
+  }
+
+  .auth-shell__main {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    padding: 0 calc(33px * var(--pd-scale)) calc(40px * var(--pd-scale));
+  }
+
+  .auth-form-wrap {
+    width: 100%;
+    max-width: calc(318px * var(--pd-scale));
+  }
+
+  .auth-heading {
+    margin-bottom: calc(32px * var(--pd-scale));
+    text-align: center;
+  }
+
+  .auth-title {
+    font-size: calc(34px * var(--pd-scale));
+    font-weight: 100;
+    line-height: calc(48px * var(--pd-scale));
+    color: #000945;
+  }
+
+  .auth-subtitle {
+    margin-top: calc(4px * var(--pd-scale));
+    font-size: calc(21px * var(--pd-scale));
+    font-weight: 500;
+    line-height: normal;
+    color: #6c41ff;
+  }
+
+  .auth-field {
+    margin-bottom: calc(10px * var(--pd-scale));
+  }
+
+  .auth-label {
+    display: block;
+    margin-bottom: calc(4px * var(--pd-scale));
+    font-size: calc(10px * var(--pd-scale));
+    font-weight: 300;
+    color: #444;
+  }
+
+  .auth-input {
+    box-sizing: border-box;
+    width: 100%;
+    height: calc(35px * var(--pd-scale));
+    padding: 0 calc(10px * var(--pd-scale));
+    border: 1px solid #dbdbdb;
+    border-radius: calc(5px * var(--pd-scale));
+    background: #fff;
+    font-size: calc(14px * var(--pd-scale));
+    font-weight: 300;
+    color: #000945;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .auth-input::placeholder {
+    color: #d9d9d9;
+  }
+
+  .auth-input:focus {
+    border-color: #6c41ff;
+  }
+
+  .auth-input--error {
+    border-color: #dc2626;
+  }
+
+  .auth-error {
+    margin-top: calc(6px * var(--pd-scale));
+    font-size: calc(10px * var(--pd-scale));
+    color: #dc2626;
+  }
+
+  .auth-btn-primary {
+    display: flex;
+    width: 100%;
+    height: calc(35px * var(--pd-scale));
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: calc(6px * var(--pd-scale));
+    background: #6c41ff;
+    color: #fff;
+    font-size: calc(14px * var(--pd-scale));
+    font-weight: 400;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .auth-btn-primary:hover:not(:disabled) {
+    background: #5a2fff;
+  }
+
+  .auth-btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .auth-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(8px * var(--pd-scale));
+    margin-top: calc(10px * var(--pd-scale));
+  }
+
+  .auth-remember {
+    display: inline-flex;
+    cursor: pointer;
+    align-items: center;
+    gap: calc(6px * var(--pd-scale));
+    font-size: calc(10px * var(--pd-scale));
+    font-weight: 300;
+    color: #444;
+  }
+
+  .auth-checkbox {
+    box-sizing: border-box;
+    width: calc(16px * var(--pd-scale));
+    height: calc(16px * var(--pd-scale));
+    flex-shrink: 0;
+    border: 1px solid #dbdbdb;
+    border-radius: calc(5px * var(--pd-scale));
+    accent-color: #6c41ff;
+    cursor: pointer;
+  }
+
+  .auth-support {
+    font-size: calc(9px * var(--pd-scale));
+    font-weight: 300;
+    line-height: normal;
+    color: #444;
+    text-align: right;
+  }
+
+  .auth-support a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .auth-support a:hover {
+    color: #6c41ff;
+  }
+
+  .auth-divider {
+    position: relative;
+    margin: calc(32px * var(--pd-scale)) 0 calc(28px * var(--pd-scale));
+    text-align: center;
+  }
+
+  .auth-divider::before,
+  .auth-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: calc(120px * var(--pd-scale));
+    height: 1px;
+    background: #dbdbdb;
+  }
+
+  .auth-divider::before {
+    left: 0;
+  }
+
+  .auth-divider::after {
+    right: 0;
+  }
+
+  .auth-divider span {
+    position: relative;
+    z-index: 1;
+    padding: 0 calc(8px * var(--pd-scale));
+    background: #fff;
+    font-size: calc(10px * var(--pd-scale));
+    font-weight: 300;
+    color: #444;
+  }
+
+  .auth-sso-row {
+    display: grid;
+    grid-template-columns: repeat(2, calc(152px * var(--pd-scale)));
+    gap: calc(14px * var(--pd-scale));
+    justify-content: center;
+  }
+
+  .auth-sso-btn {
+    display: inline-flex;
+    height: calc(37px * var(--pd-scale));
+    align-items: center;
+    justify-content: center;
+    gap: calc(10px * var(--pd-scale));
+    border: 1px solid #dbdbdb;
+    border-radius: calc(5px * var(--pd-scale));
+    background: #fff;
+    font-size: calc(16px * var(--pd-scale));
+    font-weight: 300;
+    color: #000945;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .auth-sso-btn:hover {
+    background: #fafafa;
+  }
+
+  .auth-sso-btn--logo-only {
+    padding: 0 calc(10px * var(--pd-scale));
+  }
+
+  .auth-sso-note {
+    margin-top: calc(12px * var(--pd-scale));
+    text-align: center;
+    font-size: calc(9px * var(--pd-scale));
+    font-weight: 300;
+    color: #444;
+  }
+
+  .auth-status {
+    text-align: center;
+  }
+
+  .auth-status .auth-btn-primary {
+    margin-top: calc(16px * var(--pd-scale));
+  }
+
   .faq-icon {
     display: flex;
     width: 25px;

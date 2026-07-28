@@ -7,6 +7,6 @@ const supportUrl = import.meta.env.PUBLIC_SUPPORT_URL || '/resources/knowledge-b
 
 <AuthLayout title="Sign in | Pixeldesk" description="Sign in to your Pixeldesk account.">
   <AuthBase client:only="react" supportUrl={supportUrl}>
-    <p slot="fallback" class="text-center text-sm text-[#666666]">Loading…</p>
+    <p slot="fallback" class="auth-sso-note">Loading…</p>
   </AuthBase>
 </AuthLayout>

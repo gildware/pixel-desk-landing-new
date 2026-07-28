@@ -143,20 +143,18 @@ export default function AuthBase({
   };
 
   if (sessionLoading) {
-    return (
-      <p className="text-center text-sm text-[#666666]">Checking session…</p>
-    );
+    return <p className="auth-sso-note">Checking session…</p>;
   }
 
   if (session) {
     return (
-      <div className="text-center">
-        <p className="text-sm text-[#666666]">Redirecting to dashboard…</p>
+      <div className="auth-status">
+        <p className="auth-support">Redirecting to dashboard…</p>
         <button
           type="button"
           onClick={handleLogout}
           disabled={loggingOut}
-          className="mt-4 inline-flex h-10 items-center justify-center rounded-lg border border-[#D6D6D6] px-4 text-sm font-medium text-[#333] transition-colors hover:bg-[#FAFAFA] disabled:opacity-50"
+          className="auth-btn-primary"
         >
           {loggingOut ? 'Logging out…' : 'Logout'}
         </button>

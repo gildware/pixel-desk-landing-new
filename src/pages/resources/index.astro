@@ -261,6 +261,10 @@ const gridClass = {
     gap: 62.5px;
   }
 
+  .resources-section {
+    padding-left: calc(65px * var(--pd-scale, 1.25));
+  }
+
   .resources-section__heading {
     font-size: 25px;
     font-weight: 500;
@@ -270,36 +274,37 @@ const gridClass = {
     text-shadow: none;
   }
 
+  /* Figma: 278×222 cards, 28px gaps — fixed tracks, left-aligned (not 1fr stretch) */
   .resources-grid {
     display: grid;
-    gap: 35px;
+    gap: calc(28px * var(--pd-scale, 1.25));
     width: 100%;
-    margin-top: 12.5px;
+    margin-top: calc(10px * var(--pd-scale, 1.25));
+    justify-content: start;
   }
 
   .resources-grid--3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3, calc(278px * var(--pd-scale, 1.25)));
   }
 
   .resources-grid--2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, calc(278px * var(--pd-scale, 1.25)));
   }
 
   .resources-grid--1 {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: calc(278px * var(--pd-scale, 1.25));
   }
 
   .resources-card {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 18.75px;
+    gap: calc(15px * var(--pd-scale, 1.25));
     width: 100%;
-    max-width: 347.5px;
-    height: 277.5px;
-    padding: 25px;
-    border: 1.25px solid #e2e2e2;
-    border-radius: 18.75px;
+    height: calc(222px * var(--pd-scale, 1.25));
+    padding: calc(20px * var(--pd-scale, 1.25));
+    border: calc(1px * var(--pd-scale, 1.25)) solid #e2e2e2;
+    border-radius: calc(15px * var(--pd-scale, 1.25));
     background: #fff;
     box-shadow: none;
     text-decoration: none;
@@ -308,7 +313,7 @@ const gridClass = {
 
   .resources-card--tall {
     height: auto;
-    min-height: 277.5px;
+    min-height: calc(222px * var(--pd-scale, 1.25));
   }
 
   /* Figma Group 688 — 41px layout slot; 69px asset bleeds via inset -34.15% wrapper (×1.25) */
@@ -379,8 +384,12 @@ const gridClass = {
   }
 
   @media (max-width: 1199px) {
+    .resources-section {
+      padding-left: 0;
+    }
+
     .resources-grid--3 {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, calc(278px * var(--pd-scale, 1.25)));
     }
   }
 
@@ -407,7 +416,7 @@ const gridClass = {
     }
 
     .resources-card {
-      max-width: none;
+      width: 100%;
     }
 
     .resources-cards {

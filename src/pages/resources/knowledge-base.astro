@@ -221,24 +221,27 @@ const topics: Topic[] = [
     height: 100%;
   }
 
+  /* Figma 2021:1299 — 278×204 cards, 28px col / 35px row gaps, 65px rail inset */
   .kb-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 35px;
+    grid-template-columns: repeat(3, calc(278px * var(--pd-scale, 1.25)));
+    column-gap: calc(28px * var(--pd-scale, 1.25));
+    row-gap: calc(35px * var(--pd-scale, 1.25));
     width: 100%;
+    padding-left: calc(65px * var(--pd-scale, 1.25));
+    justify-content: start;
   }
 
   .kb-card {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 18.75px;
+    gap: calc(15px * var(--pd-scale, 1.25));
     width: 100%;
-    max-width: 347.5px;
-    height: 255px;
-    padding: 25px;
-    border: 1.25px solid #e2e2e2;
-    border-radius: 18.75px;
+    height: calc(204px * var(--pd-scale, 1.25));
+    padding: calc(20px * var(--pd-scale, 1.25));
+    border: calc(1px * var(--pd-scale, 1.25)) solid #e2e2e2;
+    border-radius: calc(15px * var(--pd-scale, 1.25));
     background: #fff;
     box-shadow: none;
     text-decoration: none;
@@ -313,7 +316,8 @@ const topics: Topic[] = [
 
   @media (max-width: 1199px) {
     .kb-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      padding-left: 0;
+      grid-template-columns: repeat(2, calc(278px * var(--pd-scale, 1.25)));
     }
   }
 
@@ -342,13 +346,9 @@ const topics: Topic[] = [
     }
 
     .kb-card {
-      max-width: none;
-    }
-
-    .kb-card {
       width: 100%;
       height: auto;
-      min-height: 255px;
+      min-height: calc(204px * var(--pd-scale, 1.25));
     }
 
     .kb-cards {
