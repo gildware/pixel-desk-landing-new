@@ -12,7 +12,9 @@
     "astro": "astro",
     "export:figma-hero": "node scripts/export-figma-hero.mjs",
     "export:figma-hero:all": "node scripts/export-figma-hero.mjs --all",
-    "trim:hero-svgs": "node scripts/trim-hero-svg-viewboxes.mjs"
+    "trim:hero-svgs": "node scripts/trim-hero-svg-viewboxes.mjs",
+    "optimize:hero-rasters": "node scripts/optimize-hero-rasters.mjs",
+    "inline:hero-rasters": "node scripts/inline-hero-rasters.mjs"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",

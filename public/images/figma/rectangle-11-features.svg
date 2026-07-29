@@ -1,0 +1,12 @@
+<svg width="1512" height="796" viewBox="0 0 1512 796" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+  <!-- Figma PD Website UI 2026 Own — Features Rectangle 11 (2018:61) -->
+  <rect width="1512" height="796" fill="url(#pd_rect11_features)" fill-opacity="0.96"/>
+  <defs>
+    <radialGradient id="pd_rect11_features" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(756 737.454) rotate(-90) scale(1822.52 3461.88)">
+      <stop offset="0.307692" stop-color="#FFFFFF"/>
+      <stop offset="0.480769" stop-color="#DAD0FF" stop-opacity="0.75"/>
+      <stop offset="0.653846" stop-color="#B6A0FF" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#6C41FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>

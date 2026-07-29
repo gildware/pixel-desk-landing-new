@@ -1,1 +1,39 @@
-<div class="pd-page-top-bg" aria-hidden="true"></div>
+---
+/**
+ * Figma full-bleed top gradient wash.
+ * Home/Login → Rectangle 20 (1512×853)
+ * Resources/Pricing/KB → Rectangle 11 (1512×1006)
+ * Features → Rectangle 11 (1512×796)
+ */
+interface Props {
+  variant?: 'rect-20' | 'rect-11' | 'rect-11-features';
+}
+
+const { variant = 'rect-20' } = Astro.props;
+
+const assets = {
+  'rect-20': {
+    src: '/images/figma/rectangle-20.svg',
+    ratio: 853 / 1512,
+    height: 853,
+  },
+  'rect-11': {
+    src: '/images/figma/rectangle-11.svg',
+    ratio: 1006 / 1512,
+    height: 1006,
+  },
+  'rect-11-features': {
+    src: '/images/figma/rectangle-11-features.svg',
+    ratio: 796 / 1512,
+    height: 796,
+  },
+} as const;
+
+const asset = assets[variant];
+---
+
+<div
+  class="pd-page-top-bg"
+  style={`--pd-top-bg-ratio: ${asset.ratio}; --pd-top-bg-h: ${asset.height}px; background-image: url('${asset.src}');`}
+  aria-hidden="true"
+></div>

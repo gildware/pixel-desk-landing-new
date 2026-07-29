@@ -47,8 +47,6 @@ const boxStyle = (box) =>
 ---
 
 <section class="features-hero relative overflow-x-clip pt-[147.5px] pb-12 sm:pt-[250px] sm:pb-[103.75px]">
-  <div class="features-hero__glow" aria-hidden="true"></div>
-
   <div class="pd-rail relative z-[1]">
     <div class="features-hero__visual mx-auto" aria-label="Pixeldesk product features preview">
       <!-- Figma Ellipse 11 — SVG arc (PNG export had opaque white fill) -->
@@ -144,17 +142,8 @@ const boxStyle = (box) =>
     --fh-purple: #6c41ff;
     --fh-purple-soft: rgba(108, 65, 255, 0.11);
     --fh-navy: #000945;
-    background: #fff;
-  }
-
-  /* Figma Rectangle 11 — lavender in top corners; title area stays clean white */
-  .features-hero__glow {
-    pointer-events: none;
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 54% 42% at 0% 0%, #ece7fe 0%, rgba(236, 231, 254, 0.62) 28%, transparent 70%),
-      radial-gradient(ellipse 54% 42% at 100% 0%, #ebe6fe 0%, rgba(235, 230, 254, 0.62) 28%, transparent 70%);
+    /* Transparent so BaseLayout PageTopBg (Rectangle 11) shows through */
+    background: transparent;
   }
 
   .features-hero__visual {

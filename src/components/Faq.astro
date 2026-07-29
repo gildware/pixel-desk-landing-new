@@ -181,28 +181,18 @@ const lastIndex = items.length - 1;
   .faq__list {
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    border: 0.375px solid #878787;
+    border-radius: 18.75px;
   }
 
   .faq-entry {
-    border: 0.375px solid #878787;
     background: #fff;
     overflow: hidden;
   }
 
   .faq-entry + .faq-entry {
-    margin-top: -0.375px;
-  }
-
-  .faq-entry.is-first {
-    border-radius: 18.75px 18.75px 0 0;
-  }
-
-  .faq-entry.is-last {
-    border-radius: 0 0 18.75px 18.75px;
-  }
-
-  .faq-entry.is-first.is-last {
-    border-radius: 18.75px;
+    border-top: 0.375px solid #878787;
   }
 
   .faq-item {

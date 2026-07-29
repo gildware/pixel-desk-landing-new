@@ -7,12 +7,15 @@ interface Props {
   title?: string;
   description?: string;
   canonical?: string;
+  /** Figma top wash — Home/Login rect-20, Resources/Pricing/KB rect-11, Features rect-11-features */
+  topBg?: 'rect-20' | 'rect-11' | 'rect-11-features' | 'none';
 }
 
 const {
   title = 'Pixeldesk — The complete project OS for modern teams',
   description = 'Manage projects, delight clients, and take care of your people — all in one workspace.',
   canonical,
+  topBg = 'rect-20',
 } = Astro.props;
 
 const pageTitle = title.includes('Pixeldesk') ? title : `${title} | Pixeldesk`;
@@ -30,7 +33,7 @@ const pageTitle = title.includes('Pixeldesk') ? title : `${title} | Pixeldesk`;
     <title>{pageTitle}</title>
   </head>
   <body class="relative min-h-screen">
-    <PageTopBg />
+    {topBg !== 'none' && <PageTopBg variant={topBg} />}
     <div class="relative z-[1]">
       <slot />
     </div>

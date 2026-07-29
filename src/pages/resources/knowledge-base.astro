@@ -81,12 +81,11 @@ const topics: Topic[] = [
 <BaseLayout
   title="Knowledge Base"
   description="What do you need help with? Browse Pixeldesk guides for setup, projects, sprints, clients, and more."
+  topBg="rect-11"
 >
   <Header current="resources" />
   <main class="kb-page">
     <section class="kb-hero relative overflow-hidden pt-[338.75px] pb-[143.75px]">
-      <div class="kb-hero__gradient" aria-hidden="true"></div>
-
       <div class="pd-rail relative text-center">
         <h1 class="kb-hero__title">Knowledge Base</h1>
         <p class="kb-hero__subtitle">What do you need help with?</p>
@@ -134,27 +133,6 @@ const topics: Topic[] = [
 </BaseLayout>
 
 <style>
-  /* Figma Rectangle 11 — radial lavender hero wash (1512×1006) */
-  .kb-hero__gradient {
-    pointer-events: none;
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 100%;
-    max-width: calc(1512px * var(--pd-scale, 1.25));
-    height: calc(1006px * var(--pd-scale, 1.25));
-    transform: translateX(-50%);
-    background:
-      radial-gradient(
-        ellipse 346px 460px at 50% 93%,
-        rgba(255, 255, 255, 1) 31%,
-        rgba(218, 208, 255, 0.75) 48%,
-        rgba(182, 160, 255, 0.5) 65%,
-        rgba(108, 65, 255, 0) 100%
-      );
-    opacity: 0.96;
-  }
-
   .kb-hero__title {
     max-width: 888.75px;
     margin-inline: auto;

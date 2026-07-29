@@ -2,6 +2,8 @@
 const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companies'];
 ---
 
+<link rel="preload" as="image" href="/images/figma/hero-parts/project.svg" fetchpriority="high" />
+
 <section class="pd-hero-gradient relative overflow-x-clip pb-0 pt-[361.25px]">
   <div
     class="pd-rail grid items-start gap-y-8 xl:grid-cols-[minmax(0,528.75px)_minmax(0,623.75px)] xl:gap-x-[110px] xl:gap-y-0"
@@ -48,7 +50,7 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
       <img
         src="/images/figma/hero-parts/map.svg"
         alt=""
-        width="156"
+        width="157"
         height="120"
         class="hero-part hero-part--map"
         style="--from-x: -35px; --from-y: 12.5px; --delay: 180ms;"
@@ -70,8 +72,8 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
       <img
         src="/images/figma/hero-parts/today.svg"
         alt=""
-        width="183"
-        height="127"
+        width="192"
+        height="128"
         class="hero-part hero-part--today"
         style="--from-x: 30px; --from-y: 35px; --delay: 400ms;"
         loading="eager"
@@ -83,9 +85,10 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
         alt=""
         width="198"
         height="198"
-        class="hero-part hero-part--project"
-        style="--from-x: 0px; --from-y: -37.5px; --delay: 80ms;"
+        class="hero-part hero-part--project hero-part--lcp"
+        style="--from-x: 0px; --from-y: -37.5px; --delay: 0ms;"
         loading="eager"
+        fetchpriority="high"
         decoding="async"
       />
 
@@ -125,14 +128,7 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
   </div>
 
   <div class="pd-rail hero-audience mt-[188.125px] text-center">
-    <img
-      src="/images/figma/useful-tool-for.png"
-      alt="Useful tool for"
-      width="91"
-      height="18"
-      class="hero-audience__label"
-      decoding="async"
-    />
+    <span class="hero-audience__label">Useful tool for</span>
     <div class="hero-audience__grid">
       {
         audiences.map((name) => (
@@ -142,7 +138,7 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
     </div>
 
     <img
-      src="/images/dashboard-preview.svg"
+      src="/images/dashboard-preview-image0_2022_2173.webp"
       alt="Pixeldesk dashboard showing project summaries, status, and team widgets"
       width="931"
       height="543"
@@ -221,6 +217,15 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
     height: 43.39%;
   }
 
+  /* LCP hero card — visible while loading; no fade-in delay */
+  .hero-part--lcp {
+    opacity: 1;
+  }
+
+  .hero-visual.is-ready .hero-part--lcp {
+    opacity: 1;
+  }
+
   .hero-part--stars {
     top: 33.37%;
     left: 73.15%;
@@ -245,12 +250,22 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
     height: 3.73%;
   }
 
-  /* Frame 923 — Figma export @ 73×14 (×1.25 → 91.25×17.5) */
+  /* Figma Frame 923 styling at the requested 200% rendered size */
   .hero-audience__label {
-    display: inline-block;
-    width: 91.25px;
-    height: 17.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 182.5px;
+    height: 35px;
     margin: 0;
+    border-radius: 100px;
+    background: rgba(108, 65, 255, 0.11);
+    color: var(--color-purple);
+    font-family: var(--font-sans);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 35px;
+    white-space: nowrap;
     vertical-align: middle;
   }
 

@@ -169,20 +169,21 @@
     line-height: 17.5px;
   }
 
-  /* Figma Rectangle 20 — full-width top glow on every page (1512×853) */
+  /* Figma full-bleed top gradient — SVG set via PageTopBg variant */
   .pd-page-top-bg {
     pointer-events: none;
     position: absolute;
     top: 0;
     left: 0;
+    /* Full viewport width; avoid max-width caps that leave white side gutters */
     width: 100%;
-    max-width: 100%;
-    height: calc(853 / 1512 * 100vw);
-    max-height: calc(853px * var(--pd-scale));
+    min-width: 100%;
+    height: calc(var(--pd-top-bg-ratio, 0.564) * 100vw);
+    max-height: calc(var(--pd-top-bg-h, 853px) * var(--pd-scale));
     z-index: 0;
-    background-image: url('/images/figma/rectangle-20.svg');
     background-repeat: no-repeat;
     background-position: top center;
+    /* Match Figma preserveAspectRatio="none" — stretch across the frame */
     background-size: 100% 100%;
   }
 

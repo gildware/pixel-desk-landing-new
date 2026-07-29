@@ -106,12 +106,11 @@ const gridClass = {
 <BaseLayout
   title="Resources"
   description="Videos, docs, FAQs, API references, and more to help you get the most out of Pixeldesk."
+  topBg="rect-11"
 >
   <Header current="resources" />
   <main class="resources-page">
     <section class="resources-hero relative overflow-hidden pt-[338.75px] pb-[101.25px]">
-      <div class="resources-hero__gradient" aria-hidden="true"></div>
-
       <div class="pd-rail relative text-center">
         <h1 class="resources-hero__title">Resources</h1>
         <p class="resources-hero__subtitle">
@@ -167,27 +166,6 @@ const gridClass = {
 </BaseLayout>
 
 <style>
-  /* Figma Rectangle 11 — radial lavender hero wash (1512×1006) */
-  .resources-hero__gradient {
-    pointer-events: none;
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 100%;
-    max-width: calc(1512px * var(--pd-scale, 1.25));
-    height: calc(1006px * var(--pd-scale, 1.25));
-    transform: translateX(-50%);
-    background:
-      radial-gradient(
-        ellipse 346px 460px at 50% 93%,
-        rgba(255, 255, 255, 1) 31%,
-        rgba(218, 208, 255, 0.75) 48%,
-        rgba(182, 160, 255, 0.5) 65%,
-        rgba(108, 65, 255, 0) 100%
-      );
-    opacity: 0.96;
-  }
-
   .resources-hero__title {
     max-width: 888.75px;
     margin-inline: auto;
