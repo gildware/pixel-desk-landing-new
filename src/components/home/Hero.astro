@@ -1,5 +1,49 @@
 ---
-const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companies'];
+type AudienceCard = {
+  title: string;
+  titleLines?: [string, string];
+  body: string;
+  bodySize: 'sm' | 'md';
+  iconDefault: string;
+  iconHover: string;
+  iconGlyphDefault?: string;
+  iconGlyphHover?: string;
+};
+
+/** Figma Home 2022:1551 — audience cards 2197:343–373 */
+const audienceCards: AudienceCard[] = [
+  {
+    title: 'Design Agencies',
+    titleLines: ['Design', 'Agencies'],
+    body: 'Streamline creative projects, client approvals, and team collaboration from a single dashboard.',
+    bodySize: 'sm',
+    iconDefault: '/images/figma/hero-audience/design-agencies-default-icon.svg',
+    iconHover: '/images/figma/hero-audience/design-agencies-hover-icon.svg',
+  },
+  {
+    title: 'Corporate Consulting',
+    body: 'Manage engagements, track billable work, and keep clients informed with real-time project visibility.',
+    bodySize: 'md',
+    iconDefault: '/images/figma/hero-audience/corporate-consulting-default-icon.svg',
+    iconHover: '/images/figma/hero-audience/corporate-consulting-hover-icon.svg',
+  },
+  {
+    title: 'Software & IT Services',
+    body: 'Plan sprints, manage development workflows, and deliver products faster with agile project tracking.',
+    bodySize: 'md',
+    iconDefault: '/images/figma/hero-audience/software-it-default-circle.svg',
+    iconHover: '/images/figma/hero-audience/software-it-hover-circle.svg',
+    iconGlyphDefault: '/images/figma/hero-audience/software-it-default-glyph.svg',
+    iconGlyphHover: '/images/figma/hero-audience/software-it-hover-glyph.svg',
+  },
+  {
+    title: 'Architecture & Engineering',
+    body: 'Coordinate project milestones, resources, and stakeholder updates with complete visibility.',
+    bodySize: 'md',
+    iconDefault: '/images/figma/hero-audience/architecture-default-icon.svg',
+    iconHover: '/images/figma/hero-audience/architecture-hover-icon.svg',
+  },
+];
 ---
 
 <link rel="preload" as="image" href="/images/figma/hero-parts/project.svg" fetchpriority="high" />
@@ -21,7 +65,7 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
     </div>
 
     <div
-      class="hero-visual relative mx-auto aspect-[499/455.5] w-full max-w-[623.75px] shrink-0 overflow-hidden xl:-mt-[61.25px] xl:mx-0 xl:justify-self-start"
+      class="hero-visual relative mx-auto aspect-[499/455.5] w-full max-w-[623.75px] shrink-0 overflow-visible xl:-mt-[61.25px] xl:mx-0 xl:justify-self-start"
       data-hero-visual
       aria-label="Pixeldesk product preview"
     >
@@ -131,8 +175,68 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
     <span class="hero-audience__label">Useful tool for</span>
     <div class="hero-audience__grid">
       {
-        audiences.map((name) => (
-          <div class="hero-audience-card">{name}</div>
+        audienceCards.map((card) => (
+          <button type="button" class="hero-audience-card">
+            <span class="hero-audience-card__title">
+              {
+                card.titleLines ? (
+                  <>
+                    {card.titleLines[0]}
+                    <br />
+                    {card.titleLines[1]}
+                  </>
+                ) : (
+                  card.title
+                )
+              }
+            </span>
+            <p class:list={['hero-audience-card__body', card.bodySize === 'sm' && 'hero-audience-card__body--sm']}>
+              {card.body}
+            </p>
+            <span class="hero-audience-card__icon" aria-hidden="true">
+              {
+                card.iconGlyphDefault ? (
+                  <>
+                    <span class="hero-audience-card__icon-img hero-audience-card__icon-img--default">
+                      <img class="software-icon__circle" src={card.iconDefault} alt="" width="48" height="48" />
+                      <img
+                        class="software-icon__glyph software-icon__glyph--default"
+                        src={card.iconGlyphDefault}
+                        alt=""
+                        width="24"
+                        height="22.6356"
+                      />
+                    </span>
+                    <span class="hero-audience-card__icon-img hero-audience-card__icon-img--hover">
+                      <img class="software-icon__circle" src={card.iconHover} alt="" width="30" height="30" />
+                      <img
+                        class="software-icon__glyph software-icon__glyph--hover"
+                        src={card.iconGlyphHover}
+                        alt=""
+                        width="15.375"
+                        height="14.5222"
+                      />
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <img
+                      class="hero-audience-card__icon-img hero-audience-card__icon-img--default"
+                      src={card.iconDefault}
+                      alt=""
+                      decoding="async"
+                    />
+                    <img
+                      class="hero-audience-card__icon-img hero-audience-card__icon-img--hover"
+                      src={card.iconHover}
+                      alt=""
+                      decoding="async"
+                    />
+                  </>
+                )
+              }
+            </span>
+          </button>
         ))
       }
     </div>
@@ -217,6 +321,16 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
     height: 43.39%;
   }
 
+  /* Figma 2022:1568, 2022:1596, 2022:2137 — 4/4/7.5 shadow at 15% black. */
+  .hero-part--project,
+  .hero-part--map,
+  .hero-part--today {
+    filter: drop-shadow(
+      calc(4px * var(--pd-scale)) calc(4px * var(--pd-scale)) calc(7.5px * var(--pd-scale))
+        rgba(0, 0, 0, 0.15)
+    );
+  }
+
   /* LCP hero card — visible while loading; no fade-in delay */
   .hero-part--lcp {
     opacity: 1;
@@ -250,33 +364,33 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
     height: 3.73%;
   }
 
-  /* Figma Frame 923 styling at the requested 200% rendered size */
+  /* Figma Frame 923 label, slightly reduced for visual balance */
   .hero-audience__label {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 182.5px;
+    width: 160px;
     height: 35px;
     margin: 0;
     border-radius: 100px;
     background: rgba(108, 65, 255, 0.11);
     color: var(--color-purple);
     font-family: var(--font-sans);
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 500;
     line-height: 35px;
     white-space: nowrap;
     vertical-align: middle;
   }
 
-  /* Frame 979 — 691×84 row, Frame 925 cards 160×84, gap 17 */
+  /* Figma Home — audience row: 174×174 cards, 12px gap (2197:343–373) */
   .hero-audience__grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 21.25px;
+    gap: calc(12px * var(--pd-scale));
     width: 100%;
-    max-width: 863.75px;
-    margin: 38.75px auto 0;
+    max-width: calc(734px * var(--pd-scale));
+    margin: calc(31px * var(--pd-scale)) auto 0;
   }
 
   /* image 1 (2022:2173): 191px below cards → visible top; SVG has 19px top bleed */
@@ -286,24 +400,152 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
     max-width: 1163.75px;
     height: auto;
     margin: 238.75px auto 0;
+    border-radius: calc(14px * var(--pd-scale));
+    box-shadow:
+      calc(6px * var(--pd-scale)) calc(6px * var(--pd-scale)) calc(25px * var(--pd-scale)) 0
+      rgba(0, 0, 0, 0.1);
   }
 
-  /* Frame 925 — rx=10, fill #F0F0F0, label 15/25 Outfit Medium #000945 */
+  /* Figma 2197:251 — Default: #f0f0f0, 181×181, rx=10, p=15; Variant2 hover: #000945 + body */
   .hero-audience-card {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
     box-sizing: border-box;
     width: 100%;
-    min-height: 105px;
-    padding: 12.5px 10px;
-    border-radius: 12.5px;
+    aspect-ratio: 1;
+    padding: calc(15px * var(--pd-scale));
+    border: none;
+    border-radius: calc(10px * var(--pd-scale));
     background: #f0f0f0;
-    color: #000945;
-    font-size: 18.75px;
-    font-weight: 500;
-    line-height: 31.25px;
-    text-align: center;
+    color: var(--color-purple);
+    text-align: left;
+    cursor: default;
+    transition:
+      background 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .hero-audience-card__title {
+    font-size: calc(20px * var(--pd-scale));
+    font-weight: 600;
+    line-height: calc(22px * var(--pd-scale));
+    color: var(--color-purple);
+    transition:
+      color 0.2s ease,
+      font-size 0.2s ease,
+      line-height 0.2s ease;
+  }
+
+  .hero-audience-card__body {
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    font-size: calc(12px * var(--pd-scale));
+    font-weight: 400;
+    line-height: calc(15px * var(--pd-scale));
+    color: #fff;
+    transition:
+      opacity 0.2s ease,
+      max-height 0.2s ease;
+  }
+
+  .hero-audience-card__body--sm {
+    font-size: calc(10px * var(--pd-scale));
+    line-height: calc(12px * var(--pd-scale));
+  }
+
+  .hero-audience-card__icon {
+    position: relative;
+    flex-shrink: 0;
+    width: calc(48px * var(--pd-scale));
+    height: calc(48px * var(--pd-scale));
+    transition:
+      width 0.2s ease,
+      height 0.2s ease;
+  }
+
+  .hero-audience-card__icon-img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.2s ease;
+  }
+
+  .hero-audience-card__icon-img--hover {
+    opacity: 0;
+  }
+
+  .software-icon__circle,
+  .software-icon__glyph {
+    position: absolute;
+    display: block;
+    max-width: none;
+  }
+
+  .software-icon__circle {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Figma 2197:303 — 24×22.6356 export positioned in the 48×48 circle. */
+  .software-icon__glyph--default {
+    top: 26.4125%;
+    left: 26.0417%;
+    width: 50%;
+    height: 47.1575%;
+  }
+
+  /* Figma 2197:311 — 15.375×14.5222 export positioned in the 30×30 circle. */
+  .software-icon__glyph--hover {
+    top: 25.7867%;
+    left: 25.4167%;
+    width: 51.25%;
+    height: 48.4073%;
+  }
+
+  @media (hover: hover) {
+    .hero-audience-card:hover,
+    .hero-audience-card:focus-visible {
+      background: var(--color-navy);
+      color: #fff;
+      outline: none;
+    }
+
+    .hero-audience-card:hover .hero-audience-card__title,
+    .hero-audience-card:focus-visible .hero-audience-card__title {
+      font-size: calc(15px * var(--pd-scale));
+      line-height: calc(16px * var(--pd-scale));
+      color: #fff;
+    }
+
+    .hero-audience-card:hover .hero-audience-card__body,
+    .hero-audience-card:focus-visible .hero-audience-card__body {
+      max-height: calc(85px * var(--pd-scale));
+      opacity: 1;
+    }
+
+    .hero-audience-card:hover .hero-audience-card__icon,
+    .hero-audience-card:focus-visible .hero-audience-card__icon {
+      width: calc(30px * var(--pd-scale));
+      height: calc(30px * var(--pd-scale));
+    }
+
+    .hero-audience-card:hover .hero-audience-card__icon-img--default,
+    .hero-audience-card:focus-visible .hero-audience-card__icon-img--default {
+      opacity: 0;
+    }
+
+    .hero-audience-card:hover .hero-audience-card__icon-img--hover,
+    .hero-audience-card:focus-visible .hero-audience-card__icon-img--hover {
+      opacity: 1;
+    }
   }
 
   @media (min-width: 1024px) {
@@ -314,11 +556,9 @@ const audiences = ['Design Studios', 'Corporates', 'Consultancies', 'IT companie
     }
 
     .hero-audience-card {
-      width: 200px;
-      min-height: 105px;
-      height: 105px;
-      padding: 0;
-      flex: 0 0 200px;
+      width: calc(174px * var(--pd-scale));
+      flex: 0 0 calc(174px * var(--pd-scale));
+      aspect-ratio: 1;
     }
   }
 

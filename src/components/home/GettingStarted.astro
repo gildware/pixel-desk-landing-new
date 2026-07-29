@@ -7,32 +7,32 @@ const steps = [
   {
     title: 'Set up your workspace',
     body: 'Add your first members, upload profiles, and get the team onto Pixeldesk in minutes.',
-    image: '/images/getting-started/01-workspace.svg',
+    image: '/images/getting-started/01-workspace.png',
   },
   {
     title: 'Invite Members',
     body: 'Complete profiles, invite teammates, and get everyone logged into the workspace.',
-    image: '/images/getting-started/02-members.svg',
+    image: '/images/getting-started/02-members.png',
   },
   {
     title: 'Setup Policies',
     body: 'Configure leave types and company policies once — then every team member follows the same rules.',
-    image: '/images/getting-started/03-policies.svg',
+    image: '/images/getting-started/03-policies.png',
   },
   {
     title: 'Invite your clients',
     body: 'Add client companies, contacts, and details so every project stays connected to the right people.',
-    image: '/images/getting-started/04-clients.svg',
+    image: '/images/getting-started/04-clients.png',
   },
   {
     title: 'Customize your dashboard',
     body: 'Arrange widgets for projects, tasks, and utilization so every role sees what matters first.',
-    image: '/images/getting-started/05-dashboard.svg',
+    image: '/images/getting-started/05-dashboard.png',
   },
   {
     title: 'Start your first project',
     body: 'Create a project with assignees, dates, clients, and files — then kick off delivery in minutes.',
-    image: '/images/getting-started/06-project.svg',
+    image: '/images/getting-started/06-project.png',
   },
 ];
 
@@ -89,8 +89,8 @@ const lastIndex = steps.length - 1;
               <img
                 src={step.image}
                 alt={step.title}
-                width="544"
-                height="360"
+                width="1024"
+                height="664"
                 class="gs-stack__img"
                 loading={i === 0 ? 'eager' : 'lazy'}
                 decoding="async"
@@ -110,8 +110,8 @@ const lastIndex = steps.length - 1;
             <img
               src={lastStep.image}
               alt={lastStep.title}
-              width="544"
-              height="360"
+              width="1024"
+              height="664"
               class="gs-stack__img"
               loading="lazy"
               decoding="async"
@@ -689,7 +689,7 @@ const lastIndex = steps.length - 1;
     }
 
     .gs-stack__img {
-      aspect-ratio: 544 / 360;
+      aspect-ratio: 1024 / 664;
       height: auto;
       margin-top: 0;
       object-fit: cover;

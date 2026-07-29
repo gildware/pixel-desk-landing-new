@@ -135,7 +135,7 @@ const features = [
     height: 37.5px;
     padding: 6.25px 18.75px;
     border-radius: 50px;
-    background: rgba(255, 255, 255, 0.82);
+    background: rgba(108, 65, 255, 0.11);
     color: #6c41ff;
     font-family: var(--font-sans);
     font-size: 17.5px;
@@ -188,6 +188,12 @@ const features = [
     background: #fff;
     border: 0.625px solid #e2e2e2;
     border-radius: 18.75px;
+    /* Lighter resting state; hover restores the full Figma shadow intensity. */
+    box-shadow: 6.25px 6.25px 9.375px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s ease;
+  }
+
+  .feature-workspace__card:hover {
     box-shadow: 6.25px 6.25px 9.375px rgba(0, 0, 0, 0.16);
   }
 

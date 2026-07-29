@@ -3,6 +3,8 @@
  * LOCKED: native sticky stack — do not rewrite to a JS scene/pin.
  * Cards pin with peeks; last card + CTA are one sticky unit; a short
  * hold then exit-lock so copy + stack + CTA leave (and return) together.
+ * Below 1024px the exit is pure CSS sticky release; the JS lock (which the
+ * pinned copy column still needs) runs on wide viewports only.
  */
 const stats = [
   {
@@ -94,7 +96,7 @@ const lastIndex = stats.length - 1;
             ])
           }
 
-          <!-- Last card + CTA: one unit. JS locks peeks/copy to this unit on exit. -->
+          <!-- Last card closes the deck, so the pinned cards release against its bottom edge. -->
           <div class="why-stack__finale" style={`--i: ${lastIndex};`} data-why-finale>
             <article
               class="why-stack__card why-stack__card--finale"
@@ -113,36 +115,36 @@ const lastIndex = stats.length - 1;
                 </div>
               </div>
             </article>
+          </div>
+        </div>
 
-            <div class="why-stack__cta">
-              <div class="why-stack__cta-pill">
-                <div class="why-stack__pill">
-                  <img
-                    src="/images/icons/portal-check.svg"
-                    alt=""
-                    width="42"
-                    height="42"
-                    class="why-stack__pill-icon"
-                  />
-                  <p class="why-stack__pill-text">
-                    Pixeldesk gives every client a live portal — real-time project status, budget visibility, milestone
-                    tracking, and direct feedback tools — so they never have to ask for an update again.
-                  </p>
-                </div>
-              </div>
-
-              <div class="why-stack__cta-panel">
-                <div class="why-stack__navy">
-                  <p class="why-stack__navy-text">
-                    These aren’t edge cases. They’re the everyday reality of running a project without the right
-                    infrastructure. Every one of these problems has a direct solution in Pixeldesk.
-                  </p>
-                </div>
-                <a href="/features" class="why-stack__btn pd-btn-primary">
-                  See how Pixeldesk fixes this&nbsp;→
-                </a>
-              </div>
+        <div class="why-stack__cta">
+          <div class="why-stack__cta-pill">
+            <div class="why-stack__pill">
+              <img
+                src="/images/icons/portal-check.svg"
+                alt=""
+                width="42"
+                height="42"
+                class="why-stack__pill-icon"
+              />
+              <p class="why-stack__pill-text">
+                Pixeldesk gives every client a live portal — real-time project status, budget visibility, milestone
+                tracking, and direct feedback tools — so they never have to ask for an update again.
+              </p>
             </div>
+          </div>
+
+          <div class="why-stack__cta-panel">
+            <div class="why-stack__navy">
+              <p class="why-stack__navy-text">
+                These aren’t edge cases. They’re the everyday reality of running a project without the right
+                infrastructure. Every one of these problems has a direct solution in Pixeldesk.
+              </p>
+            </div>
+            <a href="/features" class="why-stack__btn pd-btn-primary">
+              See how Pixeldesk fixes this&nbsp;→
+            </a>
           </div>
         </div>
 
@@ -164,10 +166,8 @@ const lastIndex = stats.length - 1;
     );
     if (!finale || !copy || !leadCards.length) return;
 
-    const pinned = () =>
-      window.matchMedia('(max-width: 1023px)').matches
-        ? leadCards
-        : [copy, ...leadCards];
+    const isNarrow = () => window.matchMedia('(max-width: 1023px)').matches;
+    const pinned = () => [copy, ...leadCards];
     let locking = false;
     let lastScrollY = window.scrollY;
     let offScreenAbove = false;
@@ -208,8 +208,8 @@ const lastIndex = stats.length - 1;
         const ghost = document.createElement('div');
         ghost.setAttribute('data-why-ghost', '');
         ghost.setAttribute('aria-hidden', 'true');
-        ghost.style.height = `${el.offsetHeight}px`;
-        ghost.style.width = `${el.offsetWidth}px`;
+        ghost.style.height = `${rect.height}px`;
+        ghost.style.width = `${rect.width}px`;
         ghost.style.pointerEvents = 'none';
         ghost.style.flexShrink = '0';
         const elStyle = getComputedStyle(el);
@@ -244,7 +244,10 @@ const lastIndex = stats.length - 1;
     };
 
     const updateExitLock = () => {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      // Narrow layouts exit through native sticky release (see stylesheet), so
+      // nothing is repositioned per frame — that main-thread work is what made
+      // the stack shudder against compositor-driven touch scrolling.
+      if (isNarrow() || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         unlock();
         return;
       }
@@ -528,6 +531,7 @@ const lastIndex = stats.length - 1;
 
   .why-stack__cta {
     position: relative;
+    z-index: calc(9 + var(--stack-count));
     margin-top: 4rem;
     padding-top: 2rem;
   }
@@ -642,10 +646,10 @@ const lastIndex = stats.length - 1;
     }
 
     .why-stack__cta {
-      width: calc(100% + 428.75px + 2rem + 2 * var(--pd-page-gutter, 3.125rem));
+      grid-column: 1 / -1;
+      width: calc(100% + 2 * var(--pd-page-gutter, 3.125rem));
       max-width: none;
-      margin-left: calc(-1 * (428.75px + 2rem + var(--pd-page-gutter, 3.125rem)));
-      margin-right: calc(-1 * var(--pd-page-gutter, 3.125rem));
+      margin-inline: calc(-1 * var(--pd-page-gutter, 3.125rem));
       padding-inline: var(--pd-page-gutter, 3.125rem);
     }
   }
@@ -686,6 +690,24 @@ const lastIndex = stats.length - 1;
       position: relative !important;
       top: auto !important;
       z-index: auto;
+    }
+
+    /*
+     * Native exit (no JS): the pinned cards release against the last card's
+     * bottom edge. The extra bottom margin is each card's share of the peek
+     * offsets, so the whole stack unpins in lockstep with the last card and
+     * keeps its spacing on the way out. The following card cancels that margin
+     * so the stacking phase is unchanged.
+     */
+    .why-stack__card:not(.why-stack__card--finale) {
+      margin-bottom: calc((var(--stack-count) - 1 - var(--i)) * var(--stack-peek));
+    }
+
+    .why-stack__spacer:not(.why-stack__spacer--hold) + .why-stack__card,
+    .why-stack__spacer:not(.why-stack__spacer--hold) + .why-stack__finale {
+      margin-top: calc(
+        -1 * var(--slot-run) + var(--stack-gap) - (var(--stack-count) - var(--i)) * var(--stack-peek)
+      );
     }
 
     .why-stack__cta {
@@ -915,6 +937,10 @@ const lastIndex = stats.length - 1;
     .why-stack__card {
       height: auto;
       min-height: var(--card-h);
+    }
+
+    .why-stack__card:not(.why-stack__card--finale) {
+      margin-bottom: 0;
     }
   }
 </style>
