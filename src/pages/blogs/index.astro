@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { fetchAllPublicBlogPosts, fetchPublicBlogCategories } from '../../lib/api/blog.api';
+import { API_BASE_URL } from '../../lib/api/api.config';
 
 let posts = [];
 let filters = ['All posts'];
@@ -727,7 +728,9 @@ const initialCategory = Astro.url.searchParams.get('category') ?? '';
   }
 </style>
 
-<script define:vars={{ initialQuery, initialCategory }}>
+<script define:vars={{ initialQuery, initialCategory, apiBase: API_BASE_URL }}>
+  import { hydrateBlogIndex } from '../../lib/blogs-index.client';
+
   function normalizeSearchQuery(value) {
     return value
       .trim()
@@ -744,8 +747,6 @@ const initialCategory = Astro.url.searchParams.get('category') ?? '';
     return normalized.split(' ').every((term) => haystack.includes(term));
   }
 
-  const filterButtons = document.querySelectorAll('.blogs-filter');
-  const cards = document.querySelectorAll('.blog-card');
   const loadMoreBtn = document.getElementById('blogs-load-more');
   const subscribeForm = document.getElementById('blogs-subscribe-form');
   const searchInput = document.getElementById('blog-search');
@@ -755,6 +756,14 @@ const initialCategory = Astro.url.searchParams.get('category') ?? '';
   let activeFilter = initialCategory && initialCategory !== 'All posts' ? initialCategory : 'All posts';
   let searchQuery = initialQuery ?? '';
 
+  function getCards() {
+    return document.querySelectorAll('.blog-card');
+  }
+
+  function getFilterButtons() {
+    return document.querySelectorAll('.blogs-filter');
+  }
+
   function cardMatchesFilter(card) {
     if (activeFilter !== 'All posts' && card.dataset.category !== activeFilter) return false;
     const text = card.getAttribute('data-search-text') ?? '';
@@ -762,6 +771,7 @@ const initialCategory = Astro.url.searchParams.get('category') ?? '';
   }
 
   function refreshCards() {
+    const cards = getCards();
     const matching = Array.from(cards).filter(cardMatchesFilter);
     cards.forEach((card) => {
       const matchIndex = matching.indexOf(card);
@@ -769,29 +779,33 @@ const initialCategory = Astro.url.searchParams.get('category') ?? '';
     });
 
     if (loadMoreBtn) {
-      loadMoreBtn.hidden = visibleLimit >= matching.length;
+      loadMoreBtn.hidden = matching.length === 0 || visibleLimit >= matching.length;
     }
   }
 
-  filterButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      activeFilter = button.dataset.filter ?? 'All posts';
-      visibleLimit = 9;
+  function bindFilters() {
+    getFilterButtons().forEach((button) => {
+      button.addEventListener('click', () => {
+        activeFilter = button.dataset.filter ?? 'All posts';
+        visibleLimit = 9;
 
-      filterButtons.forEach((item) => {
-        const isActive = item === button;
-        item.classList.toggle('blogs-filter--active', isActive);
-        item.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        getFilterButtons().forEach((item) => {
+          const isActive = item === button;
+          item.classList.toggle('blogs-filter--active', isActive);
+          item.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+
+        const url = new URL(window.location.href);
+        if (activeFilter !== 'All posts') url.searchParams.set('category', activeFilter);
+        else url.searchParams.delete('category');
+        window.history.replaceState({}, '', url);
+
+        refreshCards();
       });
-
-      const url = new URL(window.location.href);
-      if (activeFilter !== 'All posts') url.searchParams.set('category', activeFilter);
-      else url.searchParams.delete('category');
-      window.history.replaceState({}, '', url);
-
-      refreshCards();
     });
-  });
+  }
+
+  bindFilters();
 
   loadMoreBtn?.addEventListener('click', () => {
     visibleLimit += 3;
@@ -821,4 +835,14 @@ const initialCategory = Astro.url.searchParams.get('category') ?? '';
   });
 
   refreshCards();
+
+  hydrateBlogIndex(apiBase)
+    .then((hydrated) => {
+      if (!hydrated) return;
+      bindFilters();
+      refreshCards();
+    })
+    .catch((error) => {
+      console.warn('[blogs] Client hydrate failed:', error);
+    });
 </script>

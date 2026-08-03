@@ -1,5 +1,6 @@
 import type { BlogPost } from '../../data/blog-types';
 import { sectionAnchorId } from '../../data/blog-posts';
+import { API_BASE_URL } from './api.config';
 
 export type PlatformBlogPostRow = {
   id: string;
@@ -30,14 +31,17 @@ type PaginatedBlogPosts = {
   totalPages: number;
 };
 
-function serverApiBase(): string {
-  const raw =
-    (import.meta.env.PUBLIC_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
-  return raw || 'http://localhost:3002';
+function apiBase(): string {
+  if (import.meta.env.SSR) {
+    const raw =
+      (import.meta.env.PUBLIC_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
+    return raw || 'http://localhost:3002';
+  }
+  return API_BASE_URL;
 }
 
 async function publicFetch<T>(path: string): Promise<T> {
-  const res = await fetch(`${serverApiBase()}${path}`);
+  const res = await fetch(`${apiBase()}${path}`);
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(
