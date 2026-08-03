@@ -8,7 +8,7 @@ const { current = 'home' } = Astro.props;
 const loginUrl = import.meta.env.PUBLIC_LOGIN_URL || '/login';
 
 const links = [
-  { href: '/', label: 'Home', key: 'home' },
+  { href: '/home', label: 'Home', key: 'home' },
   { href: '/features', label: 'Features', key: 'features' },
   { href: '/pricing', label: 'Pricing', key: 'pricing' },
   { href: '/resources', label: 'Resources', key: 'resources' },
@@ -19,7 +19,7 @@ const links = [
   <div class="pd-frame pointer-events-auto pt-[72.5px]">
     <div class="pd-rail">
       <nav class="pd-nav-shell flex min-w-0 items-center justify-between gap-3 sm:gap-4" aria-label="Primary">
-        <a href="/" class="shrink-0" aria-label="Pixeldesk home">
+        <a href="/home" class="shrink-0" aria-label="Pixeldesk home">
           <img
             src="/images/logo.svg"
             alt="Pixeldesk"

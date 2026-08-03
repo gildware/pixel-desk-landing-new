@@ -19,12 +19,9 @@ export default defineConfig({
   integrations: [
     react(),
     sitemap({
-      filter: (page) => !page.includes('/login'),
+      filter: (page) => !page.includes('/login') && !page.includes('/home'),
     }),
   ],
-  redirects: {
-    '/home': '/',
-  },
   build: {
     inlineStylesheets: 'auto',
   },
