@@ -3,17 +3,28 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 
 const apiUrl = (process.env.PUBLIC_API_URL || 'http://localhost:3002').replace(/\/$/, '');
+const site = (process.env.PUBLIC_SITE_URL || 'https://www.pixeldesk.in').replace(/\/$/, '');
 
 // https://astro.build/config
 export default defineConfig({
+  site,
   output: 'static',
   compressHTML: true,
-  integrations: [react()],
+  integrations: [
+    react(),
+    sitemap({
+      filter: (page) => !page.includes('/login'),
+    }),
+  ],
+  redirects: {
+    '/home': '/',
+  },
   build: {
     inlineStylesheets: 'auto',
   },

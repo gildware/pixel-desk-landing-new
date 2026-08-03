@@ -2,6 +2,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import Faq from '../../components/Faq.astro';
+import { buildHelpSearchIndex } from '../../lib/search/help-index';
+import { fetchAllPublicBlogPosts } from '../../lib/api/blog.api';
 
 type ResourceCard = {
   title: string;
@@ -31,7 +34,7 @@ const sections: ResourceSection[] = [
       {
         title: 'FAQs',
         body: 'Browse through our FAQs and find information that helps you to quickly resolve most common problems.',
-        href: '/#faq',
+        href: '#help-faq',
         icon: '/images/resources/icon-faqs.svg',
         tall: true,
       },
@@ -88,7 +91,7 @@ const sections: ResourceSection[] = [
       {
         title: 'Blogs',
         body: 'Read insightful articles by the PixelDesk team as they discuss a wide range of topics, from product news to project management.',
-        href: '#',
+        href: '/blogs',
         icon: '/images/resources/icon-blogs.svg',
         tall: true,
       },
@@ -101,21 +104,55 @@ const gridClass = {
   2: 'resources-grid--2',
   3: 'resources-grid--3',
 } as const;
+
+const helpFaqs = [
+  {
+    q: 'How do I get started with Pixeldesk?',
+    a: 'Create a free workspace, invite your team, and add your first project. Follow the step-by-step guide at /resources/guides/set-up-your-workspace for a full walkthrough.',
+  },
+  {
+    q: 'How do I set up a client portal?',
+    a: 'Open project settings, enable the client portal, and invite your client by email. See /resources/guides/set-up-client-portal for visibility and approval settings.',
+  },
+  {
+    q: 'How do I create a sprint in Pixeldesk?',
+    a: 'Go to Sprint Planning in your project, create a sprint with dates, drag tasks from the backlog, and click Start Sprint. Full instructions are in /resources/guides/create-your-first-sprint.',
+  },
+  {
+    q: 'Is Pixeldesk free to use?',
+    a: 'Yes. The Starter plan is free for up to 5 users and 3 active projects. Growth adds client portal, sprints, chat, and budget tracking — see /pricing for details.',
+  },
+  {
+    q: 'Where can I read project management guides?',
+    a: 'Visit /blogs for SEO guides on client portals, sprint planning, timesheets, and more — each with FAQs and links to features and pricing.',
+  },
+];
+
+let blogPostsForSearch: Awaited<ReturnType<typeof fetchAllPublicBlogPosts>> = [];
+try {
+  blogPostsForSearch = await fetchAllPublicBlogPosts();
+} catch {
+  /* help search works without blogs */
+}
+
+const allCards = sections.flatMap((section) => section.cards);
+const searchIndex = buildHelpSearchIndex(allCards, helpFaqs, blogPostsForSearch);
+const initialQuery = Astro.url.searchParams.get('q') ?? '';
 ---
 
 <BaseLayout
-  title="Resources"
-  description="Videos, docs, FAQs, API references, and more to help you get the most out of Pixeldesk."
+  title="Pixeldesk Help Center — Guides, Tutorials & FAQs"
+  description="Find answers fast with the Pixeldesk Help Center. Setup guides, feature tutorials, FAQ, troubleshooting, and best practices for project management, client portals, sprint planning, and team management."
+  canonicalPath="/resources"
   topBg="rect-11"
 >
   <Header current="resources" />
   <main class="resources-page">
     <section class="resources-hero relative overflow-hidden pt-[338.75px] pb-[101.25px]">
       <div class="pd-rail relative text-center">
-        <h1 class="resources-hero__title">Resources</h1>
+        <h1 class="resources-hero__title">How can we help?</h1>
         <p class="resources-hero__subtitle">
-          Built for three audiences at once — the Project Manager who needs control, the team that needs clarity, and the
-          client who needs confidence in what’s being delivered.
+          Find step-by-step guides, feature tutorials, and answers to common questions — all in one place.
         </p>
 
         <form class="resources-search mx-auto mt-[42.5px] w-full max-w-[702.5px]" role="search" action="/resources" method="get">
@@ -125,8 +162,10 @@ const gridClass = {
               id="resource-search"
               name="q"
               type="search"
-              placeholder=""
+              value={initialQuery}
+              placeholder="Search for features, guides, or questions…"
               class="resources-search__input"
+              autocomplete="off"
             />
             <span class="resources-search__icon" aria-hidden="true">
               <img src="/images/resources/icon-search.svg" alt="" />
@@ -136,7 +175,21 @@ const gridClass = {
       </div>
     </section>
 
-    <section class="resources-cards pb-[285px]">
+    <section
+      class="resources-search-results pd-rail"
+      id="resources-search-results"
+      hidden
+      aria-live="polite"
+      aria-label="Search results"
+    >
+      <h2 class="resources-search-results__heading">Search results</h2>
+      <ul class="resources-search-results__list" id="resources-search-list"></ul>
+      <p class="resources-search-results__empty" id="resources-search-empty" hidden>
+        No results found. Try different keywords or browse the sections below.
+      </p>
+    </section>
+
+    <section class="resources-cards pb-[285px]" id="resources-main">
       <div class="pd-rail resources-sections">
         {
           sections.map((section) => (
@@ -161,6 +214,8 @@ const gridClass = {
         }
       </div>
     </section>
+
+    <Faq items={helpFaqs} title="Help center, explained." layout="centered" />
   </main>
   <Footer />
 </BaseLayout>
@@ -231,6 +286,76 @@ const gridClass = {
     display: block;
     width: 100%;
     height: 100%;
+  }
+
+  .resources-search-results {
+    padding-bottom: 40px;
+  }
+
+  .resources-search-results__heading {
+    margin: 0 0 20px;
+    padding-left: calc(65px * var(--pd-scale, 1.25));
+    font-size: 25px;
+    font-weight: 500;
+    line-height: 30px;
+    color: #000945;
+  }
+
+  .resources-search-results__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    padding: 0 calc(65px * var(--pd-scale, 1.25));
+    list-style: none;
+  }
+
+  .resources-search-results__item a {
+    display: block;
+    padding: 16px 20px;
+    border: 1px solid #e2e2e2;
+    border-radius: 12px;
+    background: #fff;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .resources-search-results__item a:hover {
+    border-color: rgba(108, 65, 255, 0.35);
+    box-shadow: 0 6px 20px rgba(108, 65, 255, 0.1);
+  }
+
+  .resources-search-results__type {
+    display: inline-block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6c41ff;
+  }
+
+  .resources-search-results__title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: #000945;
+  }
+
+  .resources-search-results__excerpt {
+    margin: 6px 0 0;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 20px;
+    color: #444;
+  }
+
+  .resources-search-results__empty {
+    margin: 0;
+    padding-left: calc(65px * var(--pd-scale, 1.25));
+    font-size: 16px;
+    font-weight: 300;
+    color: #878787;
   }
 
   .resources-sections {
@@ -366,6 +491,12 @@ const gridClass = {
       padding-left: 0;
     }
 
+    .resources-search-results__heading,
+    .resources-search-results__list,
+    .resources-search-results__empty {
+      padding-left: 0;
+    }
+
     .resources-grid--3 {
       grid-template-columns: repeat(2, calc(278px * var(--pd-scale, 1.25)));
     }
@@ -402,3 +533,85 @@ const gridClass = {
     }
   }
 </style>
+
+<script define:vars={{ searchIndex, initialQuery }}>
+  function normalizeSearchQuery(value) {
+    return value
+      .trim()
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function matchesSearchQuery(query, ...fields) {
+    const normalized = normalizeSearchQuery(query);
+    if (!normalized) return true;
+    const haystack = fields.map((field) => normalizeSearchQuery(field)).join(' ');
+    return normalized.split(' ').every((term) => haystack.includes(term));
+  }
+
+  const searchInput = document.getElementById('resource-search');
+  const resultsPanel = document.getElementById('resources-search-results');
+  const resultsList = document.getElementById('resources-search-list');
+  const emptyState = document.getElementById('resources-search-empty');
+  const mainSection = document.getElementById('resources-main');
+  const searchForm = searchInput?.closest('form');
+
+  function renderResults(query) {
+    if (!resultsPanel || !resultsList || !emptyState || !mainSection) return;
+
+    const trimmed = query.trim();
+    if (!trimmed) {
+      resultsPanel.hidden = true;
+      mainSection.hidden = false;
+      resultsList.replaceChildren();
+      emptyState.hidden = true;
+      return;
+    }
+
+    const matches = searchIndex.filter((item) =>
+      matchesSearchQuery(trimmed, item.title, item.excerpt, item.type),
+    );
+
+    resultsPanel.hidden = false;
+    mainSection.hidden = matches.length > 0;
+    emptyState.hidden = matches.length > 0;
+    resultsList.replaceChildren();
+
+    matches.slice(0, 12).forEach((item) => {
+      const li = document.createElement('li');
+      li.className = 'resources-search-results__item';
+      li.innerHTML = `
+        <a href="${item.href}">
+          <span class="resources-search-results__type">${item.type}</span>
+          <p class="resources-search-results__title">${item.title}</p>
+          <p class="resources-search-results__excerpt">${item.excerpt}</p>
+        </a>
+      `;
+      resultsList.appendChild(li);
+    });
+
+    if (matches.length === 0) {
+      mainSection.hidden = false;
+    }
+  }
+
+  searchInput?.addEventListener('input', () => {
+    renderResults(searchInput.value);
+    const url = new URL(window.location.href);
+    const value = searchInput.value.trim();
+    if (value) url.searchParams.set('q', value);
+    else url.searchParams.delete('q');
+    window.history.replaceState({}, '', url);
+  });
+
+  searchForm?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    renderResults(searchInput?.value ?? '');
+  });
+
+  if (initialQuery) {
+    renderResults(initialQuery);
+  }
+</script>

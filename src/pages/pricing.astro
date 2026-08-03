@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Faq from '../components/Faq.astro';
 
 type FeatureItem = { text: string; included?: boolean };
 type FeatureGroup = { title: string; items: FeatureItem[] };
@@ -237,11 +238,35 @@ function cellContent(value: Cell) {
   if (typeof value === 'string') return value;
   return value ? 'check' : 'cross';
 }
+
+const pricingFaqs = [
+  {
+    q: 'Is there a free plan?',
+    a: 'Yes. Pixeldesk Starter is free forever for up to 5 users and 3 active projects — no credit card required.',
+  },
+  {
+    q: 'What is included in the Growth plan?',
+    a: 'Growth includes unlimited users and projects, client portal, sprint planning, team chat, notice board, budget tracking, leave management, full timesheets, and priority support — with a 14-day free trial.',
+  },
+  {
+    q: 'Do I need a credit card to start?',
+    a: 'No. You can start on the free Starter plan or begin a Growth trial without entering payment details.',
+  },
+  {
+    q: 'Can I switch between annual and monthly billing?',
+    a: 'Yes. Growth is available on annual billing (₹599/user/mo) or monthly billing (₹749/user/mo). Annual billing saves about 20%.',
+  },
+  {
+    q: 'Is client portal included on all plans?',
+    a: 'Client portal, sprint planning, team chat, and budget tracking are included on Growth and Enterprise. They are not available on the free Starter plan.',
+  },
+];
 ---
 
 <BaseLayout
-  title="Pricing"
-  description="Transparent pricing. Everything included. No surprises. Start free and scale when you're ready."
+  title="Pixeldesk Pricing — Free Plan & Paid Plans for Teams of All Sizes"
+  description="Pixeldesk offers a free Starter plan and affordable paid plans with client portals, sprint planning, team chat, budget tracking, leave management, and more. No credit card needed to start."
+  canonicalPath="/pricing"
   topBg="rect-11"
 >
   <Header current="pricing" />
@@ -249,11 +274,11 @@ function cellContent(value: Cell) {
     <section class="pricing-hero">
       <div class="pricing-shell pricing-hero__content">
         <h1 class="pricing-hero__title">
-          Transparent pricing.<br />Everything included. No surprises.
+          Simple pricing.<br />Powerful features at every level.
         </h1>
         <p class="pricing-hero__subtitle">
-          Start free. Scale when you’re ready. Every core feature ships in one plan — no module gates, no hidden
-          add-ons.
+          Start free. Scale when you're ready. No surprise charges, no per-feature gates on the things your team
+          actually needs every day.
         </p>
 
         <div class="billing-toggle" data-billing-toggle>
@@ -452,6 +477,8 @@ function cellContent(value: Cell) {
         </div>
       </div>
     </section>
+
+    <Faq items={pricingFaqs} title="Pricing questions, answered." layout="centered" />
   </main>
   <Footer />
 </BaseLayout>

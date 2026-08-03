@@ -1,4 +1,7 @@
 ---
+import JsonLd from './seo/JsonLd.astro';
+import { faqPageSchema } from '../lib/seo/schema';
+
 interface FaqItem {
   q: string;
   a: string;
@@ -21,6 +24,8 @@ const titleLines =
 
 const lastIndex = items.length - 1;
 ---
+
+<JsonLd data={faqPageSchema(items)} />
 
 <section id="faq" class:list={['faq', 'scroll-mt-24', { 'faq--centered': layout === 'centered' }]}>
   <div class="pd-rail faq__layout">

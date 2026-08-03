@@ -1,0 +1,25 @@
+# Pixeldesk
+
+> Pixeldesk is an all-in-one project management platform for agencies, product teams, and consultancies. It combines sprint planning, client portals, budget tracking, timesheets, notice board, and team chat in one workspace.
+
+## Key pages
+
+- [Home](https://www.pixeldesk.in/): Project management software overview
+- [Features](https://www.pixeldesk.in/features): Dashboard, projects, sprints, client portal, timesheets, chat, and people management
+- [Pricing](https://www.pixeldesk.in/pricing): Free Starter plan and paid Growth/Enterprise plans
+- [Help Center](https://www.pixeldesk.in/resources): Guides, tutorials, and FAQs
+- [Knowledge Base](https://www.pixeldesk.in/resources/knowledge-base): Feature documentation and setup guides
+- [Blog](https://www.pixeldesk.in/blogs): Project management guides and industry insights
+
+## Help guides
+
+- [Set up your workspace](https://www.pixeldesk.in/resources/guides/set-up-your-workspace)
+- [Create your first sprint](https://www.pixeldesk.in/resources/guides/create-your-first-sprint)
+- [Set up a client portal](https://www.pixeldesk.in/resources/guides/set-up-client-portal)
+- [Log and submit timesheets](https://www.pixeldesk.in/resources/guides/log-and-submit-timesheet)
+- [Post a team notice](https://www.pixeldesk.in/resources/guides/post-team-notice)
+- [Invite team members](https://www.pixeldesk.in/resources/guides/invite-team-members)
+
+## Product summary
+
+Pixeldesk helps project managers, delivery teams, and clients work in one workspace with live client visibility, agile sprint planning, integrated timesheets, leave management, and project-linked team chat.

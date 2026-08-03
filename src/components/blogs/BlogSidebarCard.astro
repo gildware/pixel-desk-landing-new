@@ -1,0 +1,80 @@
+---
+import type { BlogPost } from '../../data/blog-types';
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+---
+
+<a href={`/blogs/${post.slug}`} class="sidebar-card">
+  <div
+    class="sidebar-card__thumb"
+    aria-hidden="true"
+    style={post.imageUrl ? `background-image:url('${post.imageUrl}');background-size:cover;background-position:center;` : undefined}
+  ></div>
+  <div class="sidebar-card__body">
+    <h3 class="sidebar-card__title" set:html={post.titleHtml ?? post.title} />
+    <time class="sidebar-card__date" datetime={post.dateIso}>{post.date}</time>
+  </div>
+</a>
+
+<style>
+  .sidebar-card {
+    display: flex;
+    gap: calc(12px * var(--pd-scale, 1.25));
+    align-items: flex-start;
+    padding: calc(12px * var(--pd-scale, 1.25));
+    border: calc(1px * var(--pd-scale, 1.25)) solid #e2e2e2;
+    border-radius: calc(10px * var(--pd-scale, 1.25));
+    background: #fff;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .sidebar-card:hover {
+    border-color: rgba(108, 65, 255, 0.35);
+    box-shadow: 0 4px 14px rgba(108, 65, 255, 0.08);
+  }
+
+  .sidebar-card:focus-visible {
+    outline: 2px solid #6c41ff;
+    outline-offset: 2px;
+  }
+
+  .sidebar-card__thumb {
+    flex-shrink: 0;
+    width: calc(56px * var(--pd-scale, 1.25));
+    height: calc(56px * var(--pd-scale, 1.25));
+    border-radius: calc(5px * var(--pd-scale, 1.25));
+    background: #d9d9d9;
+  }
+
+  .sidebar-card__body {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: calc(6px * var(--pd-scale, 1.25));
+  }
+
+  .sidebar-card__title {
+    margin: 0;
+    font-size: calc(12px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(16px * var(--pd-scale, 1.25));
+    color: #000945;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .sidebar-card__date {
+    font-size: calc(10px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(14px * var(--pd-scale, 1.25));
+    color: #878787;
+  }
+</style>

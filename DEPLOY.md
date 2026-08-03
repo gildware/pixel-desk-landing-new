@@ -30,6 +30,9 @@ The browser then calls the API cross-origin with `credentials: 'include'`. Backe
 | `PUBLIC_API_URL` | `https://apis.pixeldesk.in` | API base (direct) or proxy upstream |
 | `PUBLIC_USE_API_PROXY` | `false` (prod) / `true` (local) | Same-origin `/api/proxy` vs direct API |
 | `PUBLIC_DASHBOARD_URL` | `https://dashboard.pixeldesk.in` | Redirect after successful OTP verify |
+| `PUBLIC_SITE_URL` | `https://www.pixeldesk.in` | Canonical origin for SEO, sitemap, OG tags |
+| `PUBLIC_ALT_SITE_URL` | `https://www.thepixeldesk.com` | Alternate domain (301 to canonical via nginx) |
+| `PUBLIC_ORG_SAME_AS` | `https://linkedin.com/company/...` | Comma-separated social profile URLs for Organization schema |
 | `PUBLIC_LOGIN_URL` | `/login` | Login path (same-origin) |
 | `PUBLIC_SUPPORT_URL` | `/resources/knowledge-base` | Support link on the login form |
 
@@ -52,3 +55,13 @@ Image serves on **port 80**.
 ## HSTS
 
 Enable HSTS at your TLS terminator when serving HTTPS.
+
+## Dual domain (pixeldesk.in + thepixeldesk.com)
+
+The SEO doc lists both `https://www.pixeldesk.in` and `https://www.thepixeldesk.com`. Production should:
+
+1. Point both domains at the same nginx container (or TLS load balancer).
+2. Rely on `nginx.conf` to **301 redirect** `thepixeldesk.com` → `www.pixeldesk.in`.
+3. Set `PUBLIC_SITE_URL=https://www.pixeldesk.in` at Docker build time so canonical URLs, sitemap, and OG tags use `.in` only.
+
+After deploy, submit `https://www.pixeldesk.in/sitemap-index.xml` in Google Search Console and Bing Webmaster Tools (property: `www.pixeldesk.in`).

@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
+import { topicGuideMap } from '../../data/help-guides';
 
 type Topic = {
   title: string;
@@ -15,72 +16,75 @@ const topics: Topic[] = [
   {
     title: 'Getting Started',
     body: 'Set up your workspace, invite your team, and create your first project.',
-    href: '#',
+    href: `/resources/guides/${topicGuideMap['Getting Started']}`,
     icon: '/images/knowledge-base/icon-getting-started.svg',
     articles: 5,
   },
   {
     title: 'Projects & Tasks',
     body: 'Create tasks, set milestones, manage dependencies, and switch views.',
-    href: '#',
+    href: `/resources/guides/${topicGuideMap['Projects & Tasks']}`,
     icon: '/images/knowledge-base/icon-projects-tasks.svg',
     articles: 4,
   },
   {
     title: 'Sprint Planning',
     body: 'Create sprints, manage your backlog, and track velocity.',
-    href: '#',
+    href: `/resources/guides/${topicGuideMap['Sprint Planning']}`,
     icon: '/images/knowledge-base/icon-sprint-planning.svg',
     articles: 4,
   },
   {
     title: 'Client Portal',
     body: 'Invite clients, manage their access, and configure budget visibility.',
-    href: '#',
+    href: `/resources/guides/${topicGuideMap['Client Portal']}`,
     icon: '/images/knowledge-base/icon-client-portal.svg',
     articles: 6,
   },
   {
     title: 'Notice Board',
     body: 'Post, manage, and archive important team and client announcements.',
-    href: '#',
+    href: `/resources/guides/${topicGuideMap['Notice Board']}`,
     icon: '/images/knowledge-base/icon-notice-board.svg',
     articles: 3,
   },
   {
     title: 'Team Chat',
     body: 'Use project-linked chat, @mentions, file sharing, and search.',
-    href: '#',
+    href: `/resources/guides/${topicGuideMap['Team Chat']}`,
     icon: '/images/knowledge-base/icon-team-chat.svg',
     articles: 3,
   },
   {
     title: 'People Management',
     body: 'Leave requests, holiday calendar, birthdays, and team availability.',
-    href: '#',
+    href: `/resources/guides/${topicGuideMap['People Management']}`,
     icon: '/images/knowledge-base/icon-people-management.svg',
     articles: 3,
   },
   {
     title: 'Timesheets',
     body: 'Log time, submit for approval, and export billing reports.',
-    href: '#',
+    href: `/resources/guides/${topicGuideMap.Timesheets}`,
     icon: '/images/knowledge-base/icon-timesheets.svg',
     articles: 3,
   },
   {
     title: 'Account & Billing',
     body: 'Manage your plan, users, billing details, and invoices.',
-    href: '#',
+    href: `/resources/guides/${topicGuideMap['Account & Billing']}`,
     icon: '/images/knowledge-base/icon-account-billing.svg',
     articles: 3,
   },
 ];
+
+const initialQuery = Astro.url.searchParams.get('q') ?? '';
 ---
 
 <BaseLayout
-  title="Knowledge Base"
-  description="What do you need help with? Browse Pixeldesk guides for setup, projects, sprints, clients, and more."
+  title="Pixeldesk Help Center — Knowledge Base"
+  description="Find answers fast with the Pixeldesk Help Center. Setup guides, feature tutorials, FAQ, troubleshooting, and best practices for project management, client portals, sprint planning, and team management."
+  canonicalPath="/resources/knowledge-base"
   topBg="rect-11"
 >
   <Header current="resources" />
@@ -97,8 +101,10 @@ const topics: Topic[] = [
               id="kb-search"
               name="q"
               type="search"
-              placeholder=""
+              value={initialQuery}
+              placeholder="Search for features, guides, or questions…"
               class="kb-search__input"
+              autocomplete="off"
             />
             <span class="kb-search__icon" aria-hidden="true">
               <img src="/images/resources/icon-search.svg" alt="" />
@@ -110,10 +116,14 @@ const topics: Topic[] = [
 
     <section class="kb-cards pb-[345px]">
       <div class="pd-rail">
-        <div class="kb-grid">
+        <div class="kb-grid" id="kb-grid">
           {
             topics.map((topic) => (
-              <a href={topic.href} class="kb-card">
+              <a
+                href={topic.href}
+                class="kb-card"
+                data-search-text={`${topic.title} ${topic.body}`}
+              >
                 <span class="kb-card__icon">
                   <span class="kb-card__icon-glow" aria-hidden="true">
                     <img src={topic.icon} alt="" />
@@ -226,6 +236,10 @@ const topics: Topic[] = [
     color: inherit;
   }
 
+  .kb-card[hidden] {
+    display: none;
+  }
+
   .kb-card__icon {
     position: relative;
     flex-shrink: 0;
@@ -334,3 +348,51 @@ const topics: Topic[] = [
     }
   }
 </style>
+
+<script define:vars={{ initialQuery }}>
+  function normalizeSearchQuery(value) {
+    return value
+      .trim()
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function matchesSearchQuery(query, ...fields) {
+    const normalized = normalizeSearchQuery(query);
+    if (!normalized) return true;
+    const haystack = fields.map((field) => normalizeSearchQuery(field)).join(' ');
+    return normalized.split(' ').every((term) => haystack.includes(term));
+  }
+
+  const searchInput = document.getElementById('kb-search');
+  const cards = document.querySelectorAll('.kb-card');
+  const searchForm = searchInput?.closest('form');
+
+  function filterTopics(query) {
+    cards.forEach((card) => {
+      const text = card.getAttribute('data-search-text') ?? '';
+      const visible = matchesSearchQuery(query, text);
+      card.hidden = !visible;
+    });
+  }
+
+  searchInput?.addEventListener('input', () => {
+    filterTopics(searchInput.value);
+    const url = new URL(window.location.href);
+    const value = searchInput.value.trim();
+    if (value) url.searchParams.set('q', value);
+    else url.searchParams.delete('q');
+    window.history.replaceState({}, '', url);
+  });
+
+  searchForm?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    filterTopics(searchInput?.value ?? '');
+  });
+
+  if (initialQuery) {
+    filterTopics(initialQuery);
+  }
+</script>

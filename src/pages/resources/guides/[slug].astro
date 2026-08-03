@@ -1,0 +1,193 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Header from '../../../components/Header.astro';
+import Footer from '../../../components/Footer.astro';
+import Faq from '../../../components/Faq.astro';
+import { helpGuides, getHelpGuide } from '../../../data/help-guides';
+import { howToSchema } from '../../../lib/seo/schema';
+
+export function getStaticPaths() {
+  return helpGuides.map((guide) => ({ params: { slug: guide.slug } }));
+}
+
+const { slug } = Astro.params;
+const guide = getHelpGuide(slug!);
+
+if (!guide) {
+  return Astro.redirect('/resources/knowledge-base');
+}
+
+const howTo = howToSchema(guide);
+---
+
+<BaseLayout
+  title={guide.title}
+  description={guide.description}
+  canonicalPath={`/resources/guides/${guide.slug}`}
+  jsonLd={howTo}
+  topBg="rect-11"
+>
+  <Header current="resources" />
+  <main class="help-guide">
+    <article class="pd-rail help-guide__article">
+      <nav class="help-guide__crumb" aria-label="Breadcrumb">
+        <a href="/resources">Help Center</a>
+        <span aria-hidden="true"> / </span>
+        <a href="/resources/knowledge-base">Knowledge Base</a>
+        <span aria-hidden="true"> / </span>
+        <span>{guide.topic}</span>
+      </nav>
+
+      <header class="help-guide__header">
+        <span class="help-guide__topic">{guide.topic}</span>
+        <h1 class="help-guide__title">{guide.title}</h1>
+        <p class="help-guide__description">{guide.description}</p>
+      </header>
+
+      <ol class="help-guide__steps">
+        {
+          guide.steps.map((step, index) => (
+            <li class="help-guide__step">
+              <span class="help-guide__step-num">{index + 1}</span>
+              <div class="help-guide__step-body">
+                <h2 class="help-guide__step-title">{step.name}</h2>
+                <p>{step.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <aside class="help-guide__links">
+        <p>
+          Explore related <a href="/features">features</a> or compare <a href="/pricing">plans</a>.
+          More guides in the <a href="/resources/knowledge-base">Knowledge Base</a>.
+        </p>
+      </aside>
+    </article>
+
+    <Faq items={guide.faqs} title="Guide FAQ" layout="centered" />
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .help-guide {
+    padding-top: 200px;
+    padding-bottom: 0;
+  }
+
+  .help-guide__article {
+    max-width: 760px;
+    margin-inline: auto;
+    padding-bottom: 80px;
+  }
+
+  .help-guide__crumb {
+    font-size: 14px;
+    font-weight: 300;
+    color: #5f616d;
+    margin-bottom: 24px;
+  }
+
+  .help-guide__crumb a {
+    color: #6c41ff;
+    text-decoration: none;
+  }
+
+  .help-guide__topic {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 16px;
+    border-radius: 50px;
+    background: rgba(108, 65, 255, 0.12);
+    color: #6c41ff;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .help-guide__title {
+    margin: 20px 0 0;
+    font-size: 38px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: #000945;
+  }
+
+  .help-guide__description {
+    margin: 14px 0 0;
+    font-size: 17px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: #3d3d3d;
+  }
+
+  .help-guide__steps {
+    margin: 40px 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .help-guide__step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .help-guide__step-num {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #6c41ff;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .help-guide__step-title {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #000945;
+  }
+
+  .help-guide__step-body p {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: #3d3d3d;
+  }
+
+  .help-guide__links {
+    margin-top: 40px;
+    padding: 18px 22px;
+    border-radius: 12px;
+    background: rgba(108, 65, 255, 0.08);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .help-guide__links a {
+    color: #6c41ff;
+    font-weight: 500;
+  }
+
+  @media (max-width: 767px) {
+    .help-guide {
+      padding-top: 160px;
+    }
+
+    .help-guide__title {
+      font-size: 30px;
+    }
+  }
+</style>

@@ -1,0 +1,824 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { fetchAllPublicBlogPosts, fetchPublicBlogCategories } from '../../lib/api/blog.api';
+
+let posts = [];
+let filters = ['All posts'];
+
+try {
+  const [fetchedPosts, categories] = await Promise.all([
+    fetchAllPublicBlogPosts(),
+    fetchPublicBlogCategories(),
+  ]);
+  posts = fetchedPosts;
+  filters = ['All posts', ...categories];
+} catch (error) {
+  console.warn('[blogs] Failed to load from API:', (error as Error).message);
+}
+
+const initialQuery = Astro.url.searchParams.get('q') ?? '';
+const initialCategory = Astro.url.searchParams.get('category') ?? '';
+---
+
+<BaseLayout
+  title="Pixeldesk Blog — Project Management Guides & Insights"
+  description="Practical project management guides for agencies and teams: client portals, sprint planning, budgets, timesheets, team chat, and more from Pixeldesk."
+  canonicalPath="/blogs"
+  topBg="rect-11"
+>
+  <Header current="resources" />
+  <main class="blogs-page">
+    <section class="blogs-hero relative overflow-hidden">
+      <div class="pd-rail blogs-hero__inner">
+        <p class="blogs-hero__badge">Blogs</p>
+        <h1 class="blogs-hero__title">
+          Insights for project managers,<br />
+          teams, and the clients they serve.
+        </h1>
+        <p class="blogs-hero__subtitle">
+          Practical guides, industry research, and ideas on running better projects — written for PMs, team leads, and
+          agency owners who want to do their best work without drowning in admin.
+        </p>
+
+        <form class="blogs-search" role="search" action="/blogs" method="get">
+          <label class="sr-only" for="blog-search">Search articles</label>
+          <div class="blogs-search__field">
+            <input
+              id="blog-search"
+              name="q"
+              type="search"
+              value={initialQuery}
+              placeholder="Search articles…"
+              class="blogs-search__input"
+              autocomplete="off"
+            />
+            <span class="blogs-search__icon" aria-hidden="true">
+              <img src="/images/resources/icon-search.svg" alt="" />
+            </span>
+          </div>
+        </form>
+
+        <div class="blogs-filters" role="tablist" aria-label="Filter blog posts">
+          {
+            filters.map((filter, index) => {
+              const isActive =
+                index === 0
+                  ? !initialCategory || initialCategory === 'All posts'
+                  : filter === initialCategory;
+              return (
+                <button
+                  type="button"
+                  class:list={['blogs-filter', isActive && 'blogs-filter--active']}
+                  data-filter={filter}
+                  role="tab"
+                  aria-selected={isActive ? 'true' : 'false'}
+                >
+                  {filter}
+                </button>
+              );
+            })
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="blogs-articles">
+      <div class="pd-rail">
+        <div class="blogs-articles__content">
+          <div class="blogs-articles__head">
+            <h2 class="blogs-articles__title">Articles</h2>
+            <button type="button" class="blogs-sort" aria-haspopup="listbox">
+              <span>Sort by</span>
+              <svg class="blogs-sort__icon" viewBox="0 0 14 10" fill="none" aria-hidden="true">
+                <path
+                  d="M2.66667 5H11.3333M0.5 0.5H13.5M4.83333 9.5H9.16667"
+                  stroke="#444444"
+                  stroke-width="1"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div class="blogs-grid" id="blogs-grid">
+          {
+            posts.length === 0 ? (
+              <p class="blogs-empty">No articles published yet. Check back soon.</p>
+            ) : (
+              posts.map((post, index) => (
+                <a
+                  href={`/blogs/${post.slug}`}
+                  class="blog-card"
+                  data-category={post.category}
+                  data-search-text={`${post.title} ${post.excerpt} ${post.category}`}
+                  data-index={index}
+                  hidden={index >= 9}
+                >
+                  <div class="blog-card__body">
+                    <div
+                      class="blog-card__thumb"
+                      aria-hidden="true"
+                      style={post.imageUrl ? `background-image:url('${post.imageUrl}');background-size:cover;background-position:center;` : undefined}
+                    ></div>
+                    <span class="blog-card__category">{post.category}</span>
+                    <h3 class="blog-card__title" set:html={post.titleHtml ?? post.title} />
+                    <p class="blog-card__excerpt">{post.excerpt}</p>
+                  </div>
+                  <div class="blog-card__foot">
+                    <div class="blog-card__divider" aria-hidden="true"></div>
+                    <div class="blog-card__meta">
+                      <time class="blog-card__date" datetime={post.dateIso}>{post.date}</time>
+                      <span class:list={['blog-card__read', post.readMoreVariant === 'navy' && 'blog-card__read--navy']}>
+                        Read More
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              ))
+            )
+          }
+          </div>
+        </div>
+
+        <div class="blogs-load-wrap">
+          <button type="button" class="blogs-load-more" id="blogs-load-more">
+            Load More
+          </button>
+        </div>
+
+        <section class="blogs-subscribe" aria-labelledby="blogs-subscribe-title">
+          <span class="blogs-subscribe__badge">Industry Insights</span>
+          <h2 id="blogs-subscribe-title" class="blogs-subscribe__title">
+            Get the best PM insights delivered to your inbox.
+          </h2>
+          <p class="blogs-subscribe__copy">
+            One email every two weeks. Practical, no-fluff advice on running better projects, managing teams, and keeping
+            clients happy.
+          </p>
+          <form class="blogs-subscribe__form" id="blogs-subscribe-form">
+            <label class="sr-only" for="blogs-subscribe-email">Email address</label>
+            <div class="blogs-subscribe__field">
+              <input
+                id="blogs-subscribe-email"
+                type="email"
+                name="email"
+                autocomplete="email"
+                class="blogs-subscribe__input"
+              />
+              <button type="submit" class="blogs-subscribe__btn">Subscribe free →</button>
+            </div>
+          </form>
+          <p class="blogs-subscribe__note">No spam. Unsubscribe anytime.</p>
+        </section>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  /* Figma Blogs frame — values ×1.25 (--pd-scale) */
+  .blogs-hero {
+    padding-top: calc(227px * var(--pd-scale, 1.25));
+    padding-bottom: calc(72px * var(--pd-scale, 1.25));
+  }
+
+  .blogs-hero__inner {
+    text-align: center;
+  }
+
+  .blogs-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    height: calc(30px * var(--pd-scale, 1.25));
+    margin: 0;
+    padding: calc(5px * var(--pd-scale, 1.25)) calc(15px * var(--pd-scale, 1.25));
+    border-radius: calc(40px * var(--pd-scale, 1.25));
+    background: rgba(108, 65, 255, 0.11);
+    color: #6c41ff;
+    font-size: calc(14px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(25px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+  }
+
+  .blogs-hero__title {
+    max-width: calc(787px * var(--pd-scale, 1.25));
+    margin: calc(20px * var(--pd-scale, 1.25)) auto 0;
+    font-size: calc(50px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(52px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    color: #000945;
+  }
+
+  .blogs-hero__subtitle {
+    max-width: calc(714px * var(--pd-scale, 1.25));
+    margin: calc(18px * var(--pd-scale, 1.25)) auto 0;
+    font-size: calc(16px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(24px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    color: #000945;
+  }
+
+  .blogs-search {
+    width: 100%;
+    max-width: calc(562px * var(--pd-scale, 1.25));
+    margin: calc(35px * var(--pd-scale, 1.25)) auto 0;
+  }
+
+  .blogs-search__field {
+    position: relative;
+    height: calc(42px * var(--pd-scale, 1.25));
+    border-radius: calc(21px * var(--pd-scale, 1.25));
+    background: #fff;
+    box-shadow: calc(6px * var(--pd-scale, 1.25)) calc(6px * var(--pd-scale, 1.25))
+      calc(33px * var(--pd-scale, 1.25)) rgba(108, 65, 255, 0.21);
+  }
+
+  .blogs-search__input {
+    box-sizing: border-box;
+    width: 100%;
+    height: calc(42px * var(--pd-scale, 1.25));
+    padding: 0 calc(45px * var(--pd-scale, 1.25)) 0 calc(20px * var(--pd-scale, 1.25));
+    border: 0;
+    border-radius: calc(21px * var(--pd-scale, 1.25));
+    background: transparent;
+    font-size: calc(14px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(42px * var(--pd-scale, 1.25));
+    color: #000945;
+    outline: none;
+  }
+
+  .blogs-search__input::placeholder {
+    color: #878787;
+  }
+
+  .blogs-search__icon {
+    position: absolute;
+    top: 50%;
+    right: calc(21px * var(--pd-scale, 1.25));
+    display: flex;
+    width: calc(18px * var(--pd-scale, 1.25));
+    height: calc(18px * var(--pd-scale, 1.25));
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .blogs-search__icon img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .blogs-filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: calc(13px * var(--pd-scale, 1.25));
+    max-width: calc(701px * var(--pd-scale, 1.25));
+    margin: calc(39px * var(--pd-scale, 1.25)) auto 0;
+  }
+
+  .blogs-filter {
+    display: inline-flex;
+    align-items: center;
+    height: calc(30px * var(--pd-scale, 1.25));
+    padding: calc(5px * var(--pd-scale, 1.25)) calc(15px * var(--pd-scale, 1.25));
+    border: calc(0.75px * var(--pd-scale, 1.25)) solid #d9d9d9;
+    border-radius: calc(40px * var(--pd-scale, 1.25));
+    background: rgba(255, 255, 255, 0.11);
+    color: #000945;
+    font-family: var(--font-sans);
+    font-size: calc(14px * var(--pd-scale, 1.25));
+    font-weight: 400;
+    line-height: calc(25px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .blogs-filter--active {
+    border-color: transparent;
+    background: #000945;
+    color: #fff;
+    font-weight: 500;
+  }
+
+  .blogs-articles {
+    padding-bottom: calc(120px * var(--pd-scale, 1.25));
+  }
+
+  .blogs-articles__content {
+    width: fit-content;
+    max-width: 100%;
+    padding-left: calc(15px * var(--pd-scale, 1.25));
+  }
+
+  /* Figma 2210:195 + 2210:411 — Articles left = card 1; Sort right = card 3 right − 5px; shared bottom baseline */
+  .blogs-articles__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    box-sizing: border-box;
+    width: calc(3 * 300px * var(--pd-scale, 1.25) + 2 * 40px * var(--pd-scale, 1.25));
+    max-width: 100%;
+    padding-right: calc(5px * var(--pd-scale, 1.25));
+    margin-bottom: calc(42px * var(--pd-scale, 1.25));
+  }
+
+  .blogs-articles__title {
+    margin: 0;
+    font-size: calc(20px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(22px * var(--pd-scale, 1.25));
+    color: #000945;
+  }
+
+  .blogs-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(7px * var(--pd-scale, 1.25));
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #444;
+    font-family: var(--font-sans);
+    font-size: calc(12px * var(--pd-scale, 1.25));
+    font-weight: 400;
+    line-height: calc(14px * var(--pd-scale, 1.25));
+    cursor: pointer;
+  }
+
+  .blogs-sort__icon {
+    flex-shrink: 0;
+    width: calc(13px * var(--pd-scale, 1.25));
+    height: calc(9px * var(--pd-scale, 1.25));
+  }
+
+  .blogs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, calc(300px * var(--pd-scale, 1.25)));
+    column-gap: calc(40px * var(--pd-scale, 1.25));
+    row-gap: calc(42px * var(--pd-scale, 1.25));
+    justify-content: start;
+    width: calc(3 * 300px * var(--pd-scale, 1.25) + 2 * 40px * var(--pd-scale, 1.25));
+    max-width: 100%;
+  }
+
+  .blog-card {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: calc(300px * var(--pd-scale, 1.25));
+    height: calc(500px * var(--pd-scale, 1.25));
+    padding: calc(20px * var(--pd-scale, 1.25));
+    border: calc(1px * var(--pd-scale, 1.25)) solid #e2e2e2;
+    border-radius: calc(15px * var(--pd-scale, 1.25));
+    background: #fff;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .blog-card:hover {
+    border-color: rgba(108, 65, 255, 0.35);
+    box-shadow: 0 6px 20px rgba(108, 65, 255, 0.1);
+  }
+
+  .blog-card:focus-visible {
+    outline: 2px solid #6c41ff;
+    outline-offset: 3px;
+  }
+
+  .blog-card[hidden] {
+    display: none;
+  }
+
+  .blog-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: calc(15px * var(--pd-scale, 1.25));
+  }
+
+  .blog-card__thumb {
+    flex-shrink: 0;
+    width: 100%;
+    height: calc(126px * var(--pd-scale, 1.25));
+    border-radius: calc(5px * var(--pd-scale, 1.25));
+    background: #d9d9d9;
+  }
+
+  .blog-card__category {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    height: calc(23px * var(--pd-scale, 1.25));
+    padding: calc(5px * var(--pd-scale, 1.25)) calc(10px * var(--pd-scale, 1.25));
+    border-radius: calc(40px * var(--pd-scale, 1.25));
+    background: rgba(108, 65, 255, 0.11);
+    color: #6c41ff;
+    font-size: calc(11px * var(--pd-scale, 1.25));
+    font-weight: 600;
+    line-height: calc(14px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .blog-card__title {
+    margin: 0;
+    font-size: calc(20px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(26px * var(--pd-scale, 1.25));
+    color: #000945;
+  }
+
+  .blog-card__excerpt {
+    margin: 0;
+    font-size: calc(12px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(18px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    color: #000945;
+  }
+
+  .blog-card__foot {
+    display: flex;
+    flex-direction: column;
+    gap: calc(15px * var(--pd-scale, 1.25));
+  }
+
+  .blog-card__divider {
+    height: calc(1px * var(--pd-scale, 1.25));
+    background: #e2e2e2;
+  }
+
+  .blog-card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(10px * var(--pd-scale, 1.25));
+  }
+
+  .blog-card__date {
+    font-size: calc(12px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(18px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    color: #000945;
+    white-space: nowrap;
+  }
+
+  .blog-card__read {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    height: calc(18px * var(--pd-scale, 1.25));
+    padding: calc(5px * var(--pd-scale, 1.25)) calc(10px * var(--pd-scale, 1.25));
+    border-radius: calc(40px * var(--pd-scale, 1.25));
+    background: #878787;
+    color: #fff;
+    font-size: calc(9px * var(--pd-scale, 1.25));
+    font-weight: 600;
+    line-height: calc(14px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .blog-card__read--navy {
+    background: #000945;
+  }
+
+  .blog-card:hover .blog-card__read,
+  .blog-card:focus-visible .blog-card__read {
+    background: #000945;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(0, 9, 69, 0.18);
+  }
+
+  .blog-card__read:focus-visible {
+    outline: 2px solid #000945;
+    outline-offset: 2px;
+  }
+
+  .blogs-load-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: calc(60px * var(--pd-scale, 1.25));
+  }
+
+  .blogs-load-more {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100px * var(--pd-scale, 1.25));
+    height: calc(34px * var(--pd-scale, 1.25));
+    padding: calc(10px * var(--pd-scale, 1.25));
+    border: calc(1px * var(--pd-scale, 1.25)) solid #e2e2e2;
+    border-radius: calc(8px * var(--pd-scale, 1.25));
+    background: #fff;
+    box-shadow: calc(4px * var(--pd-scale, 1.25)) calc(4px * var(--pd-scale, 1.25))
+      calc(14px * var(--pd-scale, 1.25)) 0 rgba(0, 0, 0, 0.12);
+    color: #000945;
+    font-family: var(--font-sans);
+    font-size: calc(12px * var(--pd-scale, 1.25));
+    font-weight: 400;
+    line-height: calc(14px * var(--pd-scale, 1.25));
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .blogs-load-more[hidden] {
+    display: none;
+  }
+
+  .blogs-empty {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: calc(40px * var(--pd-scale, 1.25)) 0;
+    font-size: calc(16px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(24px * var(--pd-scale, 1.25));
+    color: #878787;
+    text-align: center;
+  }
+
+  .blogs-subscribe {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: calc(594px * var(--pd-scale, 1.25));
+    min-height: calc(295px * var(--pd-scale, 1.25));
+    margin: calc(147px * var(--pd-scale, 1.25)) auto 0;
+    padding: calc(37px * var(--pd-scale, 1.25)) calc(28px * var(--pd-scale, 1.25));
+    border: calc(1px * var(--pd-scale, 1.25)) solid #bdbdbd;
+    border-radius: calc(15px * var(--pd-scale, 1.25));
+    background: #f0f0f0;
+    text-align: center;
+  }
+
+  .blogs-subscribe__badge {
+    display: inline-flex;
+    align-items: center;
+    height: calc(23px * var(--pd-scale, 1.25));
+    padding: calc(5px * var(--pd-scale, 1.25)) calc(10px * var(--pd-scale, 1.25));
+    border-radius: calc(40px * var(--pd-scale, 1.25));
+    background: rgba(108, 65, 255, 0.11);
+    color: #6c41ff;
+    font-size: calc(11px * var(--pd-scale, 1.25));
+    font-weight: 600;
+    line-height: calc(14px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .blogs-subscribe__title {
+    max-width: calc(390px * var(--pd-scale, 1.25));
+    margin: 0;
+    font-size: calc(25px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(26px * var(--pd-scale, 1.25));
+    color: #6c41ff;
+  }
+
+  .blogs-subscribe__copy {
+    max-width: calc(406px * var(--pd-scale, 1.25));
+    margin: 0;
+    font-size: calc(12px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(18px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    color: #000945;
+  }
+
+  .blogs-subscribe__form {
+    width: 100%;
+    max-width: calc(440px * var(--pd-scale, 1.25));
+  }
+
+  .blogs-subscribe__field {
+    position: relative;
+    width: 100%;
+    height: calc(41px * var(--pd-scale, 1.25));
+  }
+
+  .blogs-subscribe__input {
+    box-sizing: border-box;
+    width: 100%;
+    height: calc(41px * var(--pd-scale, 1.25));
+    padding: 0 calc(120px * var(--pd-scale, 1.25)) 0 calc(14px * var(--pd-scale, 1.25));
+    border: calc(0.5px * var(--pd-scale, 1.25)) solid #878787;
+    border-radius: calc(9px * var(--pd-scale, 1.25));
+    background: #fff;
+    font-family: var(--font-sans);
+    font-size: calc(12px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    color: #000945;
+    outline: none;
+  }
+
+  .blogs-subscribe__btn {
+    position: absolute;
+    top: 50%;
+    right: calc(4px * var(--pd-scale, 1.25));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(26.739px * var(--pd-scale, 1.25));
+    padding: calc(10px * var(--pd-scale, 1.25));
+    border: calc(0.5px * var(--pd-scale, 1.25)) solid #e2e2e2;
+    border-radius: calc(4px * var(--pd-scale, 1.25));
+    background: #6c41ff;
+    box-shadow: calc(4px * var(--pd-scale, 1.25)) calc(4px * var(--pd-scale, 1.25))
+      calc(14px * var(--pd-scale, 1.25)) rgba(0, 0, 0, 0.12);
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: calc(12px * var(--pd-scale, 1.25));
+    font-weight: 400;
+    line-height: calc(14px * var(--pd-scale, 1.25));
+    white-space: nowrap;
+    cursor: pointer;
+    transform: translateY(-50%);
+  }
+
+  .blogs-subscribe__note {
+    margin: 0;
+    font-size: calc(12px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(18px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    color: #878787;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 1199px) {
+    .blogs-articles__head,
+    .blogs-grid {
+      width: calc(2 * 300px * var(--pd-scale, 1.25) + 1 * 40px * var(--pd-scale, 1.25));
+    }
+
+    .blogs-grid {
+      grid-template-columns: repeat(2, calc(300px * var(--pd-scale, 1.25)));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .blogs-hero {
+      padding-top: 220px;
+      padding-bottom: 60px;
+    }
+
+    .blogs-hero__title {
+      font-size: 40px;
+      line-height: 44px;
+    }
+
+    .blogs-hero__subtitle {
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    .blogs-articles__content {
+      width: 100%;
+      padding-left: 0;
+    }
+
+    .blogs-articles__head {
+      width: 100%;
+    }
+
+    .blogs-grid {
+      grid-template-columns: minmax(0, 1fr);
+      width: 100%;
+    }
+
+    .blog-card {
+      width: 100%;
+      height: auto;
+      min-height: calc(500px * var(--pd-scale, 1.25));
+    }
+
+    .blogs-subscribe {
+      margin-top: 80px;
+    }
+  }
+</style>
+
+<script define:vars={{ initialQuery, initialCategory }}>
+  function normalizeSearchQuery(value) {
+    return value
+      .trim()
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function matchesSearchQuery(query, ...fields) {
+    const normalized = normalizeSearchQuery(query);
+    if (!normalized) return true;
+    const haystack = fields.map((field) => normalizeSearchQuery(field)).join(' ');
+    return normalized.split(' ').every((term) => haystack.includes(term));
+  }
+
+  const filterButtons = document.querySelectorAll('.blogs-filter');
+  const cards = document.querySelectorAll('.blog-card');
+  const loadMoreBtn = document.getElementById('blogs-load-more');
+  const subscribeForm = document.getElementById('blogs-subscribe-form');
+  const searchInput = document.getElementById('blog-search');
+  const searchForm = searchInput?.closest('form');
+
+  let visibleLimit = 9;
+  let activeFilter = initialCategory && initialCategory !== 'All posts' ? initialCategory : 'All posts';
+  let searchQuery = initialQuery ?? '';
+
+  function cardMatchesFilter(card) {
+    if (activeFilter !== 'All posts' && card.dataset.category !== activeFilter) return false;
+    const text = card.getAttribute('data-search-text') ?? '';
+    return matchesSearchQuery(searchQuery, text);
+  }
+
+  function refreshCards() {
+    const matching = Array.from(cards).filter(cardMatchesFilter);
+    cards.forEach((card) => {
+      const matchIndex = matching.indexOf(card);
+      card.hidden = matchIndex === -1 || matchIndex >= visibleLimit;
+    });
+
+    if (loadMoreBtn) {
+      loadMoreBtn.hidden = visibleLimit >= matching.length;
+    }
+  }
+
+  filterButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      activeFilter = button.dataset.filter ?? 'All posts';
+      visibleLimit = 9;
+
+      filterButtons.forEach((item) => {
+        const isActive = item === button;
+        item.classList.toggle('blogs-filter--active', isActive);
+        item.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+
+      const url = new URL(window.location.href);
+      if (activeFilter !== 'All posts') url.searchParams.set('category', activeFilter);
+      else url.searchParams.delete('category');
+      window.history.replaceState({}, '', url);
+
+      refreshCards();
+    });
+  });
+
+  loadMoreBtn?.addEventListener('click', () => {
+    visibleLimit += 3;
+    refreshCards();
+  });
+
+  subscribeForm?.addEventListener('submit', (event) => {
+    event.preventDefault();
+  });
+
+  searchInput?.addEventListener('input', () => {
+    searchQuery = searchInput.value;
+    visibleLimit = 9;
+    refreshCards();
+    const url = new URL(window.location.href);
+    const value = searchInput.value.trim();
+    if (value) url.searchParams.set('q', value);
+    else url.searchParams.delete('q');
+    window.history.replaceState({}, '', url);
+  });
+
+  searchForm?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    searchQuery = searchInput?.value ?? '';
+    visibleLimit = 9;
+    refreshCards();
+  });
+
+  refreshCards();
+</script>

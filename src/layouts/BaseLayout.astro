@@ -2,11 +2,23 @@
 import '../styles/global.css';
 import ScrollProgress from '../components/ScrollProgress.astro';
 import PageTopBg from '../components/PageTopBg.astro';
+import JsonLd from '../components/seo/JsonLd.astro';
+import { absoluteUrl, alternateSiteUrl, canonicalFromPath, defaultOgImage, siteName, siteUrl } from '../lib/seo/site';
+import { organizationSchema } from '../lib/seo/schema';
 
 interface Props {
   title?: string;
   description?: string;
+  /** Path for canonical/OG URL, e.g. `/features`. Defaults to current pathname. */
+  canonicalPath?: string;
+  /** Override full canonical URL when needed. */
   canonical?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   /** Figma top wash — Home/Login rect-20, Resources/Pricing/KB rect-11, Features rect-11-features */
   topBg?: 'rect-20' | 'rect-11' | 'rect-11-features' | 'none';
 }
@@ -14,11 +26,26 @@ interface Props {
 const {
   title = 'Pixeldesk — The complete project OS for modern teams',
   description = 'Manage projects, delight clients, and take care of your people — all in one workspace.',
+  canonicalPath,
   canonical,
+  ogTitle,
+  ogDescription,
+  ogImage = defaultOgImage,
+  ogType = 'website',
+  noindex = false,
+  jsonLd,
   topBg = 'rect-20',
 } = Astro.props;
 
 const pageTitle = title.includes('Pixeldesk') ? title : `${title} | Pixeldesk`;
+const canonicalUrl = canonical ?? canonicalFromPath(canonicalPath ?? Astro.url.pathname);
+const socialTitle = ogTitle ?? pageTitle;
+const socialDescription = ogDescription ?? description;
+
+const structuredData = [
+  organizationSchema(),
+  ...(jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : []),
+];
 ---
 
 <!doctype html>
@@ -28,9 +55,31 @@ const pageTitle = title.includes('Pixeldesk') ? title : `${title} | Pixeldesk`;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
-    {canonical && <link rel="canonical" href={canonical} />}
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="canonical" href={canonicalUrl} />
+    {alternateSiteUrl && alternateSiteUrl !== siteUrl && (
+      <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+    )}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{pageTitle}</title>
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={socialTitle} />
+    <meta property="og:description" content={socialDescription} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage.startsWith('http') ? ogImage : absoluteUrl(ogImage)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Pixeldesk — Project management for modern teams" />
+    <meta property="og:locale" content="en_IN" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={socialTitle} />
+    <meta name="twitter:description" content={socialDescription} />
+    <meta name="twitter:image" content={ogImage.startsWith('http') ? ogImage : absoluteUrl(ogImage)} />
+
+    <JsonLd data={structuredData} />
   </head>
   <body class="relative min-h-screen">
     {topBg !== 'none' && <PageTopBg variant={topBg} />}
