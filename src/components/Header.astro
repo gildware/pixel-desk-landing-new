@@ -46,7 +46,13 @@ const links = [
             }
           </ul>
 
-          <a href={loginUrl} class="pd-btn-login hidden shrink-0 sm:inline-flex lg:inline-flex">Log in</a>
+          <a
+            href={loginUrl}
+            data-header-auth
+            class="pd-btn-login hidden shrink-0 sm:inline-flex lg:inline-flex"
+          >
+            Log in
+          </a>
           <button
             type="button"
             class="inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-line text-navy lg:hidden"
@@ -73,7 +79,9 @@ const links = [
               </li>
             ))
           }
-          <li class="sm:hidden"><a href={loginUrl} class="pd-btn-login mt-1 w-full">Log in</a></li>
+          <li class="sm:hidden">
+            <a href={loginUrl} data-header-auth class="pd-btn-login mt-1 w-full">Log in</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -81,6 +89,31 @@ const links = [
 </header>
 
 <script>
+  import { getSession } from '../lib/api/auth.api';
+  import { DASHBOARD_URL } from '../lib/api/api.config';
+  import { dashboardRedirectUrl } from '../lib/auth/dashboardRedirect';
+  import { getCsrfTokenFromCookie } from '../lib/csrf';
+
+  async function updateHeaderAuth() {
+    const links = document.querySelectorAll('[data-header-auth]');
+    if (!links.length) return;
+
+    try {
+      await getSession();
+      const dashboardUrl = dashboardRedirectUrl(DASHBOARD_URL, {
+        csrfToken: getCsrfTokenFromCookie(),
+      });
+      links.forEach((link) => {
+        if (link instanceof HTMLAnchorElement) {
+          link.href = dashboardUrl;
+          link.textContent = 'Dashboard';
+        }
+      });
+    } catch {
+      /* not logged in — keep Log in links */
+    }
+  }
+
   const DESKTOP_NAV_MQ = window.matchMedia('(min-width: 1024px)');
 
   function closeMobileNav() {
@@ -117,7 +150,11 @@ const links = [
   }
 
   initHeaderNav();
-  document.addEventListener('astro:page-load', initHeaderNav);
+  updateHeaderAuth();
+  document.addEventListener('astro:page-load', () => {
+    initHeaderNav();
+    updateHeaderAuth();
+  });
 </script>
 
 <style>

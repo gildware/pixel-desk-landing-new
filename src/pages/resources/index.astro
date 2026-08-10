@@ -5,6 +5,10 @@ import Footer from '../../components/Footer.astro';
 import Faq from '../../components/Faq.astro';
 import { buildHelpSearchIndex } from '../../lib/search/help-index';
 import { fetchAllPublicBlogPosts } from '../../lib/api/blog.api';
+import {
+  fetchPublicWebsiteFaqs,
+  flattenWebsiteFaqsForSearch,
+} from '../../lib/api/websiteFaq.api';
 
 type ResourceCard = {
   title: string;
@@ -34,7 +38,7 @@ const sections: ResourceSection[] = [
       {
         title: 'FAQs',
         body: 'Browse through our FAQs and find information that helps you to quickly resolve most common problems.',
-        href: '#help-faq',
+        href: '/resources/faqs',
         icon: '/images/resources/icon-faqs.svg',
         tall: true,
       },
@@ -72,7 +76,7 @@ const sections: ResourceSection[] = [
       {
         title: 'Video Tutorials',
         body: 'Watch our videos to get started with PixelDesk. Find the best tips and tricks for some of our most important features.',
-        href: '#',
+        href: '/resources/video-tutorials',
         icon: '/images/resources/icon-video.svg',
         tall: true,
       },
@@ -85,7 +89,7 @@ const sections: ResourceSection[] = [
       {
         title: "What's New",
         body: 'Get the latest news on product updates and enhancements from the PixelDesk.',
-        href: '#',
+        href: '/resources/whats-new',
         icon: '/images/resources/icon-whats-new.svg',
       },
       {
@@ -105,7 +109,7 @@ const gridClass = {
   3: 'resources-grid--3',
 } as const;
 
-const helpFaqs = [
+const fallbackHelpFaqs = [
   {
     q: 'How do I get started with Pixeldesk?',
     a: 'Create a free workspace, invite your team, and add your first project. Follow the step-by-step guide at /resources/guides/set-up-your-workspace for a full walkthrough.',
@@ -127,6 +131,15 @@ const helpFaqs = [
     a: 'Visit /blogs for SEO guides on client portals, sprint planning, timesheets, and more — each with FAQs and links to features and pricing.',
   },
 ];
+
+let helpFaqs = fallbackHelpFaqs;
+try {
+  const websiteFaqs = await fetchPublicWebsiteFaqs();
+  const fromApi = flattenWebsiteFaqsForSearch(websiteFaqs);
+  if (fromApi.length > 0) helpFaqs = fromApi;
+} catch {
+  /* keep fallback FAQs for help search */
+}
 
 let blogPostsForSearch: Awaited<ReturnType<typeof fetchAllPublicBlogPosts>> = [];
 try {

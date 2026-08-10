@@ -1,0 +1,1029 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import JsonLd from '../../components/seo/JsonLd.astro';
+import { faqPageSchema } from '../../lib/seo/schema';
+import {
+  fetchPublicWebsiteFaqs,
+  type WebsiteFaqCategory,
+} from '../../lib/api/websiteFaq.api';
+
+let faqCategories: WebsiteFaqCategory[] = [];
+
+try {
+  faqCategories = await fetchPublicWebsiteFaqs();
+} catch {
+  faqCategories = [];
+}
+
+const sidebarTopics = faqCategories.map((entry) => entry.category);
+
+function categorySlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+const faqSchemaItems = faqCategories.flatMap((entry) =>
+  entry.items.map((item) => ({ q: item.question, a: item.answer })),
+);
+
+const faqsPayload = JSON.stringify(faqCategories);
+const initialQuery = Astro.url.searchParams.get('q') ?? '';
+---
+
+<BaseLayout
+  title="Pixeldesk Help Center — FAQs"
+  description="Browse Pixeldesk FAQs by topic. Find answers on setup, client management, timesheets, leave tracking, and more."
+  canonicalPath="/resources/faqs"
+  topBg="rect-11"
+>
+  <JsonLd data={faqPageSchema(faqSchemaItems)} />
+  <Header current="resources" />
+
+  <main class="faqs-page">
+    <section class="faqs-hero">
+      <div class="pd-rail faqs-hero__inner">
+        <h1 class="faqs-hero__title">FAQs</h1>
+        <p class="faqs-hero__subtitle">
+          Built for three audiences at once — the Project Manager who needs control, the team that needs clarity, and
+          the client who needs confidence in what's being delivered.
+        </p>
+
+        <form class="faqs-search" role="search" action="/resources/faqs" method="get">
+          <label class="sr-only" for="faqs-search">Search FAQs</label>
+          <div class="faqs-search__field">
+            <input
+              id="faqs-search"
+              name="q"
+              type="search"
+              placeholder=""
+              class="faqs-search__input"
+              autocomplete="off"
+              value={initialQuery}
+            />
+            <img
+              src="/images/figma/faqs-page/icon-search.svg"
+              alt=""
+              width="23.75"
+              height="23.75"
+              class="faqs-search__icon"
+              aria-hidden="true"
+            />
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="faqs-body">
+      <div class="pd-rail faqs-body__rail">
+        <p class="faqs-body__toc-label">Table of Content</p>
+        <img
+          src="/images/figma/faqs-page/line-divider.svg"
+          alt=""
+          class="faqs-body__rule"
+          aria-hidden="true"
+        />
+
+        <div class="faqs-body__grid">
+          {
+            sidebarTopics.length > 0 ? (
+              <>
+                <nav class="faqs-sidebar" aria-label="FAQ topics">
+                  <div class="faqs-sidebar__scroll" data-faqs-sidebar-scroll>
+                    <ul class="faqs-sidebar__list">
+                      {sidebarTopics.map((topic, index) => (
+                        <li>
+                          <button
+                            type="button"
+                            class:list={['faqs-sidebar__item', { 'is-active': index === 0 }]}
+                            data-topic={topic}
+                            data-section-id={`faq-section-${categorySlug(topic)}`}
+                          >
+                            {topic}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </nav>
+
+                <div class="faqs-content">
+                  <div class="faqs-content__scroll" data-faqs-scroll>
+                    <div class="faqs-accordion-stage" data-faqs-stage>
+                      <div class="faqs-accordion" data-faqs-accordion>
+                        {faqCategories.map((category, catIndex) => (
+                          <section
+                            class:list={['faqs-section', { 'is-active': catIndex === 0 }]}
+                            id={`faq-section-${categorySlug(category.category)}`}
+                            data-category={category.category}
+                            data-section-index={catIndex}
+                            hidden={catIndex !== 0}
+                            aria-label={category.category}
+                          >
+                            {category.items.length === 0 ? (
+                              <p class="faqs-empty">No questions in this category yet.</p>
+                            ) : (
+                              category.items.map((item, index) => (
+                                <>
+                                  <article
+                                    class:list={['faqs-item', { 'is-open': catIndex === 0 && index === 0 }]}
+                                    data-faq-id={item.id}
+                                  >
+                                    <button
+                                      type="button"
+                                      class="faqs-item__trigger"
+                                      aria-expanded={catIndex === 0 && index === 0 ? 'true' : 'false'}
+                                    >
+                                      <img
+                                        src={
+                                          catIndex === 0 && index === 0
+                                            ? '/images/figma/faqs-page/icon-minus.svg'
+                                            : '/images/figma/faqs-page/icon-plus.svg'
+                                        }
+                                        alt=""
+                                        width="27.5"
+                                        height="27.5"
+                                        class="faqs-item__toggle"
+                                        data-toggle-icon
+                                      />
+                                      <span class="faqs-item__content">
+                                        <span class="faqs-item__question">{item.question}</span>
+                                        <span class="faqs-item__answer">{item.answer}</span>
+                                      </span>
+                                    </button>
+                                  </article>
+                                  {index < category.items.length - 1 && (
+                                    <img
+                                      src="/images/figma/faqs-page/line-accordion.svg"
+                                      alt=""
+                                      class="faqs-accordion__line"
+                                      aria-hidden="true"
+                                    />
+                                  )}
+                                </>
+                              ))
+                            )}
+                          </section>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p class="faqs-empty faqs-empty--page">
+                FAQs are being updated. Please check back soon.
+              </p>
+            )
+          }
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script type="application/json" id="faqs-data" set:html={faqsPayload} />
+  <script define:vars={{ initialQuery }}>
+    window.__FAQS_INITIAL__ = { query: initialQuery };
+  </script>
+</BaseLayout>
+
+<style>
+  /*
+   * Figma 2224:242 @ 1× — all sizes multiplied by var(--pd-scale, 1.25).
+   * Frame 1512px wide; rail 1010px — match at ~1890px viewport (1512 × 1.25).
+   */
+
+  /* 2224:279 — y 271, 50px Medium, lh 52, w 711 */
+  .faqs-hero {
+    padding-top: calc(271px * var(--pd-scale, 1.25));
+  }
+
+  .faqs-hero__inner {
+    text-align: center;
+  }
+
+  .faqs-hero__title {
+    margin: 0 auto;
+    max-width: calc(711px * var(--pd-scale, 1.25));
+    font-family: var(--font-sans);
+    font-size: calc(50px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(52px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    color: #000945;
+  }
+
+  /* 2224:346 — y 337, 16px Light, lh 24, w 714, gap from title 14px */
+  .faqs-hero__subtitle {
+    margin: calc(14px * var(--pd-scale, 1.25)) auto 0;
+    max-width: calc(714px * var(--pd-scale, 1.25));
+    font-family: var(--font-sans);
+    font-size: calc(16px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(24px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    color: #000945;
+  }
+
+  /* 2224:343 — Group 701 @ y 419; gap from subtitle bottom (361) = 58px */
+  .faqs-search {
+    margin: calc(58px * var(--pd-scale, 1.25)) auto 0;
+    width: 100%;
+    max-width: calc(562px * var(--pd-scale, 1.25));
+  }
+
+  .faqs-search__field {
+    position: relative;
+    height: calc(42px * var(--pd-scale, 1.25));
+    border-radius: calc(21px * var(--pd-scale, 1.25));
+    background: #fff;
+    /* Matches search-field.svg filter: dx/dy 6, blur 16.5, #6c41ff @ 21% */
+    filter: drop-shadow(
+      calc(6px * var(--pd-scale, 1.25)) calc(6px * var(--pd-scale, 1.25))
+        calc(16.5px * var(--pd-scale, 1.25)) rgba(108, 65, 255, 0.21)
+    );
+  }
+
+  .faqs-search__input {
+    box-sizing: border-box;
+    width: 100%;
+    height: calc(42px * var(--pd-scale, 1.25));
+    padding: 0 calc(56px * var(--pd-scale, 1.25)) 0 calc(20px * var(--pd-scale, 1.25));
+    border: 0;
+    border-radius: calc(21px * var(--pd-scale, 1.25));
+    background: transparent;
+    font-family: var(--font-sans);
+    font-size: calc(16px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(42px * var(--pd-scale, 1.25));
+    color: #000945;
+    outline: none;
+  }
+
+  /* 2224:345 — Vector 19×19, inset 21px from rect right @ 1× */
+  .faqs-search__icon {
+    position: absolute;
+    top: 50%;
+    right: calc(21px * var(--pd-scale, 1.25));
+    display: block;
+    width: calc(19px * var(--pd-scale, 1.25));
+    height: calc(19px * var(--pd-scale, 1.25));
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  /* 2224:342 / 2224:364 — TOC y 559, Line 25 y 599 (#bdbdbd 0.5px), content y 622 */
+  .faqs-body {
+    padding-top: calc(98px * var(--pd-scale, 1.25));
+    padding-bottom: calc(189px * var(--pd-scale, 1.25));
+  }
+
+  .faqs-body__toc-label {
+    margin: 0;
+    padding-left: calc(1px * var(--pd-scale, 1.25));
+    font-family: var(--font-sans);
+    font-size: calc(20px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(24px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    color: #000945;
+  }
+
+  .faqs-body__rule {
+    display: block;
+    width: 100%;
+    height: calc(0.5px * var(--pd-scale, 1.25));
+    margin-top: calc(16px * var(--pd-scale, 1.25));
+  }
+
+  /* 2224:347 w 163 + gap 99 + 2224:302 w 747 */
+  .faqs-body__grid {
+    display: grid;
+    grid-template-columns: calc(163px * var(--pd-scale, 1.25)) minmax(0, calc(747px * var(--pd-scale, 1.25)));
+    column-gap: calc(99px * var(--pd-scale, 1.25));
+    align-items: start;
+    margin-top: calc(23px * var(--pd-scale, 1.25));
+    padding-left: calc(1px * var(--pd-scale, 1.25));
+  }
+
+  /* Independent scroll panes — Figma content frame h 686 */
+  .faqs-sidebar__scroll {
+    height: calc(686px * var(--pd-scale, 1.25));
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 9, 69, 0.2) transparent;
+  }
+
+  .faqs-content {
+    min-width: 0;
+    min-height: 0;
+    height: calc(686px * var(--pd-scale, 1.25));
+    overflow: hidden;
+  }
+
+  .faqs-content__scroll {
+    height: 100%;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 9, 69, 0.2) transparent;
+  }
+
+  .faqs-sidebar__scroll::-webkit-scrollbar,
+  .faqs-content__scroll::-webkit-scrollbar {
+    width: calc(4px * var(--pd-scale, 1.25));
+  }
+
+  .faqs-sidebar__scroll::-webkit-scrollbar-thumb,
+  .faqs-content__scroll::-webkit-scrollbar-thumb {
+    border-radius: calc(4px * var(--pd-scale, 1.25));
+    background: rgba(0, 9, 69, 0.2);
+  }
+
+  .faqs-sidebar {
+    min-height: 0;
+  }
+
+  .faqs-sidebar__list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* 2224:348 — 14px, active #444 Medium / inactive #9d9d9d Light, lh normal */
+  .faqs-sidebar__item {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: calc(14px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: normal;
+    color: #9d9d9d;
+    transition:
+      color 0.28s ease,
+      font-weight 0.28s ease;
+  }
+
+  .faqs-sidebar__item.is-active {
+    font-weight: 500;
+    color: #444;
+  }
+
+  .faqs-sidebar__item:hover {
+    color: #444;
+  }
+
+  /*
+   * Accordion nodes are re-rendered client-side for search/category switching.
+   * :global keeps Figma typography on dynamically inserted elements.
+   */
+  .faqs-accordion-stage {
+    position: relative;
+    width: 100%;
+    max-width: calc(747px * var(--pd-scale, 1.25));
+    min-height: 0;
+    transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .faqs-page :global(.faqs-accordion) {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: calc(747px * var(--pd-scale, 1.25));
+  }
+
+  .faqs-page :global(.faqs-section) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: calc(24px * var(--pd-scale, 1.25));
+    width: 100%;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate3d(0, 14px, 0);
+    transition:
+      opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0.42s;
+    will-change: opacity, transform;
+  }
+
+  .faqs-page :global(.faqs-section.is-active) {
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .faqs-page :global(.faqs-section.is-layered) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .faqs-page :global(.faqs-section.is-leaving.is-forward) {
+    opacity: 0;
+    transform: translate3d(0, -14px, 0);
+  }
+
+  .faqs-page :global(.faqs-section.is-leaving.is-backward) {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+
+  .faqs-page :global(.faqs-section.is-entering.is-forward) {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+
+  .faqs-page :global(.faqs-section.is-entering.is-backward) {
+    opacity: 0;
+    transform: translate3d(0, -14px, 0);
+  }
+
+  .faqs-page :global(.faqs-item) {
+    width: 100%;
+  }
+
+  /* 2224:303 — Group 738 22px + gap 15 + Frame 1044 710px */
+  .faqs-page :global(.faqs-item__trigger) {
+    display: flex;
+    align-items: flex-start;
+    gap: calc(15px * var(--pd-scale, 1.25));
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    color: #000945;
+    font: inherit;
+  }
+
+  .faqs-page :global(.faqs-item__toggle) {
+    flex-shrink: 0;
+    display: block;
+    width: calc(22px * var(--pd-scale, 1.25));
+    height: calc(22px * var(--pd-scale, 1.25));
+  }
+
+  .faqs-page :global(.faqs-item__content) {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: calc(15px * var(--pd-scale, 1.25));
+    min-width: 0;
+    max-width: calc(710px * var(--pd-scale, 1.25));
+  }
+
+  .faqs-page :global(.faqs-item:not(.is-open) .faqs-item__content) {
+    gap: 0;
+  }
+
+  /* 2224:308 — 20px Medium, lh 24 */
+  .faqs-page :global(.faqs-item__question) {
+    display: block;
+    width: 100%;
+    font-family: var(--font-sans);
+    font-size: calc(20px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(24px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    color: #000945;
+  }
+
+  /* 2224:309 — 10px Light, lh 18 */
+  .faqs-page :global(.faqs-item__answer) {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    font-family: var(--font-sans);
+    font-size: calc(10px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(18px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    color: #000945;
+    transition:
+      max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.25s ease;
+  }
+
+  .faqs-page :global(.faqs-item.is-open .faqs-item__answer) {
+    max-height: none;
+    opacity: 1;
+  }
+
+  /* Line 22/23 — 710×0.75 #d9d9d9, x 37 within accordion */
+  .faqs-page :global(.faqs-accordion__line) {
+    display: block;
+    align-self: flex-end;
+    width: calc(710px * var(--pd-scale, 1.25));
+    height: calc(0.75px * var(--pd-scale, 1.25));
+    max-width: none;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .faqs-page :global(.faqs-empty) {
+    margin: 0;
+    width: 100%;
+    font-family: var(--font-sans);
+    font-size: calc(16px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(24px * var(--pd-scale, 1.25));
+    color: #000945;
+  }
+
+  .faqs-empty--page {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: calc(32px * var(--pd-scale, 1.25)) 0;
+  }
+
+  .faqs-page :global(.faqs-item.is-hidden) {
+    display: none;
+  }
+
+  .faqs-page :global(.faqs-accordion__line.is-hidden) {
+    display: none;
+  }
+
+  @media (max-width: 1199px) {
+    .faqs-body__grid {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: calc(32px * var(--pd-scale, 1.25));
+      padding-left: 0;
+    }
+
+    .faqs-sidebar__scroll {
+      height: auto;
+      max-height: none;
+      overflow: visible;
+    }
+
+    .faqs-content {
+      height: auto;
+      overflow: visible;
+    }
+
+    .faqs-content__scroll {
+      height: auto;
+      max-height: none;
+      overflow: visible;
+    }
+
+    .faqs-sidebar__list {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: calc(12px * var(--pd-scale, 1.25));
+    }
+
+    .faqs-sidebar {
+      overflow-x: auto;
+    }
+
+    .faqs-sidebar__item {
+      height: auto;
+      width: auto;
+    }
+
+    .faqs-page :global(.faqs-accordion) {
+      align-items: stretch;
+      max-width: none;
+    }
+
+    .faqs-accordion-stage {
+      max-width: none;
+    }
+
+    .faqs-page :global(.faqs-section) {
+      align-items: stretch;
+    }
+
+    .faqs-page :global(.faqs-accordion__line) {
+      align-self: stretch;
+      width: auto;
+      margin-left: calc(37px * var(--pd-scale, 1.25));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .faqs-hero {
+      padding-top: calc(200px * var(--pd-scale, 1.25));
+    }
+
+    .faqs-body {
+      padding-top: calc(64px * var(--pd-scale, 1.25));
+      padding-bottom: calc(96px * var(--pd-scale, 1.25));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faqs-page :global(.faqs-item__answer),
+    .faqs-page :global(.faqs-section),
+    .faqs-accordion-stage,
+    .faqs-sidebar__item {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  type FaqItem = { id: string; question: string; answer: string; sortOrder: number };
+  type FaqCategory = { category: string; categorySortOrder: number; items: FaqItem[] };
+
+  const MINUS_ICON = '/images/figma/faqs-page/icon-minus.svg';
+  const PLUS_ICON = '/images/figma/faqs-page/icon-plus.svg';
+  const LINE_ICON = '/images/figma/faqs-page/line-accordion.svg';
+
+  function readFaqCategories(): FaqCategory[] {
+    const node = document.getElementById('faqs-data');
+    if (!node?.textContent) return [];
+    try {
+      return JSON.parse(node.textContent) as FaqCategory[];
+    } catch {
+      return [];
+    }
+  }
+
+  function normalizeQuery(value: string): string {
+    return value.trim().toLowerCase();
+  }
+
+  function matchesQuery(item: FaqItem, query: string): boolean {
+    if (!query) return true;
+    const haystack = `${item.question} ${item.answer}`.toLowerCase();
+    return haystack.includes(query);
+  }
+
+  function createFaqArticle(item: FaqItem, isOpen: boolean): HTMLElement {
+    const article = document.createElement('article');
+    article.className = `faqs-item${isOpen ? ' is-open' : ''}`;
+    article.dataset.faqId = item.id;
+    article.innerHTML = `
+      <button type="button" class="faqs-item__trigger" aria-expanded="${isOpen ? 'true' : 'false'}">
+        <img src="${isOpen ? MINUS_ICON : PLUS_ICON}" alt="" width="27.5" height="27.5" class="faqs-item__toggle" data-toggle-icon />
+        <span class="faqs-item__content">
+          <span class="faqs-item__question"></span>
+          <span class="faqs-item__answer"></span>
+        </span>
+      </button>
+    `;
+    const question = article.querySelector('.faqs-item__question');
+    const answer = article.querySelector('.faqs-item__answer');
+    if (question) question.textContent = item.question;
+    if (answer) answer.textContent = item.answer;
+    return article;
+  }
+
+  function appendDivider(container: HTMLElement) {
+    const line = document.createElement('img');
+    line.src = LINE_ICON;
+    line.alt = '';
+    line.className = 'faqs-accordion__line';
+    line.setAttribute('aria-hidden', 'true');
+    container.appendChild(line);
+  }
+
+  function renderSearchResults(accordion: HTMLElement, items: FaqItem[]) {
+    accordion.innerHTML = '';
+    accordion.dataset.mode = 'search';
+    if (!items.length) {
+      accordion.innerHTML = '<p class="faqs-empty">No questions match your search.</p>';
+      return;
+    }
+    items.forEach((item, index) => {
+      accordion.appendChild(createFaqArticle(item, true));
+      if (index < items.length - 1) appendDivider(accordion);
+    });
+  }
+
+  function restoreBrowseSections(
+    accordion: HTMLElement,
+    categories: FaqCategory[],
+    activeIndex: number,
+  ) {
+    accordion.innerHTML = '';
+    accordion.dataset.mode = 'browse';
+
+    categories.forEach((category, catIndex) => {
+      const section = document.createElement('section');
+      section.className = `faqs-section${catIndex === activeIndex ? ' is-active' : ''}`;
+      section.id = `faq-section-${category.category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
+      section.dataset.category = category.category;
+      section.dataset.sectionIndex = String(catIndex);
+      section.hidden = catIndex !== activeIndex;
+      section.setAttribute('aria-label', category.category);
+
+      if (!category.items.length) {
+        section.innerHTML = '<p class="faqs-empty">No questions in this category yet.</p>';
+      } else {
+        category.items.forEach((item, index) => {
+          section.appendChild(createFaqArticle(item, catIndex === activeIndex && index === 0));
+          if (index < category.items.length - 1) appendDivider(section);
+        });
+      }
+
+      accordion.appendChild(section);
+    });
+  }
+
+  function initFaqsPage() {
+    const accordion = document.querySelector('[data-faqs-accordion]');
+    const accordionStage = document.querySelector('[data-faqs-stage]');
+    const contentScroll = document.querySelector('[data-faqs-scroll]');
+    const sidebarScroll = document.querySelector('[data-faqs-sidebar-scroll]');
+    const searchInput = document.getElementById('faqs-search');
+    const sidebar = document.querySelector('.faqs-sidebar');
+
+    if (!(accordion instanceof HTMLElement) || accordion.dataset.bound === 'true') return;
+    accordion.dataset.bound = 'true';
+
+    const categories = readFaqCategories();
+    if (!categories.length) return;
+
+    const initial =
+      (window as typeof window & { __FAQS_INITIAL__?: { query?: string } }).__FAQS_INITIAL__ ??
+      {};
+
+    const SECTION_TRANSITION_MS = 420;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    let activeCategoryIndex = 0;
+    let isBrowseMode = true;
+    let isTransitioning = false;
+
+    const getBrowseSections = () => {
+      if (accordion.dataset.mode === 'search') return [];
+      return Array.from(accordion.querySelectorAll('.faqs-section')).filter(
+        (node): node is HTMLElement => node instanceof HTMLElement,
+      );
+    };
+
+    const setActiveSidebar = (category: string) => {
+      document.querySelectorAll('.faqs-sidebar__item').forEach((button) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        const isActive = button.dataset.topic === category;
+        button.classList.toggle('is-active', isActive);
+        if (isActive && sidebarScroll instanceof HTMLElement) {
+          const buttonTop = button.offsetTop;
+          const buttonBottom = buttonTop + button.offsetHeight;
+          const viewTop = sidebarScroll.scrollTop;
+          const viewBottom = viewTop + sidebarScroll.clientHeight;
+          if (buttonTop < viewTop || buttonBottom > viewBottom) {
+            sidebarScroll.scrollTo({
+              top: buttonTop - sidebarScroll.clientHeight / 2 + button.offsetHeight / 2,
+              behavior: 'smooth',
+            });
+          }
+        }
+      });
+    };
+
+    const clearStageHeight = () => {
+      if (accordionStage instanceof HTMLElement) {
+        accordionStage.style.height = '';
+      }
+    };
+
+    const resetContentScroll = (position: 'top' | 'bottom' = 'top') => {
+      if (!(contentScroll instanceof HTMLElement)) return;
+
+      const targetTop =
+        position === 'bottom' ? contentScroll.scrollHeight - contentScroll.clientHeight : 0;
+
+      if (prefersReducedMotion) {
+        contentScroll.scrollTop = targetTop;
+        return;
+      }
+
+      contentScroll.scrollTo({ top: targetTop, behavior: 'smooth' });
+    };
+
+    const finishSectionState = (index: number) => {
+      const sections = getBrowseSections();
+      sections.forEach((section, sectionIndex) => {
+        const isActive = sectionIndex === index;
+        section.classList.toggle('is-active', isActive);
+        section.classList.remove('is-layered', 'is-leaving', 'is-entering', 'is-forward', 'is-backward');
+        section.hidden = !isActive;
+        section.style.position = '';
+      });
+
+      activeCategoryIndex = index;
+      isBrowseMode = true;
+      setActiveSidebar(categories[index].category);
+      clearStageHeight();
+    };
+
+    const showCategory = (
+      index: number,
+      options: { scrollPosition?: 'top' | 'bottom' } = {},
+    ) => {
+      if (index < 0 || index >= categories.length) return;
+      if (index === activeCategoryIndex && !isTransitioning) {
+        resetContentScroll(options.scrollPosition ?? 'top');
+        return;
+      }
+      if (isTransitioning) return;
+
+      const sections = getBrowseSections();
+      const currentSection = sections[activeCategoryIndex];
+      const nextSection = sections[index];
+      if (!currentSection || !nextSection) return;
+
+      const direction = index > activeCategoryIndex ? 'forward' : 'backward';
+      isTransitioning = true;
+
+      const applyInstantSwitch = () => {
+        finishSectionState(index);
+        resetContentScroll(options.scrollPosition ?? 'top');
+        window.setTimeout(() => {
+          isTransitioning = false;
+        }, 80);
+      };
+
+      if (prefersReducedMotion || !currentSection.classList.contains('is-active')) {
+        applyInstantSwitch();
+        return;
+      }
+
+      const currentHeight = currentSection.offsetHeight;
+      if (accordionStage instanceof HTMLElement) {
+        accordionStage.style.height = `${currentHeight}px`;
+      }
+
+      nextSection.hidden = false;
+      nextSection.classList.add('is-layered', 'is-entering', direction);
+      currentSection.classList.add('is-layered', 'is-leaving', direction);
+
+      const nextHeight = nextSection.offsetHeight;
+
+      requestAnimationFrame(() => {
+        if (accordionStage instanceof HTMLElement) {
+          accordionStage.style.height = `${nextHeight}px`;
+        }
+
+        nextSection.classList.remove('is-entering');
+        nextSection.classList.add('is-active');
+        currentSection.classList.remove('is-active');
+      });
+
+      window.setTimeout(() => {
+        finishSectionState(index);
+        resetContentScroll(options.scrollPosition ?? 'top');
+
+        window.setTimeout(() => {
+          isTransitioning = false;
+        }, 80);
+      }, SECTION_TRANSITION_MS);
+    };
+
+    const showCategoryFromUi = (index: number) => {
+      showCategory(index, { scrollPosition: 'top' });
+    };
+
+    accordion.addEventListener('click', (event) => {
+      const trigger = (event.target as Element | null)?.closest('.faqs-item__trigger');
+      if (!(trigger instanceof HTMLButtonElement)) return;
+
+      const item = trigger.closest('.faqs-item');
+      if (!(item instanceof HTMLElement)) return;
+
+      const icon = trigger.querySelector('[data-toggle-icon]');
+      const willOpen = !item.classList.contains('is-open');
+
+      item.classList.toggle('is-open', willOpen);
+      trigger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+
+      if (icon instanceof HTMLImageElement) {
+        icon.src = willOpen ? MINUS_ICON : PLUS_ICON;
+      }
+    });
+
+    const enterSearchMode = (query: string) => {
+      isBrowseMode = false;
+      if (sidebar instanceof HTMLElement) sidebar.hidden = true;
+
+      const matches = categories.flatMap((entry) =>
+        entry.items.filter((item) => matchesQuery(item, query)),
+      );
+      renderSearchResults(accordion, matches);
+    };
+
+    const enterBrowseMode = (index = activeCategoryIndex) => {
+      if (sidebar instanceof HTMLElement) sidebar.hidden = false;
+      restoreBrowseSections(accordion, categories, index);
+      showCategory(index, { scrollPosition: 'top' });
+    };
+
+    document.querySelectorAll('.faqs-sidebar__item').forEach((button) => {
+      button.addEventListener('click', () => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        const topic = button.dataset.topic;
+        if (!topic) return;
+
+        if (searchInput instanceof HTMLInputElement && searchInput.value) {
+          searchInput.value = '';
+        }
+
+        if (accordion.dataset.mode === 'search') {
+          enterBrowseMode(categories.findIndex((entry) => entry.category === topic));
+          return;
+        }
+
+        const index = categories.findIndex((entry) => entry.category === topic);
+        if (index >= 0) showCategoryFromUi(index);
+      });
+    });
+
+    if (searchInput instanceof HTMLInputElement) {
+      searchInput.addEventListener('input', () => {
+        const normalized = normalizeQuery(searchInput.value);
+        if (normalized) {
+          enterSearchMode(normalized);
+        } else {
+          enterBrowseMode(activeCategoryIndex);
+        }
+      });
+    }
+
+    const initialQuery = normalizeQuery(initial.query || '');
+    if (initialQuery) {
+      enterSearchMode(initial.query || '');
+    } else {
+      accordion.dataset.mode = 'browse';
+      setActiveSidebar(categories[0]?.category ?? '');
+      clearStageHeight();
+    }
+
+    const bindScrollPaneWheel = (pane: HTMLElement, allowPageScroll = false) => {
+      pane.addEventListener(
+        'wheel',
+        (event) => {
+          const { scrollTop, scrollHeight, clientHeight } = pane;
+          const canScroll = scrollHeight > clientHeight + 1;
+
+          if (!canScroll) {
+            if (allowPageScroll) return;
+            return;
+          }
+
+          const delta = event.deltaY;
+          const atTop = scrollTop <= 0;
+          const atBottom = scrollTop + clientHeight >= scrollHeight - 1;
+          if ((delta < 0 && atTop) || (delta > 0 && atBottom)) return;
+          event.stopPropagation();
+        },
+        { passive: true },
+      );
+    };
+
+    if (sidebarScroll instanceof HTMLElement) {
+      bindScrollPaneWheel(sidebarScroll);
+    }
+
+    if (contentScroll instanceof HTMLElement) {
+      bindScrollPaneWheel(contentScroll, true);
+    }
+  }
+
+  initFaqsPage();
+  document.addEventListener('astro:page-load', initFaqsPage);
+</script>

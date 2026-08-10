@@ -38,7 +38,7 @@ export function buildHelpSearchIndex(
   const fromFaqs = faqs.map((item) => ({
     title: item.q,
     excerpt: item.a,
-    href: '#help-faq',
+    href: '/resources/faqs',
     type: 'FAQ',
   }));
 

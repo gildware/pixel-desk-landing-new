@@ -1,0 +1,722 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { fetchPublicWhatsNewUpdates } from '../../lib/api/whats-new.api';
+import {
+  buildWhatsNewViewModel,
+  WHATS_NEW_LAYOUT,
+  type WhatsNewEntry,
+  type WhatsNewFilter,
+} from '../../data/whats-new';
+
+const s = 'var(--pd-scale, 1.25)';
+const initialQuery = Astro.url.searchParams.get('q') ?? '';
+const initialYear = Astro.url.searchParams.get('year') ?? 'Latest';
+
+let whatsNewEntries: WhatsNewEntry[] = [];
+let whatsNewFilters: WhatsNewFilter[] = [{ label: 'Latest', variant: 'latest' }];
+
+try {
+  const rows = await fetchPublicWhatsNewUpdates();
+  const viewModel = buildWhatsNewViewModel(rows);
+  whatsNewEntries = viewModel.entries;
+  whatsNewFilters = viewModel.filters;
+} catch (error) {
+  console.warn('[whats-new] Failed to load updates from API:', error);
+}
+
+const timelineHeight =
+  whatsNewEntries.length === 0
+    ? WHATS_NEW_LAYOUT.firstCardOffset + WHATS_NEW_LAYOUT.cardHeight
+    : WHATS_NEW_LAYOUT.firstCardOffset +
+      whatsNewEntries[whatsNewEntries.length - 1].top +
+      WHATS_NEW_LAYOUT.cardHeight;
+---
+
+<BaseLayout
+  title="What's New — Pixeldesk Product Updates"
+  description="Keep track of the latest Pixeldesk features, performance enhancements, and app updates across all platforms."
+  canonicalPath="/resources/whats-new"
+  topBg="rect-11"
+>
+  <Header current="resources" />
+  <main class="whats-new-page">
+    <section class="whats-new-hero">
+      <div class="pd-rail whats-new-hero__inner">
+        <p class="whats-new-hero__badge">What’s new</p>
+        <h1 class="whats-new-hero__title">What’s new</h1>
+        <p class="whats-new-hero__subtitle">
+          Keep track of the latest features, performance enhancements, and app updates across all platforms.
+        </p>
+
+        <form class="whats-new-search" role="search" action="/resources/whats-new" method="get">
+          <label class="sr-only" for="whats-new-search">Search updates</label>
+          <div class="whats-new-search__field">
+            <input
+              id="whats-new-search"
+              name="q"
+              type="search"
+              value={initialQuery}
+              placeholder=""
+              class="whats-new-search__input"
+              autocomplete="off"
+            />
+            <img
+              src="/images/figma/whats-new/icon-search.svg"
+              alt=""
+              width="18"
+              height="18"
+              class="whats-new-search__icon"
+            />
+          </div>
+        </form>
+
+        <div class="whats-new-filters" role="tablist" aria-label="Filter updates by year">
+          {
+            whatsNewFilters.map((filter) => {
+              const isActive = filter.label === initialYear;
+              return (
+                <button
+                  type="button"
+                  class:list={[
+                    'whats-new-filter',
+                    isActive && 'whats-new-filter--active',
+                    filter.variant === 'filled' && 'whats-new-filter--filled',
+                    filter.variant === 'outline' && 'whats-new-filter--outline',
+                  ]}
+                  data-filter={filter.label}
+                  role="tab"
+                  aria-selected={isActive ? 'true' : 'false'}
+                >
+                  {filter.label}
+                </button>
+              );
+            })
+          }
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="whats-new-timeline"
+      aria-label="Product updates"
+      style={`--wn-timeline-h: calc(${timelineHeight}px * ${s});`}
+    >
+      <div class="pd-rail whats-new-timeline__rail">
+        <div class="whats-new-timeline__fade whats-new-timeline__fade--top" aria-hidden="true">
+          <img src="/images/figma/whats-new/timeline-fade.png" alt="" width="46" height="112" />
+        </div>
+        <div class="whats-new-timeline__fade whats-new-timeline__fade--bottom" aria-hidden="true">
+          <img src="/images/figma/whats-new/timeline-fade.png" alt="" width="46" height="112" />
+        </div>
+        <div class="whats-new-timeline__track" aria-hidden="true">
+          <img
+            src="/images/figma/whats-new/timeline-line.svg"
+            alt=""
+            width="1198"
+            height="1"
+            class="whats-new-timeline__line"
+          />
+        </div>
+
+        <div class="whats-new-timeline__canvas" id="whats-new-entries">
+          {
+            whatsNewEntries.map((entry) => (
+              <article
+                class="whats-new-entry"
+                data-year={String(entry.year)}
+                data-search-text={`${entry.title} ${entry.body} ${entry.month} ${entry.date}`}
+                style={`
+                  top: calc(${WHATS_NEW_LAYOUT.firstCardOffset + entry.top}px * ${s});
+                  --wn-marker-top: calc(${entry.markerTop}px * ${s});
+                  --wn-dot-top: calc(${entry.dotTop}px * ${s});
+                  --wn-month-w: ${entry.monthWidth != null ? `calc(${entry.monthWidth}px * ${s})` : 'auto'};
+                `}
+              >
+                {entry.showYear && <p class="whats-new-entry__year">{entry.year}</p>}
+                <span class="whats-new-entry__month">{entry.month}</span>
+                <span class="whats-new-entry__dot">
+                  <img src="/images/figma/whats-new/timeline-dot.svg" alt="" width="8" height="8" />
+                </span>
+                <div class="whats-new-entry__card">
+                  <div class="whats-new-entry__content">
+                    <p class="whats-new-entry__date">{entry.date}</p>
+                    <h2 class="whats-new-entry__title">{entry.title}</h2>
+                    <p class="whats-new-entry__body">{entry.body}</p>
+                  </div>
+                  <span class="whats-new-entry__read">Read More</span>
+                </div>
+              </article>
+            ))
+          }
+        </div>
+
+        <p class="whats-new-empty" id="whats-new-empty" hidden>
+          No updates match your search or filter.
+        </p>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  /* Figma Whats New 2224:462 — all values × --pd-scale (1.25) */
+  .whats-new-hero {
+    padding-top: calc(227px * var(--pd-scale, 1.25));
+  }
+
+  .whats-new-hero__inner {
+    text-align: center;
+  }
+
+  .whats-new-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    height: calc(30px * var(--pd-scale, 1.25));
+    margin: 0 0 0 calc(2px * var(--pd-scale, 1.25));
+    padding: calc(5px * var(--pd-scale, 1.25)) calc(15px * var(--pd-scale, 1.25));
+    border-radius: calc(40px * var(--pd-scale, 1.25));
+    background: rgba(108, 65, 255, 0.11);
+    color: #6c41ff;
+    font-size: calc(14px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(25px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+  }
+
+  .whats-new-hero__title {
+    max-width: calc(787px * var(--pd-scale, 1.25));
+    margin: calc(14px * var(--pd-scale, 1.25)) auto 0;
+    font-size: calc(50px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(52px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    color: #000945;
+  }
+
+  .whats-new-hero__subtitle {
+    max-width: calc(464px * var(--pd-scale, 1.25));
+    margin: calc(20px * var(--pd-scale, 1.25)) auto 0;
+    font-size: calc(16px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(24px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    color: #000945;
+  }
+
+  .whats-new-search {
+    width: 100%;
+    max-width: calc(562px * var(--pd-scale, 1.25));
+    margin: calc(20px * var(--pd-scale, 1.25)) auto 0;
+  }
+
+  .whats-new-search__field {
+    position: relative;
+    height: calc(42px * var(--pd-scale, 1.25));
+    border-radius: calc(21px * var(--pd-scale, 1.25));
+    background: #fff;
+    /* Figma Group 701 / search-field.svg: dx/dy 6, blur 16.5, #6c41ff @ 21% */
+    filter: drop-shadow(
+      calc(6px * var(--pd-scale, 1.25)) calc(6px * var(--pd-scale, 1.25))
+        calc(16.5px * var(--pd-scale, 1.25)) rgba(108, 65, 255, 0.21)
+    );
+  }
+
+  .whats-new-search__input {
+    box-sizing: border-box;
+    width: 100%;
+    height: calc(42px * var(--pd-scale, 1.25));
+    padding: 0 calc(45px * var(--pd-scale, 1.25)) 0 calc(20px * var(--pd-scale, 1.25));
+    border: 0;
+    border-radius: calc(21px * var(--pd-scale, 1.25));
+    background: transparent;
+    font-size: calc(14px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(42px * var(--pd-scale, 1.25));
+    color: #000945;
+    outline: none;
+  }
+
+  .whats-new-search__icon {
+    position: absolute;
+    top: 50%;
+    right: calc(21px * var(--pd-scale, 1.25));
+    display: block;
+    width: calc(18px * var(--pd-scale, 1.25));
+    height: calc(18px * var(--pd-scale, 1.25));
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .whats-new-filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: calc(13px * var(--pd-scale, 1.25));
+    max-width: calc(701px * var(--pd-scale, 1.25));
+    min-height: calc(85px * var(--pd-scale, 1.25));
+    margin: calc(37px * var(--pd-scale, 1.25)) auto 0;
+    padding-bottom: 0;
+  }
+
+  .whats-new-timeline {
+    /* Figma line starts y=518, filter row ends y=520 — overlap by 2px */
+    margin-top: calc(-2px * var(--pd-scale, 1.25));
+    padding-bottom: calc(253px * var(--pd-scale, 1.25));
+  }
+
+  .whats-new-filter {
+    display: inline-flex;
+    align-items: center;
+    height: calc(30px * var(--pd-scale, 1.25));
+    padding: calc(5px * var(--pd-scale, 1.25)) calc(15px * var(--pd-scale, 1.25));
+    border: calc(0.75px * var(--pd-scale, 1.25)) solid transparent;
+    border-radius: calc(40px * var(--pd-scale, 1.25));
+    background: transparent;
+    color: #000945;
+    font-family: var(--font-sans);
+    font-size: calc(14px * var(--pd-scale, 1.25));
+    font-weight: 400;
+    line-height: calc(25px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .whats-new-filter--filled {
+    border-color: #d9d9d9;
+    background: rgba(255, 255, 255, 0.11);
+  }
+
+  .whats-new-filter--outline {
+    border-color: #d9d9d9;
+    background: transparent;
+  }
+
+  .whats-new-filter--active {
+    border-color: transparent;
+    background: #000945;
+    color: #fff;
+    font-weight: 500;
+  }
+
+  .whats-new-timeline__rail {
+    position: relative;
+    --wn-year-x: calc(39px * var(--pd-scale, 1.25));
+    --wn-month-x: calc(99px * var(--pd-scale, 1.25));
+    --wn-dot-x: calc(170px * var(--pd-scale, 1.25));
+    --wn-line-x: calc(174px * var(--pd-scale, 1.25));
+    --wn-card-x: calc(197px * var(--pd-scale, 1.25));
+    --wn-card-w: calc(813px * var(--pd-scale, 1.25));
+    --wn-fade-top-x: calc(153px * var(--pd-scale, 1.25));
+    --wn-fade-bottom-x: calc(147px * var(--pd-scale, 1.25));
+  }
+
+  .whats-new-timeline__track {
+    position: absolute;
+    top: calc(-7px * var(--pd-scale, 1.25));
+    left: var(--wn-line-x);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 0;
+    height: calc(1198px * var(--pd-scale, 1.25));
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .whats-new-timeline__line {
+    display: block;
+    width: calc(1198px * var(--pd-scale, 1.25));
+    height: calc(0.5px * var(--pd-scale, 1.25));
+    transform: rotate(90deg);
+    transform-origin: center center;
+    flex-shrink: 0;
+  }
+
+  .whats-new-timeline__fade {
+    position: absolute;
+    width: calc(46px * var(--pd-scale, 1.25));
+    height: calc(112px * var(--pd-scale, 1.25));
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .whats-new-timeline__fade img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .whats-new-timeline__fade--top {
+    top: calc(-7px * var(--pd-scale, 1.25));
+    left: var(--wn-fade-top-x);
+    transform: rotate(180deg);
+  }
+
+  .whats-new-timeline__fade--bottom {
+    top: calc(1086px * var(--pd-scale, 1.25));
+    left: var(--wn-fade-bottom-x);
+  }
+
+  .whats-new-timeline__canvas {
+    position: relative;
+    min-height: var(--wn-timeline-h);
+  }
+
+  .whats-new-entry {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: calc(215px * var(--pd-scale, 1.25));
+  }
+
+  .whats-new-entry[hidden] {
+    display: none;
+  }
+
+  .whats-new-entry__year {
+    position: absolute;
+    top: var(--wn-marker-top);
+    left: var(--wn-year-x);
+    margin: 0;
+    font-size: calc(21px * var(--pd-scale, 1.25));
+    font-weight: 600;
+    line-height: calc(18px * var(--pd-scale, 1.25));
+    color: #6c41ff;
+    white-space: nowrap;
+  }
+
+  .whats-new-entry__month {
+    position: absolute;
+    top: var(--wn-marker-top);
+    left: var(--wn-month-x);
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--wn-month-w);
+    min-width: calc(43px * var(--pd-scale, 1.25));
+    height: calc(18px * var(--pd-scale, 1.25));
+    padding: calc(5px * var(--pd-scale, 1.25)) calc(10px * var(--pd-scale, 1.25));
+    border-radius: calc(40px * var(--pd-scale, 1.25));
+    background: #000945;
+    color: #fff;
+    font-size: calc(9px * var(--pd-scale, 1.25));
+    font-weight: 600;
+    line-height: calc(14px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+
+  .whats-new-entry__dot {
+    position: absolute;
+    top: var(--wn-dot-top);
+    left: var(--wn-dot-x);
+    display: flex;
+    width: calc(8px * var(--pd-scale, 1.25));
+    height: calc(8px * var(--pd-scale, 1.25));
+  }
+
+  .whats-new-entry__dot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .whats-new-entry__card {
+    position: absolute;
+    top: 0;
+    left: var(--wn-card-x);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: calc(22px * var(--pd-scale, 1.25));
+    width: var(--wn-card-w);
+    max-width: calc(100% - var(--wn-card-x));
+    height: calc(215px * var(--pd-scale, 1.25));
+    padding: calc(20px * var(--pd-scale, 1.25)) calc(19px * var(--pd-scale, 1.25));
+    border: calc(0.5px * var(--pd-scale, 1.25)) solid #d9d9d9;
+    border-radius: calc(10px * var(--pd-scale, 1.25));
+    background: #fff;
+  }
+
+  .whats-new-entry__date {
+    margin: 0 0 calc(12px * var(--pd-scale, 1.25));
+    font-size: calc(8px * var(--pd-scale, 1.25));
+    font-weight: 600;
+    line-height: calc(10px * var(--pd-scale, 1.25));
+    color: #878787;
+  }
+
+  .whats-new-entry__title {
+    margin: 0 0 calc(12px * var(--pd-scale, 1.25));
+    font-size: calc(18px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(22px * var(--pd-scale, 1.25));
+    color: #000945;
+  }
+
+  .whats-new-entry__body {
+    margin: 0;
+    font-size: calc(12px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(22px * var(--pd-scale, 1.25));
+    color: #444;
+  }
+
+  .whats-new-entry__read {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    height: calc(18px * var(--pd-scale, 1.25));
+    padding: calc(5px * var(--pd-scale, 1.25)) calc(10px * var(--pd-scale, 1.25));
+    border-radius: calc(40px * var(--pd-scale, 1.25));
+    background: #444;
+    color: #fff;
+    font-size: calc(9px * var(--pd-scale, 1.25));
+    font-weight: 600;
+    line-height: calc(14px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+
+  .whats-new-empty {
+    margin: calc(40px * var(--pd-scale, 1.25)) 0 0;
+    padding-left: var(--wn-card-x);
+    font-size: calc(16px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(24px * var(--pd-scale, 1.25));
+    color: #878787;
+    text-align: center;
+  }
+
+  .whats-new-timeline--empty {
+    padding-bottom: calc(80px * var(--pd-scale, 1.25));
+  }
+
+  .whats-new-timeline--empty .whats-new-timeline__track,
+  .whats-new-timeline--empty .whats-new-timeline__fade {
+    display: none;
+  }
+
+  .whats-new-timeline--empty .whats-new-timeline__canvas {
+    min-height: 0;
+  }
+
+  .whats-new-timeline--empty .whats-new-empty {
+    margin: calc(60px * var(--pd-scale, 1.25)) auto 0;
+    padding-left: 0;
+    max-width: calc(464px * var(--pd-scale, 1.25));
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (max-width: 1374px) {
+    .whats-new-timeline__rail {
+      --wn-year-x: calc(8px * var(--pd-scale, 1.25));
+      --wn-month-x: calc(68px * var(--pd-scale, 1.25));
+      --wn-dot-x: calc(139px * var(--pd-scale, 1.25));
+      --wn-line-x: calc(143px * var(--pd-scale, 1.25));
+      --wn-card-x: calc(166px * var(--pd-scale, 1.25));
+      --wn-fade-top-x: calc(122px * var(--pd-scale, 1.25));
+      --wn-fade-bottom-x: calc(116px * var(--pd-scale, 1.25));
+    }
+
+    .whats-new-entry__card {
+      max-width: calc(100% - var(--wn-card-x));
+    }
+  }
+
+  @media (max-width: 767px) {
+    .whats-new-hero {
+      padding-top: 220px;
+    }
+
+    .whats-new-timeline {
+      margin-top: 0;
+    }
+
+    .whats-new-hero__title {
+      font-size: 40px;
+      line-height: 44px;
+    }
+
+    .whats-new-hero__subtitle {
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    .whats-new-timeline__rail {
+      --wn-year-x: 0;
+      --wn-month-x: calc(52px * var(--pd-scale, 1.25));
+      --wn-dot-x: calc(20px * var(--pd-scale, 1.25));
+      --wn-line-x: calc(24px * var(--pd-scale, 1.25));
+      --wn-card-x: calc(40px * var(--pd-scale, 1.25));
+      --wn-fade-top-x: calc(24px * var(--pd-scale, 1.25));
+      --wn-fade-bottom-x: calc(24px * var(--pd-scale, 1.25));
+    }
+
+    .whats-new-entry {
+      position: relative;
+      top: auto !important;
+      height: auto;
+      margin-bottom: calc(42px * var(--pd-scale, 1.25));
+    }
+
+    .whats-new-timeline__canvas {
+      min-height: 0;
+      padding-top: calc(40px * var(--pd-scale, 1.25));
+    }
+
+    .whats-new-entry__year,
+    .whats-new-entry__month,
+    .whats-new-entry__dot {
+      position: static;
+      top: auto;
+      left: auto;
+    }
+
+    .whats-new-entry__month {
+      margin-bottom: calc(8px * var(--pd-scale, 1.25));
+    }
+
+    .whats-new-entry__dot {
+      display: none;
+    }
+
+    .whats-new-entry__card {
+      position: static;
+      height: auto;
+      min-height: calc(215px * var(--pd-scale, 1.25));
+      max-width: 100%;
+    }
+
+    .whats-new-timeline__track,
+    .whats-new-timeline__fade {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  function readUrlState() {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q') ?? '';
+    const year = params.get('year') ?? 'Latest';
+    return {
+      searchQuery: q,
+      activeFilter: year && year !== 'Latest' ? year : 'Latest',
+    };
+  }
+
+  function normalizeSearchQuery(value) {
+    return value
+      .trim()
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function matchesSearchQuery(query, ...fields) {
+    const normalized = normalizeSearchQuery(query);
+    if (!normalized) return true;
+    const haystack = fields.map((field) => normalizeSearchQuery(field)).join(' ');
+    return normalized.split(' ').every((term) => haystack.includes(term));
+  }
+
+  const searchInput = document.getElementById('whats-new-search');
+  const searchForm = searchInput?.closest('form');
+  const filterButtons = document.querySelectorAll('.whats-new-filter');
+  const entries = document.querySelectorAll('.whats-new-entry');
+  const emptyState = document.getElementById('whats-new-empty');
+  const canvas = document.getElementById('whats-new-entries');
+  const timelineSection = document.querySelector('.whats-new-timeline');
+
+  let { searchQuery, activeFilter } = readUrlState();
+
+  const validFilters = new Set(
+    [...filterButtons].map((button) => button.dataset.filter ?? 'Latest'),
+  );
+  if (activeFilter !== 'Latest' && !validFilters.has(activeFilter)) {
+    activeFilter = 'Latest';
+  }
+
+  if (searchInput) searchInput.value = searchQuery;
+
+  function syncFilterUi() {
+    filterButtons.forEach((button) => {
+      const isActive = (button.dataset.filter ?? 'Latest') === activeFilter;
+      button.classList.toggle('whats-new-filter--active', isActive);
+      button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+  }
+
+  function entryMatches(entry) {
+    const year = entry.dataset.year ?? '';
+    if (activeFilter !== 'Latest' && year !== activeFilter) return false;
+    const text = entry.getAttribute('data-search-text') ?? '';
+    return matchesSearchQuery(searchQuery, text);
+  }
+
+  function refreshEntries() {
+    let visibleCount = 0;
+    entries.forEach((entry) => {
+      const visible = entryMatches(entry);
+      entry.hidden = !visible;
+      if (visible) visibleCount += 1;
+    });
+    const isEmpty = visibleCount === 0;
+    if (emptyState) emptyState.hidden = !isEmpty;
+    if (canvas) canvas.style.minHeight = isEmpty ? '0' : '';
+    timelineSection?.classList.toggle('whats-new-timeline--empty', isEmpty);
+  }
+
+  filterButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      activeFilter = button.dataset.filter ?? 'Latest';
+      syncFilterUi();
+
+      const url = new URL(window.location.href);
+      if (activeFilter !== 'Latest') url.searchParams.set('year', activeFilter);
+      else url.searchParams.delete('year');
+      window.history.replaceState({}, '', url);
+
+      refreshEntries();
+    });
+  });
+
+  searchInput?.addEventListener('input', () => {
+    searchQuery = searchInput.value;
+    refreshEntries();
+    const url = new URL(window.location.href);
+    const value = searchInput.value.trim();
+    if (value) url.searchParams.set('q', value);
+    else url.searchParams.delete('q');
+    window.history.replaceState({}, '', url);
+  });
+
+  searchForm?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    searchQuery = searchInput?.value ?? '';
+    refreshEntries();
+  });
+
+  // Apply URL deep-link state (static build has no request query at compile time).
+  syncFilterUi();
+  refreshEntries();
+</script>

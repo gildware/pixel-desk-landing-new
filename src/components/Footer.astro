@@ -87,7 +87,8 @@ const columns = [
   @media (min-width: 768px) {
     .site-footer__grid {
       grid-template-columns: minmax(0, 1fr) repeat(3, auto);
-      column-gap: clamp(2rem, 5vw, 81.25px);
+      /* Figma 2224:248–259 — 118px between link columns at 1× */
+      column-gap: calc(118px * var(--pd-scale, 1.25));
       row-gap: 0;
     }
   }

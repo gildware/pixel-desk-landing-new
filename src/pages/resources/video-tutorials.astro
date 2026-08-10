@@ -1,0 +1,777 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { fetchPublicVideoTutorials } from '../../lib/api/video-tutorials.api';
+import {
+  buildVideoTutorialsViewModel,
+  fallbackDefaultVideoLessonId,
+  fallbackVideoTutorialCategories,
+  findVideoLesson,
+  type VideoTutorialCategory,
+} from '../../data/video-tutorials';
+
+let videoTutorialCategories: VideoTutorialCategory[] = fallbackVideoTutorialCategories;
+let defaultVideoLessonId = fallbackDefaultVideoLessonId;
+
+try {
+  const payload = await fetchPublicVideoTutorials();
+  const viewModel = buildVideoTutorialsViewModel(payload);
+  videoTutorialCategories = viewModel.categories;
+  defaultVideoLessonId = viewModel.defaultLessonId;
+} catch (error) {
+  console.warn('[video-tutorials] Failed to load from API:', error);
+}
+
+const initial = findVideoLesson(videoTutorialCategories, defaultVideoLessonId) ??
+  findVideoLesson(videoTutorialCategories, videoTutorialCategories.flatMap((c) => c.lessons)[0]?.id ?? '') ?? {
+    category: videoTutorialCategories[0],
+    lesson: videoTutorialCategories[0]?.lessons[0] ?? {
+      id: defaultVideoLessonId,
+      title: 'Sub Category',
+      duration: '3.30 minute',
+      description: [],
+      videoUrl: null,
+      categoryTitle: 'Category',
+    },
+  };
+
+const clientCategories = videoTutorialCategories.map((category) => ({
+  id: category.id,
+  title: category.title,
+  lessons: category.lessons,
+}));
+
+const allLessons = videoTutorialCategories.flatMap((category) =>
+  category.lessons.map((lesson) => ({ category, lesson })),
+);
+const defaultLessonIndex = Math.max(
+  0,
+  allLessons.findIndex((entry) => entry.lesson.id === defaultVideoLessonId),
+);
+const lessonOrder = allLessons.map((entry) => entry.lesson.id);
+
+const ICON = '/images/video-tutorials/icon-category.svg';
+const ICON_OPEN = '/images/video-tutorials/icon-category-open.svg';
+const ICON_ALT = '/images/video-tutorials/icon-category-alt.svg';
+const ICON_SUB = '/images/video-tutorials/icon-subcategory.svg';
+const CHEVRON_RIGHT = '/images/video-tutorials/chevron-right.svg';
+const CHEVRON_DOWN = '/images/video-tutorials/chevron-down.svg';
+---
+
+<BaseLayout
+  title="Pixeldesk Video Tutorials — Learn the Platform"
+  description="Watch Pixeldesk video tutorials to learn workspace setup, projects, client portals, and team workflows step by step."
+  canonicalPath="/resources/video-tutorials"
+  topBg="rect-11"
+>
+  <Header current="resources" />
+  <main
+    class="vt-page"
+    id="vt-page"
+    data-default-lesson-id={defaultVideoLessonId}
+    data-categories={JSON.stringify(clientCategories)}
+    data-lesson-order={JSON.stringify(lessonOrder)}
+    data-default-lesson-index={defaultLessonIndex}
+  >
+    <section class="vt-hero relative overflow-hidden">
+      <div class="pd-rail vt-hero__inner text-center">
+        <p class="vt-hero__badge">Video Tutorials</p>
+        <h1 class="vt-hero__title">Learn. Understand. Enjoy Pixeldesk</h1>
+        <p class="vt-hero__subtitle">E risus a ligula porta, cursus faucibus dui cursus. Maecenas aliquam mauris in pulvinar luctus. Nam eleifend augue in lectus cursus laoreet.</p>
+      </div>
+    </section>
+
+    <section class="vt-body">
+      <div class="pd-rail vt-body__grid">
+        <aside class="vt-sidebar" aria-label="Video categories">
+          <div class="vt-sidebar__scroll" data-vt-sidebar-scroll>
+          {
+            videoTutorialCategories.map((category) => {
+              const hasLessons = category.lessons.length > 0;
+              const panelId = `vt-panel-${category.id}`;
+              const isOpen = category.lessons.some((lesson) => lesson.id === defaultVideoLessonId);
+              const isFlatCategory =
+                hasLessons && category.lessons.length === 1 && Boolean(category.durationLabel);
+              const flatLesson = isFlatCategory ? category.lessons[0] : null;
+
+              if (isFlatCategory && flatLesson) {
+                return (
+                  <div
+                    class:list={[
+                      'vt-cat',
+                      'vt-cat--flat',
+                      flatLesson.id === defaultVideoLessonId && 'vt-cat--flat-active',
+                    ]}
+                  >
+                    <div class="vt-cat__inner vt-cat__inner--flat">
+                      <button
+                        type="button"
+                        class="vt-cat__flat-btn"
+                        data-lesson-id={flatLesson.id}
+                        data-video-url={flatLesson.videoUrl ?? undefined}
+                        data-category-title={category.title}
+                        aria-current={flatLesson.id === defaultVideoLessonId ? 'true' : undefined}
+                      >
+                        <span class="vt-cat__label">
+                          <img src={ICON_ALT} alt="" width="12" height="12" />
+                          <span>{category.title}</span>
+                        </span>
+                        <span class="vt-cat__duration">{category.durationLabel}</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              }
+
+              if (!hasLessons) {
+                return (
+                  <div class="vt-cat vt-cat--flat">
+                    <div class="vt-cat__row">
+                      <span class="vt-cat__label">
+                        <img src={category.durationLabel ? ICON_ALT : ICON} alt="" width="12" height="12" />
+                        <span>{category.title}</span>
+                      </span>
+                      {category.durationLabel ? (
+                        <span class="vt-cat__duration">{category.durationLabel}</span>
+                      ) : (
+                        <img class="vt-cat__chevron vt-cat__chevron--collapsed" src={CHEVRON_RIGHT} alt="" width="10" height="6" />
+                      )}
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <div
+                  class:list={['vt-cat', 'vt-cat--accordion', isOpen && 'vt-cat--open']}
+                  data-lessons={category.lessons.length}
+                >
+                  <div class="vt-cat__inner">
+                    <button
+                      type="button"
+                      class="vt-cat__toggle"
+                      aria-expanded={isOpen}
+                      aria-controls={panelId}
+                    >
+                      <span class="vt-cat__label">
+                        <img class="vt-cat__icon" src={isOpen ? ICON_OPEN : ICON} alt="" width="12" height="12" data-icon-collapsed={ICON} data-icon-open={ICON_OPEN} />
+                        <span>{category.title}</span>
+                      </span>
+                      {!isOpen && category.durationLabel ? (
+                        <span class="vt-cat__duration">{category.durationLabel}</span>
+                      ) : (
+                        <img
+                          class:list={['vt-cat__chevron', !isOpen && 'vt-cat__chevron--collapsed']}
+                          src={isOpen ? CHEVRON_DOWN : CHEVRON_RIGHT}
+                          alt=""
+                          width="10"
+                          height="6"
+                        />
+                      )}
+                    </button>
+                    <div class="vt-cat__panel" id={panelId} hidden={!isOpen}>
+                      <div class="vt-cat__divider vt-cat__divider--wide" aria-hidden="true"></div>
+                      {category.lessons.map((lesson, index) => (
+                        <div class="vt-sub-block">
+                          {index > 0 && (
+                            <div class="vt-cat__divider vt-cat__divider--narrow" aria-hidden="true"></div>
+                          )}
+                          <div class:list={['vt-sub-wrap', lesson.id === defaultVideoLessonId && 'vt-sub-wrap--active']}>
+                            <button
+                              type="button"
+                              class="vt-sub"
+                              data-lesson-id={lesson.id}
+                              data-video-url={lesson.videoUrl ?? undefined}
+                              data-category-title={category.title}
+                              aria-current={lesson.id === defaultVideoLessonId ? 'true' : undefined}
+                            >
+                              <span class="vt-sub__label">
+                                <img src={ICON_SUB} alt="" width="12" height="12" />
+                                <span>{lesson.title}</span>
+                              </span>
+                              <span class="vt-sub__duration">{lesson.duration}</span>
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          }
+          </div>
+        </aside>
+
+        <div class="vt-main">
+          <div class="vt-player" aria-label="Video player">
+            {
+              initial.lesson.videoUrl ? (
+                <iframe
+                  class="vt-player__iframe"
+                  src={initial.lesson.videoUrl}
+                  title={initial.lesson.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen
+                />
+              ) : (
+                <p class="vt-player__label">Video Player</p>
+              )
+            }
+          </div>
+
+          <div class="vt-main__scroll" data-vt-scroll>
+            <div class="vt-lessons" data-vt-lessons>
+              {
+                allLessons.map((entry, index) => (
+                  <section
+                    class:list={['vt-lesson', index === defaultLessonIndex && 'vt-lesson--active']}
+                    data-lesson-id={entry.lesson.id}
+                    data-lesson-index={index}
+                    hidden={index !== defaultLessonIndex}
+                    aria-label={entry.lesson.title}
+                  >
+                    <div class="vt-copy">
+                      <p class="vt-copy__category">{entry.category.title}</p>
+                      <p class="vt-copy__sub">{entry.lesson.title}</p>
+                      <p class="vt-copy__spacer" aria-hidden="true">&nbsp;</p>
+                      <div class="vt-copy__body">
+                        {entry.lesson.description.map((paragraph) => (
+                          <p>{paragraph}</p>
+                        ))}
+                      </div>
+                    </div>
+                  </section>
+                ))
+              }
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  /* Figma 2224:365 @ 1512 — Figma 1× × 1.25 (--pd-scale) */
+
+  .vt-hero__inner {
+    padding-top: calc(227px * var(--pd-scale, 1.25));
+    padding-bottom: calc(110px * var(--pd-scale, 1.25));
+  }
+
+  .vt-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    height: calc(30px * var(--pd-scale, 1.25));
+    margin: 0 0 0 calc(2px * var(--pd-scale, 1.25));
+    padding: calc(5px * var(--pd-scale, 1.25)) calc(15px * var(--pd-scale, 1.25));
+    border-radius: calc(40px * var(--pd-scale, 1.25));
+    background: rgba(108, 65, 255, 0.11);
+    color: #6c41ff;
+    font-size: calc(14px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(25px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+  }
+
+  .vt-hero__title {
+    margin: calc(14px * var(--pd-scale, 1.25)) auto 0;
+    max-width: calc(787px * var(--pd-scale, 1.25));
+    font-size: calc(50px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(52px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    color: #000945;
+    text-shadow: none;
+  }
+
+  .vt-hero__subtitle {
+    box-sizing: border-box;
+    width: calc(714px * var(--pd-scale, 1.25));
+    max-width: 100%;
+    margin: calc(20px * var(--pd-scale, 1.25)) auto 0;
+    font-size: calc(16px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(24px * var(--pd-scale, 1.25));
+    letter-spacing: 0;
+    color: #000945;
+    text-align: center;
+    text-shadow: none;
+  }
+
+  .vt-body {
+    padding-bottom: calc(511px * var(--pd-scale, 1.25));
+  }
+
+  .vt-body__grid {
+    display: grid;
+    grid-template-columns: calc(298px * var(--pd-scale, 1.25)) calc(673px * var(--pd-scale, 1.25));
+    column-gap: calc(39px * var(--pd-scale, 1.25));
+    align-items: start;
+    justify-content: space-between;
+    padding-left: calc(1px * var(--pd-scale, 1.25));
+  }
+
+  .vt-sidebar {
+    display: flex;
+    flex-direction: column;
+    width: calc(298px * var(--pd-scale, 1.25));
+    min-width: 0;
+  }
+
+  .vt-sidebar__scroll {
+    max-height: calc(686px * var(--pd-scale, 1.25));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 9, 69, 0.2) transparent;
+  }
+
+  .vt-sidebar__scroll::-webkit-scrollbar {
+    width: calc(4px * var(--pd-scale, 1.25));
+  }
+
+  .vt-sidebar__scroll::-webkit-scrollbar-thumb {
+    border-radius: calc(4px * var(--pd-scale, 1.25));
+    background: rgba(0, 9, 69, 0.2);
+  }
+
+  .vt-cat {
+    box-sizing: border-box;
+    width: calc(298px * var(--pd-scale, 1.25));
+    border: calc(0.5px * var(--pd-scale, 1.25)) solid #d9d9d9;
+    background: #fff;
+    overflow: visible;
+  }
+
+  .vt-cat + .vt-cat {
+    border-top: 0;
+  }
+
+  .vt-cat--flat,
+  .vt-cat--accordion:not(.vt-cat--open) {
+    height: calc(44px * var(--pd-scale, 1.25));
+    min-height: calc(44px * var(--pd-scale, 1.25));
+    max-height: calc(44px * var(--pd-scale, 1.25));
+  }
+
+  .vt-cat--flat {
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    align-items: stretch;
+    overflow: visible;
+  }
+
+  /* Figma 2224:428 — collapsed overview row with duration, full-width selection fill */
+  .vt-cat--flat-active::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    background: rgba(108, 65, 255, 0.11);
+    pointer-events: none;
+  }
+
+  .vt-cat__inner--flat {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    gap: 0;
+    justify-content: center;
+    padding: calc(14px * var(--pd-scale, 1.25));
+  }
+
+  .vt-cat__flat-btn {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(10px * var(--pd-scale, 1.25));
+    height: calc(15px * var(--pd-scale, 1.25));
+    min-height: calc(15px * var(--pd-scale, 1.25));
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    color: inherit;
+    font: inherit;
+  }
+
+  .vt-cat--accordion:not(.vt-cat--open) .vt-cat__inner {
+    justify-content: center;
+    gap: 0;
+    height: 100%;
+    padding: calc(14px * var(--pd-scale, 1.25));
+  }
+
+  .vt-cat__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: calc(12px * var(--pd-scale, 1.25));
+    padding: calc(14px * var(--pd-scale, 1.25));
+    box-sizing: border-box;
+    overflow: visible;
+  }
+
+  .vt-cat--open .vt-cat__inner {
+    padding-block: calc(13.3px * var(--pd-scale, 1.25));
+    padding-inline: calc(15px * var(--pd-scale, 1.25));
+  }
+
+  .vt-cat__row,
+  .vt-cat__toggle {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(10px * var(--pd-scale, 1.25));
+    height: calc(15px * var(--pd-scale, 1.25));
+    min-height: calc(15px * var(--pd-scale, 1.25));
+    flex-shrink: 0;
+  }
+
+  .vt-cat--open .vt-cat__toggle {
+    width: calc(268px * var(--pd-scale, 1.25));
+  }
+
+  .vt-cat__toggle {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    color: inherit;
+    font: inherit;
+  }
+
+  .vt-cat__label {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(10px * var(--pd-scale, 1.25));
+    font-size: calc(12px * var(--pd-scale, 1.25));
+    font-weight: 400;
+    line-height: normal;
+    color: #444;
+  }
+
+  .vt-cat__label img {
+    display: block;
+    width: calc(12px * var(--pd-scale, 1.25));
+    height: calc(12px * var(--pd-scale, 1.25));
+    flex-shrink: 0;
+  }
+
+  .vt-cat__duration {
+    font-size: calc(8px * var(--pd-scale, 1.25));
+    font-weight: 400;
+    line-height: normal;
+    color: #444;
+    white-space: nowrap;
+  }
+
+  .vt-cat__chevron {
+    display: block;
+    width: calc(10px * var(--pd-scale, 1.25));
+    height: calc(6px * var(--pd-scale, 1.25));
+    flex-shrink: 0;
+  }
+
+  .vt-cat__chevron--collapsed {
+    transform: rotate(90deg);
+  }
+
+  .vt-cat__panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0;
+    width: 100%;
+    overflow: visible;
+  }
+
+  .vt-cat__panel[hidden] {
+    display: none;
+  }
+
+  /* Divider + row stay flush; 12px gap only between lesson blocks (Figma). */
+  .vt-sub-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0;
+    width: 100%;
+  }
+
+  .vt-cat__divider {
+    position: relative;
+    z-index: 1;
+    display: block;
+    flex-shrink: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-top: calc(0.5px * var(--pd-scale, 1.25)) solid #e2e2e2;
+  }
+
+  .vt-cat__divider--wide {
+    width: calc(268px * var(--pd-scale, 1.25));
+    max-width: 100%;
+  }
+
+  .vt-cat__divider--narrow {
+    width: calc(247px * var(--pd-scale, 1.25));
+    max-width: 100%;
+  }
+
+  .vt-sub-wrap {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    height: calc(39px * var(--pd-scale, 1.25));
+    min-height: calc(39px * var(--pd-scale, 1.25));
+    max-height: calc(39px * var(--pd-scale, 1.25));
+    overflow: visible;
+    flex-shrink: 0;
+  }
+
+  /* Figma 2224:459 — rgba(108,65,255,0.11), 298×39, full sidebar width, flush with rules */
+  .vt-sub-wrap--active::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    bottom: 0;
+    left: calc(-1 * 15px * var(--pd-scale, 1.25));
+    width: calc(298px * var(--pd-scale, 1.25));
+    background: rgba(108, 65, 255, 0.11);
+    pointer-events: none;
+  }
+
+  .vt-sub {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: calc(247px * var(--pd-scale, 1.25));
+    max-width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: calc(10px * var(--pd-scale, 1.25));
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    color: inherit;
+    font: inherit;
+  }
+
+  .vt-sub__label,
+  .vt-sub__duration {
+    position: relative;
+    z-index: 1;
+  }
+
+  .vt-sub__label {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(10px * var(--pd-scale, 1.25));
+    font-size: calc(12px * var(--pd-scale, 1.25));
+    font-weight: 400;
+    line-height: calc(15px * var(--pd-scale, 1.25));
+    color: #444;
+  }
+
+  .vt-sub__label img {
+    display: block;
+    width: calc(12px * var(--pd-scale, 1.25));
+    height: calc(12px * var(--pd-scale, 1.25));
+    flex-shrink: 0;
+  }
+
+  .vt-sub__duration {
+    font-size: calc(8px * var(--pd-scale, 1.25));
+    font-weight: 400;
+    line-height: normal;
+    color: #444;
+    white-space: nowrap;
+  }
+
+  .vt-main {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .vt-main__scroll {
+    margin-top: calc(28px * var(--pd-scale, 1.25));
+  }
+
+  .vt-lessons {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .vt-lesson {
+    display: none;
+    width: 100%;
+  }
+
+  .vt-lesson--active {
+    display: block;
+  }
+
+  .vt-player {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 673 / 389;
+    border-radius: calc(6px * var(--pd-scale, 1.25));
+    background: #d9d9d9;
+    overflow: hidden;
+  }
+
+  .vt-player__label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    font-size: calc(18px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(22px * var(--pd-scale, 1.25));
+    color: #000945;
+  }
+
+  .vt-player :global(.vt-player__iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: calc(6px * var(--pd-scale, 1.25));
+  }
+
+  .vt-copy {
+    width: 100%;
+    margin-top: 0;
+  }
+
+  .vt-copy__category {
+    margin: 0 0 calc(3px * var(--pd-scale, 1.25));
+    font-size: calc(18px * var(--pd-scale, 1.25));
+    font-weight: 500;
+    line-height: calc(22px * var(--pd-scale, 1.25));
+    color: #000945;
+  }
+
+  .vt-copy__sub {
+    margin: 0;
+    font-size: calc(15px * var(--pd-scale, 1.25));
+    font-weight: 400;
+    line-height: calc(22px * var(--pd-scale, 1.25));
+    color: #444;
+  }
+
+  .vt-copy__spacer {
+    margin: 0;
+    height: calc(20px * var(--pd-scale, 1.25));
+    font-size: calc(20px * var(--pd-scale, 1.25));
+    line-height: calc(20px * var(--pd-scale, 1.25));
+    visibility: hidden;
+  }
+
+  .vt-copy__body :global(p) {
+    margin: 0;
+    font-size: calc(12px * var(--pd-scale, 1.25));
+    font-weight: 300;
+    line-height: calc(22px * var(--pd-scale, 1.25));
+    color: #444;
+  }
+
+  .vt-copy__body :global(p + p) {
+    margin-top: calc(10px * var(--pd-scale, 1.25));
+  }
+
+  @media (max-width: 1023px) {
+    .vt-body__grid {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 50px;
+    }
+
+    .vt-sidebar,
+    .vt-cat {
+      width: 100%;
+      max-width: calc(298px * var(--pd-scale, 1.25));
+    }
+
+    .vt-sidebar__scroll {
+      max-height: none;
+      overflow: visible;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .vt-hero__inner {
+      padding-top: calc(160px * var(--pd-scale, 1.25));
+      padding-bottom: calc(60px * var(--pd-scale, 1.25));
+    }
+
+    .vt-hero__title {
+      font-size: calc(36px * var(--pd-scale, 1.25));
+      line-height: calc(40px * var(--pd-scale, 1.25));
+    }
+
+    .vt-body {
+      padding-bottom: calc(120px * var(--pd-scale, 1.25));
+    }
+  }
+</style>
+
+<script>
+  import { initVideoTutorials } from '../../lib/video-tutorials.client';
+
+  function bootVideoTutorials() {
+    const root = document.getElementById('vt-page');
+    if (!root) return;
+
+    const defaultLessonId = root.dataset.defaultLessonId ?? '';
+    const defaultLessonIndex = Number(root.dataset.defaultLessonIndex ?? '0');
+    let categories = [];
+    let lessonOrder = [];
+    try {
+      categories = JSON.parse(root.dataset.categories ?? '[]');
+    } catch {
+      categories = [];
+    }
+    try {
+      lessonOrder = JSON.parse(root.dataset.lessonOrder ?? '[]');
+    } catch {
+      lessonOrder = [];
+    }
+
+    initVideoTutorials(defaultLessonId, categories, {
+      defaultLessonIndex: Number.isFinite(defaultLessonIndex) ? defaultLessonIndex : 0,
+      lessonOrder,
+    });
+  }
+
+  bootVideoTutorials();
+  document.addEventListener('astro:page-load', bootVideoTutorials);
+</script>

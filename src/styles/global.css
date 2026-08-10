@@ -74,7 +74,9 @@
     padding-inline: 26.25px;
     border-radius: 35px;
     background: #fff;
-    box-shadow: 7.5px 7.5px 41.25px rgba(0, 0, 0, 0.08);
+    /* Figma 2224:280 — offset scales, blur stays 33px at 1× */
+    box-shadow: calc(6px * var(--pd-scale, 1.25)) calc(6px * var(--pd-scale, 1.25)) 33px
+      rgba(0, 0, 0, 0.08);
   }
 
   @media (max-width: 639px) {
