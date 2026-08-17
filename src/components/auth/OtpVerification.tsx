@@ -9,6 +9,8 @@ interface OtpVerificationProps {
   onChangeEmail?: () => void;
   loading: boolean;
   error?: string;
+  /** When false, returning users can verify without re-checking marketing/terms boxes. */
+  requireConsent?: boolean;
 }
 
 export default function OtpVerification({
@@ -18,6 +20,7 @@ export default function OtpVerification({
   onChangeEmail,
   loading,
   error,
+  requireConsent = true,
 }: OtpVerificationProps) {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
   const [agreeOffers, setAgreeOffers] = useState(false);
@@ -84,7 +87,8 @@ export default function OtpVerification({
 
   const otpValue = otp.join('');
   const isOtpComplete = otp.every((d) => d.length === 1);
-  const canSubmit = isOtpComplete && agreeOffers && agreeTerms && !loading;
+  const consentOk = !requireConsent || (agreeOffers && agreeTerms);
+  const canSubmit = isOtpComplete && consentOk && !loading;
 
   const submitOtp = async () => {
     if (!canSubmit) return;
@@ -133,32 +137,34 @@ export default function OtpVerification({
           )}
         </div>
 
-        <div className="flex flex-col gap-3">
-          <label className="inline-flex cursor-pointer items-start gap-2.5">
-            <input
-              type="checkbox"
-              checked={agreeOffers}
-              onChange={(e) => setAgreeOffers(e.target.checked)}
-              className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#C8C8C8] text-purple focus:ring-purple/30"
-            />
-            <span className="text-xs leading-snug text-[#666666] sm:text-sm">
-              I agree to receive offers, tips and product updates sent by
-              Pixeldesk. Unsubscribe anytime.
-            </span>
-          </label>
+        {requireConsent ? (
+          <div className="flex flex-col gap-3">
+            <label className="inline-flex cursor-pointer items-start gap-2.5">
+              <input
+                type="checkbox"
+                checked={agreeOffers}
+                onChange={(e) => setAgreeOffers(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#C8C8C8] text-purple focus:ring-purple/30"
+              />
+              <span className="text-xs leading-snug text-[#666666] sm:text-sm">
+                I agree to receive offers, tips and product updates sent by
+                Pixeldesk. Unsubscribe anytime.
+              </span>
+            </label>
 
-          <label className="inline-flex cursor-pointer items-start gap-2.5">
-            <input
-              type="checkbox"
-              checked={agreeTerms}
-              onChange={(e) => setAgreeTerms(e.target.checked)}
-              className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#C8C8C8] text-purple focus:ring-purple/30"
-            />
-            <span className="text-xs leading-snug text-[#666666] sm:text-sm">
-              I agree to Pixeldesk&apos;s Terms of Service &amp; Privacy Policy.
-            </span>
-          </label>
-        </div>
+            <label className="inline-flex cursor-pointer items-start gap-2.5">
+              <input
+                type="checkbox"
+                checked={agreeTerms}
+                onChange={(e) => setAgreeTerms(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#C8C8C8] text-purple focus:ring-purple/30"
+              />
+              <span className="text-xs leading-snug text-[#666666] sm:text-sm">
+                I agree to Pixeldesk&apos;s Terms of Service &amp; Privacy Policy.
+              </span>
+            </label>
+          </div>
+        ) : null}
 
         <button
           type="button"

@@ -25,6 +25,7 @@ export default function AuthBase({
   const [session, setSession] = useState<unknown | null>(null);
   const [sessionLoading, setSessionLoading] = useState(true);
   const [email, setEmail] = useState<string | null>(null);
+  const [requireConsent, setRequireConsent] = useState(true);
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | undefined>();
@@ -87,7 +88,13 @@ export default function AuthBase({
     try {
       setLoading(true);
       setError(undefined);
-      await requestOtp(value);
+      const result = (await requestOtp(value)) as {
+        data?: { requiresConsent?: boolean };
+        requiresConsent?: boolean;
+      };
+      const needsConsent =
+        result?.data?.requiresConsent ?? result?.requiresConsent;
+      setRequireConsent(needsConsent !== false);
       setEmail(value);
       setRememberMe(rememberChoice);
     } catch (err: unknown) {
@@ -180,10 +187,12 @@ export default function AuthBase({
       onResendOtp={handleResendOtp}
       onChangeEmail={() => {
         setEmail(null);
+        setRequireConsent(true);
         setError(undefined);
       }}
       loading={loading}
       error={error}
+      requireConsent={requireConsent}
     />
   );
 }
