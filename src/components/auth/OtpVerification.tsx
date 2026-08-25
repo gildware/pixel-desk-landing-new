@@ -1,4 +1,4 @@
-import { useEffect, useState, type ClipboardEvent, type KeyboardEvent } from 'react';
+import { useEffect, useState, type ClipboardEvent, type FormEvent, type KeyboardEvent } from 'react';
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
@@ -79,12 +79,6 @@ export default function OtpVerification({
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
-    if (e.key === 'Backspace' && otp[index] === '' && index > 0) {
-      document.getElementById(`otp-${index - 1}`)?.focus();
-    }
-  };
-
   const otpValue = otp.join('');
   const isOtpComplete = otp.every((d) => d.length === 1);
   const consentOk = !requireConsent || (agreeOffers && agreeTerms);
@@ -93,6 +87,22 @@ export default function OtpVerification({
   const submitOtp = async () => {
     if (!canSubmit) return;
     await onVerify?.(otpValue);
+  };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    void submitOtp();
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.currentTarget.form?.requestSubmit();
+      return;
+    }
+    if (e.key === 'Backspace' && otp[index] === '' && index > 0) {
+      document.getElementById(`otp-${index - 1}`)?.focus();
+    }
   };
 
   return (
@@ -109,7 +119,7 @@ export default function OtpVerification({
         </p>
       </div>
 
-      <div className="flex flex-col gap-6">
+      <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
         <div>
           <label className="mb-3 block text-center text-sm text-[#666666]">
             Login code
@@ -167,8 +177,7 @@ export default function OtpVerification({
         ) : null}
 
         <button
-          type="button"
-          onClick={submitOtp}
+          type="submit"
           disabled={!canSubmit}
           className="h-12 w-full rounded-lg bg-purple text-base font-semibold tracking-wide text-white shadow-sm transition-colors hover:bg-purple-deep disabled:cursor-not-allowed disabled:opacity-50"
         >
@@ -211,7 +220,7 @@ export default function OtpVerification({
             </button>
           )}
         </div>
-      </div>
+      </form>
     </div>
   );
 }
