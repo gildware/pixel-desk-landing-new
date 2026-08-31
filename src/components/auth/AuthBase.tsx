@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import LoginForm from './LoginForm';
 import OtpVerification from './OtpVerification';
 import { getSession, logout, requestOtp, verifyOtp } from '../../lib/api/auth.api';
-import { DASHBOARD_URL } from '../../lib/api/api.config';
+import { DASHBOARD_URL, SUPER_ADMIN_URL } from '../../lib/api/api.config';
 import { dashboardRedirectUrl } from '../../lib/auth/dashboardRedirect';
+import { isGlobalSuperAdminSession } from '../../lib/auth/superAdminSession';
 import { getCsrfTokenFromCookie } from '../../lib/csrf';
 
 type VerifyOtpResponse = {
@@ -75,13 +76,13 @@ export default function AuthBase({
   }, []);
 
   useEffect(() => {
-    if (!sessionLoading && session) {
-      window.location.replace(
-        dashboardRedirectUrl(DASHBOARD_URL, {
-          csrfToken: getCsrfTokenFromCookie(),
-        }),
-      );
-    }
+    if (sessionLoading || !session) return;
+    if (isGlobalSuperAdminSession(session)) return;
+    window.location.replace(
+      dashboardRedirectUrl(DASHBOARD_URL, {
+        csrfToken: getCsrfTokenFromCookie(),
+      }),
+    );
   }, [session, sessionLoading]);
 
   const handleRequestOtp = async (value: string, rememberChoice: boolean) => {
@@ -124,6 +125,13 @@ export default function AuthBase({
         otp,
         rememberMe,
       )) as VerifyOtpResponse;
+      if (isGlobalSuperAdminSession(result)) {
+        setSession(result);
+        setError(
+          'You are logged in as a super admin and cannot log in to the company dashboard.',
+        );
+        return;
+      }
       const csrfToken =
         result?.data?.csrfToken || getCsrfTokenFromCookie() || undefined;
       // cookies are set by backend; hard-navigate into dashboard
@@ -154,6 +162,37 @@ export default function AuthBase({
   }
 
   if (session) {
+    if (isGlobalSuperAdminSession(session)) {
+      return (
+        <div className="auth-status">
+          <p className="auth-blocked-title">Super admin account</p>
+          <p className="auth-blocked-message">
+            You are logged in as a super admin and cannot log in to the company
+            dashboard. Sign out first if you need to use a company account.
+          </p>
+          <div className="auth-blocked-actions">
+            <button
+              type="button"
+              onClick={() => {
+                window.location.assign(SUPER_ADMIN_URL);
+              }}
+              className="auth-btn-primary"
+            >
+              Go to Super Admin
+            </button>
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="auth-btn-secondary"
+            >
+              {loggingOut ? 'Signing out…' : 'Sign out'}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="auth-status">
         <p className="auth-support">Redirecting to dashboard…</p>

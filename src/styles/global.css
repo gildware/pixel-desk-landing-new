@@ -457,6 +457,57 @@
     margin-top: calc(16px * var(--pd-scale));
   }
 
+  .auth-blocked-actions {
+    display: flex;
+    flex-direction: column;
+    gap: calc(10px * var(--pd-scale));
+    margin-top: calc(16px * var(--pd-scale));
+  }
+
+  .auth-blocked-actions .auth-btn-primary {
+    margin-top: 0;
+  }
+
+  .auth-btn-secondary {
+    display: flex;
+    width: 100%;
+    height: calc(35px * var(--pd-scale));
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #dbdbdb;
+    border-radius: calc(6px * var(--pd-scale));
+    background: #fff;
+    color: #444;
+    font-size: calc(14px * var(--pd-scale));
+    font-weight: 400;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+
+  .auth-btn-secondary:hover:not(:disabled) {
+    background: #fafafa;
+  }
+
+  .auth-btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .auth-blocked-title {
+    margin: 0 0 calc(8px * var(--pd-scale));
+    font-size: calc(16px * var(--pd-scale));
+    font-weight: 600;
+    color: #444;
+  }
+
+  .auth-blocked-message {
+    margin: 0;
+    font-size: calc(12px * var(--pd-scale));
+    font-weight: 300;
+    line-height: 1.4;
+    color: #444;
+  }
+
   .faq-icon {
     display: flex;
     width: 25px;

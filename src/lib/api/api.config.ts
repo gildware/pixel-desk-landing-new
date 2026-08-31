@@ -13,6 +13,12 @@ export const DASHBOARD_URL =
   (import.meta.env.PUBLIC_DASHBOARD_URL as string | undefined)?.replace(/\/$/, '') ||
   'http://localhost:5173';
 
+export const SUPER_ADMIN_URL =
+  (import.meta.env.PUBLIC_SUPER_ADMIN_URL as string | undefined)?.replace(
+    /\/$/,
+    '',
+  ) || 'http://localhost:3000';
+
 export const DEFAULT_FETCH_OPTIONS: RequestInit = {
   credentials: 'include',
   headers: {
