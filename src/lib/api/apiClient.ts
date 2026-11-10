@@ -13,11 +13,15 @@ const AUTH_PATHS_NO_REFRESH = new Set([
   '/auth/refresh',
   '/auth/request-otp',
   '/auth/verify-otp',
+  '/auth/login-password',
+  '/auth/forgot-password',
+  '/auth/reset-password',
   '/auth/logout',
 ]);
 
 function shouldTryRefresh(endpoint: string): boolean {
-  return !AUTH_PATHS_NO_REFRESH.has(endpoint);
+  const path = endpoint.split('?')[0];
+  return !AUTH_PATHS_NO_REFRESH.has(path);
 }
 
 async function postRefresh(): Promise<boolean> {
@@ -57,9 +61,18 @@ export async function apiClient<T>(
   }
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
+    const error = (await response.json().catch(() => ({}))) as {
+      message?: string;
+      errors?: Array<{ msg?: string; message?: string }>;
+    };
+    const validationMessage = Array.isArray(error.errors)
+      ? error.errors
+          .map((e) => e.msg || e.message)
+          .filter(Boolean)
+          .join(', ')
+      : '';
     throw new Error(
-      (error as { message?: string }).message || 'Something went wrong',
+      error.message || validationMessage || 'Something went wrong',
     );
   }
 

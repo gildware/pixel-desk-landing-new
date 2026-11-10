@@ -484,6 +484,11 @@
     transition: background 0.15s ease;
   }
 
+  .auth-btn-secondary--accent {
+    border-color: #6c41ff;
+    color: #6c41ff;
+  }
+
   .auth-btn-secondary:hover:not(:disabled) {
     background: #fafafa;
   }
@@ -491,6 +496,98 @@
   .auth-btn-secondary:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  .auth-actions-stack {
+    display: flex;
+    flex-direction: column;
+    gap: calc(10px * var(--pd-scale));
+  }
+
+  .auth-input-wrap {
+    position: relative;
+  }
+
+  .auth-input-wrap .auth-input {
+    padding-right: calc(52px * var(--pd-scale));
+  }
+
+  .auth-input-toggle {
+    position: absolute;
+    top: 50%;
+    right: calc(10px * var(--pd-scale));
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: #6c41ff;
+    font-size: calc(10px * var(--pd-scale));
+    font-weight: 400;
+    cursor: pointer;
+  }
+
+  .auth-field-meta {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: calc(6px * var(--pd-scale));
+  }
+
+  .auth-text-link {
+    display: inline-block;
+    margin-top: calc(6px * var(--pd-scale));
+    border: 0;
+    background: transparent;
+    color: #6c41ff;
+    font-size: calc(10px * var(--pd-scale));
+    font-weight: 300;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+
+  .auth-text-link--center {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin-top: calc(14px * var(--pd-scale));
+  }
+
+  .auth-text-link:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .auth-password-checklist {
+    margin: 0 0 calc(14px * var(--pd-scale));
+    padding: 0;
+    list-style: none;
+  }
+
+  .auth-password-checklist__item {
+    position: relative;
+    padding-left: calc(14px * var(--pd-scale));
+    margin-bottom: calc(4px * var(--pd-scale));
+    font-size: calc(10px * var(--pd-scale));
+    font-weight: 300;
+    color: #888;
+  }
+
+  .auth-password-checklist__item::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+  }
+
+  .auth-password-checklist__item.is-met {
+    color: #15803d;
+  }
+
+  .auth-password-checklist__item.is-met::before {
+    content: '✓';
+  }
+
+  a.auth-btn-primary {
+    text-decoration: none;
+    box-sizing: border-box;
   }
 
   .auth-blocked-title {

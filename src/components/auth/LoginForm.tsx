@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react';
 
 interface LoginFormProps {
-  onContinue: (email: string, rememberMe: boolean) => Promise<void> | void;
+  onPassword: (email: string, rememberMe: boolean) => void;
+  onOtp: (email: string, rememberMe: boolean) => Promise<void> | void;
   loading: boolean;
   error?: string;
   supportUrl?: string;
@@ -59,7 +60,8 @@ function MicrosoftIcon() {
 }
 
 export default function LoginForm({
-  onContinue,
+  onPassword,
+  onOtp,
   loading,
   error,
   supportUrl = '/resources/knowledge-base',
@@ -68,15 +70,29 @@ export default function LoginForm({
   const [rememberMe, setRememberMe] = useState(false);
   const [touched, setTouched] = useState(false);
   const [ssoMessage, setSsoMessage] = useState<string | null>(null);
+  const [pendingAction, setPendingAction] = useState<'password' | 'otp' | null>(
+    null,
+  );
 
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const showEmailError = touched && !isValidEmail;
+  const normalizedEmail = email.trim().toLowerCase();
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handlePassword = (e: FormEvent) => {
     e.preventDefault();
     setTouched(true);
     if (!isValidEmail) return;
-    await onContinue(email.trim().toLowerCase(), rememberMe);
+    setPendingAction('password');
+    onPassword(normalizedEmail, rememberMe);
+  };
+
+  const handleOtp = async (e: FormEvent) => {
+    e.preventDefault();
+    setTouched(true);
+    if (!isValidEmail) return;
+    setPendingAction('otp');
+    await onOtp(normalizedEmail, rememberMe);
+    setPendingAction(null);
   };
 
   return (
@@ -86,7 +102,7 @@ export default function LoginForm({
         <p className="auth-subtitle">Sign in to your account</p>
       </div>
 
-      <form onSubmit={handleSubmit} noValidate>
+      <form noValidate>
         <div className="auth-field">
           <label htmlFor="email" className="auth-label">
             Your email address
@@ -109,9 +125,26 @@ export default function LoginForm({
           {error && !showEmailError && <p className="auth-error">{error}</p>}
         </div>
 
-        <button type="submit" disabled={!isValidEmail || loading} className="auth-btn-primary">
-          {loading ? 'Sending…' : 'Send login code'}
-        </button>
+        <div className="auth-actions-stack">
+          <button
+            type="button"
+            disabled={!isValidEmail || loading}
+            className="auth-btn-primary"
+            onClick={handlePassword}
+          >
+            Sign in with password
+          </button>
+          <button
+            type="button"
+            disabled={!isValidEmail || loading}
+            className="auth-btn-secondary auth-btn-secondary--accent"
+            onClick={handleOtp}
+          >
+            {loading && pendingAction === 'otp'
+              ? 'Sending…'
+              : 'Send one-time code'}
+          </button>
+        </div>
 
         <div className="auth-row">
           <label htmlFor="rememberMe" className="auth-remember">

@@ -1,13 +1,25 @@
 import { useEffect, useState } from 'react';
 import LoginForm from './LoginForm';
 import OtpVerification from './OtpVerification';
-import { getSession, logout, requestOtp, verifyOtp } from '../../lib/api/auth.api';
+import PasswordLoginForm from './PasswordLoginForm';
+import ForgotPasswordForm from './ForgotPasswordForm';
+import CheckEmailNotice from './CheckEmailNotice';
+import {
+  forgotPassword,
+  getSession,
+  loginWithPassword,
+  logout,
+  requestOtp,
+  verifyOtp,
+} from '../../lib/api/auth.api';
 import { DASHBOARD_URL, SUPER_ADMIN_URL } from '../../lib/api/api.config';
 import { dashboardRedirectUrl } from '../../lib/auth/dashboardRedirect';
 import { isGlobalSuperAdminSession } from '../../lib/auth/superAdminSession';
 import { getCsrfTokenFromCookie } from '../../lib/csrf';
 
-type VerifyOtpResponse = {
+type AuthStep = 'email' | 'password' | 'otp' | 'forgot' | 'check-email';
+
+type AuthSuccessResponse = {
   data?: { csrfToken?: string };
 };
 
@@ -15,16 +27,12 @@ interface AuthBaseProps {
   supportUrl?: string;
 }
 
-/**
- * Same login flow as pixel-desk-web AuthBase:
- * session check → request OTP → verify OTP → hard redirect to dashboard.
- * UI uses the pixel-desk-landing auth shell styles.
- */
 export default function AuthBase({
   supportUrl = '/resources/knowledge-base',
 }: AuthBaseProps) {
   const [session, setSession] = useState<unknown | null>(null);
   const [sessionLoading, setSessionLoading] = useState(true);
+  const [step, setStep] = useState<AuthStep>('email');
   const [email, setEmail] = useState<string | null>(null);
   const [requireConsent, setRequireConsent] = useState(true);
   const [rememberMe, setRememberMe] = useState(false);
@@ -39,8 +47,6 @@ export default function AuthBase({
       const params = new URLSearchParams(window.location.search);
       const forceLogout = params.get('logout') === '1';
 
-      // Dashboard sends ?logout=1 when its API session fails but landing still
-      // has host-only proxy cookies — clear them here so we don't redirect-loop.
       if (forceLogout) {
         try {
           await logout();
@@ -62,8 +68,6 @@ export default function AuthBase({
         const data = await getSession();
         if (!cancelled) setSession(data);
       } catch {
-        // Mirror pixel-desk-web: auth failures → no session.
-        // Also treat proxy/API downtime as logged-out so the form can render.
         if (!cancelled) setSession(null);
       } finally {
         if (!cancelled) setSessionLoading(false);
@@ -85,6 +89,35 @@ export default function AuthBase({
     );
   }, [session, sessionLoading]);
 
+  const redirectAfterLogin = (result: AuthSuccessResponse) => {
+    if (isGlobalSuperAdminSession(result)) {
+      setSession(result);
+      setError(
+        'You are logged in as a super admin and cannot log in to the company dashboard.',
+      );
+      return;
+    }
+    const csrfToken =
+      result?.data?.csrfToken || getCsrfTokenFromCookie() || undefined;
+    window.location.replace(
+      dashboardRedirectUrl(DASHBOARD_URL, { csrfToken }),
+    );
+  };
+
+  const resetToEmail = () => {
+    setStep('email');
+    setEmail(null);
+    setRequireConsent(true);
+    setError(undefined);
+  };
+
+  const handlePasswordChoice = (value: string, rememberChoice: boolean) => {
+    setError(undefined);
+    setEmail(value);
+    setRememberMe(rememberChoice);
+    setStep('password');
+  };
+
   const handleRequestOtp = async (value: string, rememberChoice: boolean) => {
     try {
       setLoading(true);
@@ -98,6 +131,7 @@ export default function AuthBase({
       setRequireConsent(needsConsent !== false);
       setEmail(value);
       setRememberMe(rememberChoice);
+      setStep('otp');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
@@ -116,7 +150,6 @@ export default function AuthBase({
 
   const handleVerifyOtp = async (otp: string) => {
     if (!email) return;
-
     try {
       setLoading(true);
       setError(undefined);
@@ -124,20 +157,44 @@ export default function AuthBase({
         email,
         otp,
         rememberMe,
-      )) as VerifyOtpResponse;
-      if (isGlobalSuperAdminSession(result)) {
-        setSession(result);
-        setError(
-          'You are logged in as a super admin and cannot log in to the company dashboard.',
-        );
-        return;
-      }
-      const csrfToken =
-        result?.data?.csrfToken || getCsrfTokenFromCookie() || undefined;
-      // cookies are set by backend; hard-navigate into dashboard
-      window.location.replace(
-        dashboardRedirectUrl(DASHBOARD_URL, { csrfToken }),
-      );
+      )) as AuthSuccessResponse;
+      redirectAfterLogin(result);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePasswordLogin = async (
+    password: string,
+    rememberChoice: boolean,
+  ) => {
+    if (!email) return;
+    try {
+      setLoading(true);
+      setError(undefined);
+      setRememberMe(rememberChoice);
+      const result = (await loginWithPassword(
+        email,
+        password,
+        rememberChoice,
+      )) as AuthSuccessResponse;
+      redirectAfterLogin(result);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotSubmit = async (value: string) => {
+    try {
+      setLoading(true);
+      setError(undefined);
+      await forgotPassword(value);
+      setEmail(value);
+      setStep('check-email');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
@@ -208,30 +265,72 @@ export default function AuthBase({
     );
   }
 
-  if (!email) {
+  if (step === 'forgot') {
     return (
-      <LoginForm
-        onContinue={handleRequestOtp}
+      <ForgotPasswordForm
+        initialEmail={email || ''}
+        onSubmit={handleForgotSubmit}
+        onBack={() => {
+          setError(undefined);
+          setStep(email ? 'password' : 'email');
+        }}
         loading={loading}
         error={error}
-        supportUrl={supportUrl}
+      />
+    );
+  }
+
+  if (step === 'check-email' && email) {
+    return (
+      <CheckEmailNotice
+        email={email}
+        loading={loading}
+        error={error}
+        onResend={() => handleForgotSubmit(email)}
+        onBack={resetToEmail}
+      />
+    );
+  }
+
+  if (step === 'password' && email) {
+    return (
+      <PasswordLoginForm
+        email={email}
+        initialRememberMe={rememberMe}
+        loading={loading}
+        error={error}
+        onSubmit={handlePasswordLogin}
+        onForgotPassword={() => {
+          setError(undefined);
+          setStep('forgot');
+        }}
+        onUseOtp={() => handleRequestOtp(email, rememberMe)}
+        onChangeEmail={resetToEmail}
+      />
+    );
+  }
+
+  if (step === 'otp' && email) {
+    return (
+      <OtpVerification
+        email={email}
+        onVerify={handleVerifyOtp}
+        onResendOtp={handleResendOtp}
+        onChangeEmail={resetToEmail}
+        loading={loading}
+        error={error}
+        requireConsent={requireConsent}
       />
     );
   }
 
   return (
-    <OtpVerification
-      email={email}
-      onVerify={handleVerifyOtp}
-      onResendOtp={handleResendOtp}
-      onChangeEmail={() => {
-        setEmail(null);
-        setRequireConsent(true);
-        setError(undefined);
-      }}
+    <LoginForm
+      onPassword={handlePasswordChoice}
+      onOtp={handleRequestOtp}
       loading={loading}
       error={error}
-      requireConsent={requireConsent}
+      supportUrl={supportUrl}
     />
   );
 }

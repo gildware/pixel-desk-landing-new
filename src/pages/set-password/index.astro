@@ -1,0 +1,13 @@
+---
+import AuthLayout from '../../layouts/AuthLayout.astro';
+import SetPasswordPage from '../../components/auth/SetPasswordPage';
+---
+
+<AuthLayout
+  title="Set password | Pixeldesk"
+  description="Set or reset your Pixeldesk password."
+>
+  <SetPasswordPage client:only="react">
+    <p slot="fallback" class="auth-sso-note">Loading…</p>
+  </SetPasswordPage>
+</AuthLayout>
