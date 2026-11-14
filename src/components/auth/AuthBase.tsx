@@ -118,6 +118,10 @@ export default function AuthBase({
     setStep('password');
   };
 
+  const isOtpAlreadySentError = (message: string) =>
+    /please wait .* before requesting a new otp/i.test(message) ||
+    /too many resend attempts/i.test(message);
+
   const handleRequestOtp = async (value: string, rememberChoice: boolean) => {
     try {
       setLoading(true);
@@ -133,9 +137,42 @@ export default function AuthBase({
       setRememberMe(rememberChoice);
       setStep('otp');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      const message =
+        err instanceof Error ? err.message : 'Something went wrong';
+      // Cooldown / resend-block means a code was already issued — still show OTP entry.
+      if (isOtpAlreadySentError(message)) {
+        setEmail(value);
+        setRememberMe(rememberChoice);
+        setError(message);
+        setStep('otp');
+      } else {
+        setError(message);
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  /** From password screen: always open OTP UI, then try to send/resend. */
+  const handleSwitchToOtp = async (rememberChoice: boolean) => {
+    if (!email) return;
+    setRememberMe(rememberChoice);
+    setError(undefined);
+    setStep('otp');
+    try {
+      // Do not toggle shared `loading` — that labels the verify button "Verifying…".
+      const result = (await requestOtp(email)) as {
+        data?: { requiresConsent?: boolean };
+        requiresConsent?: boolean;
+      };
+      const needsConsent =
+        result?.data?.requiresConsent ?? result?.requiresConsent;
+      setRequireConsent(needsConsent !== false);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Something went wrong';
+      // Keep OTP screen; show wait/resend message if a code was already sent.
+      setError(message);
     }
   };
 
@@ -304,7 +341,7 @@ export default function AuthBase({
           setError(undefined);
           setStep('forgot');
         }}
-        onUseOtp={() => handleRequestOtp(email, rememberMe)}
+        onUseOtp={(rememberChoice) => handleSwitchToOtp(rememberChoice)}
         onChangeEmail={resetToEmail}
       />
     );

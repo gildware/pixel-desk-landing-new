@@ -5,7 +5,7 @@ interface PasswordLoginFormProps {
   initialRememberMe?: boolean;
   onSubmit: (password: string, rememberMe: boolean) => Promise<void> | void;
   onForgotPassword: () => void;
-  onUseOtp: () => Promise<void> | void;
+  onUseOtp: (rememberMe: boolean) => Promise<void> | void;
   onChangeEmail: () => void;
   loading: boolean;
   error?: string;
@@ -120,7 +120,7 @@ export default function PasswordLoginForm({
         <button
           type="button"
           className="auth-text-link auth-text-link--center"
-          onClick={onUseOtp}
+          onClick={() => void onUseOtp(rememberMe)}
           disabled={loading}
         >
           Use a one-time code instead
